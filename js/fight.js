@@ -1,5 +1,5 @@
 // returns an array containing two states -- one for he human and one for the zombie
-zm.fight = function (human,zombie) {
+z.fight = function (human,zombie) {
 		var zh = zombie.targetCount,
 			hz = human.targetCount,
 			biteChance = .1/zh,

@@ -1,4 +1,4 @@
-var zm = {
+var z = {
 	recognitionRange: 30,
 	gridHeight: 0,
 	gridWidth: 0,
@@ -6,6 +6,7 @@ var zm = {
 	foodAvailability: 0,
 	hidingPlaceFrequency: 0,
 	zombificationDuration: 0,
+	timelapsefactor: 3600,
 
 //stats for all humans
 	humanStartPopulation: 9000,
@@ -24,27 +25,45 @@ var zm = {
 	zombieCurrentPopulation: 1,
 	zombieBaseRunspeed: 1000,
 	zombieHerding: 1,
-	zombieBrainEatingEfficiency: 1
+	zombieBrainEatingEfficiency: 1,
+	
+	humans: [],
+	zombies: []
 };
 
 
-zm.init = function (h,w,hpop,zpop,zbr,hherd,zherd) 
+z.init = function (h,w,hpop,zpop,zbr,hherd,zherd) 
 {
-	zm.gridHeight = h;
-	zm.gridWidth = w;
-	zm.humanStartPopulation = hpop;
-	zm.zombieStartPopulation = zpop;
-	zm.zombieBrainEatingEfficiency = zbr;
-	zm.humanHerding = hherd;
-	zm.zombieHerding = zherd;
+	z.gridHeight = h;
+	z.gridWidth = w;
+	z.humanStartPopulation = hpop;
+	z.zombieStartPopulation = zpop;
+	z.zombieBrainEatingEfficiency = zbr;
+	z.humanHerding = hherd;
+	z.zombieHerding = zherd;
 	
 	var i = document.createElement('canvas');
+	$(i).attr('height', h);
+	$(i).attr('width', w);
 	$('body').append(i);
+	
+	// this here advances the turn by one time-lapsed hour
+	var turns = setInterval(function () {z.advanceTurn();},3600 * 1000 / z.timelapsefactor);
 };
 
+
+// human and zombie update methods get called by the turn increment function
+z.advanceTurn = function () {
+	$.each(z.humans, function (i, item) {
+		item.update(); 
+	});
+}
+
+// prototype for both humans and zombies
 Humanoid = function () 
 {
 		targetCount = 0,
+		moveDirection = 0,
 		this.pos =  
 		{
 			x: 0,
@@ -61,21 +80,99 @@ Humanoid = function ()
 			this.pos.x = x;
 			this.pos.y = y;
 		}
+		
+		this.move = function () 
+		{
+		}
+		
+		this.die = function () 
+		{
+		}
 };
 
 Human = function () 
 {
-	var runspeed = (Math.random() / 5 + .9) * 3000;
+	var runspeed = (Math.random() / 5 + .9) * 3000,
+		gender,
+		stamina,
+		hunger,
+		timeSinceLastAte = 0,
+		timeSinceLastRested = 0;
+	
+	this.update = function ()
+	{
+		// code here to update stam, hunger and position
+	};
+	
+	this.attack = function ()
+	{
+	}
+	
+	this.rest = function ()
+	{
+	}
+	
+	this.hide = function ()
+	{
+	}
+	
+	this.findFood = function () 
+	{
+	}
+	
+	this.reproduce = function () 
+	{
+		//start timer or just represent frequency abstractly
+	}
+	
+	this.chooseAction = function () 
+	{
+	}
+	
+	this.chooseNextMove = function ()
+	{
+	}
+	
+	this.die = function ()
+	{
+	}
+	
+	this.zombify = function ()
+	{
+	}
+	
+	this.updateStamina = function () 
+	{
+		this.stamina = this.stamina - (this.timeSinceLastAte * this.timeSinceLastRested) ^ z.humanStamCoeff;
+	}
+	
+	this.updateHunger = function () {
+		this.hunger = this.hunger * (this.timeSinceLastAte) ^ z.humanHungerCoeff;
+	}
 };
 
 Zombie = function () 
 {
 	var runspeed = (Math.random() / 5 + .9) * 1000;
+	
+	this.chooseTarget = function () 
+	{
+	}
+	
+	this.chooseNextMove = function () 
+	{
+	}
+	
 };
 
 Human.prototype = new Humanoid();
 Zombie.prototype = new Humanoid();
 
 $(document).ready(function ($) {
-	zm.init(480,480,9000,1,1,1,1);
+	// event handlers down here:
+	// start		
+	$('#z-sim-init').live('submit', function (e) {
+		e.preventDefault(); 
+		z.init(480,480,9000,1,1,1,1);
+	});
 });
