@@ -1,5 +1,5 @@
 var z = {
-	: 1,
+	hRecognitionRange: 1,
 	zRecognitionRange: 10,
 	sightRange: 20,
 	gridHeight: 0,
