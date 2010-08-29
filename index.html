@@ -13,16 +13,16 @@
 
 <label for="hpop">Initial human population:</label>
 <input id="hpop" name="hpop" type="text" value="1000"/>
-<label for="scale">Initial zombie population:</label>
-<input id="scale" name="scale" type="text" value="1"/>
+<label for="zpop">Initial zombie population:</label>
+<input id="zpop" name="zpop" type="text" value="1"/>
 <label for="scale">Scale (meters/px):</label>
-<input id="scale" name="scale" type="text" value="2"/>
-<label for="scale">Zombie brain-eating success rate (%):</label>
-<input id="scale" name="scale" type="text" value="100"/>
+<input id="scale" name="scale" type="text" value="20"/>
+<label for="zbr">Zombie brain-eating success rate (%):</label>
+<input id="zbr" name="zbr" type="text" value="100"/>
 <input type="submit" value="start" name="start" id="start"/>
 </form>
 
-<a href="#" onclick="$(body).html('Range: ' + z.range(z.humans[0],z.zombies[0]) + '; Sees: '+ z.sees(z.humans[0],z.zombies[0]));return false;">Click to test range and visibility</a>
+<a href="#" onclick="$(body).html('Range: ' + z.range(z.humans[0],z.zombies[0]) + '; Recognizes: '+ z.recognizes(z.humans[0],z.zombies[0]));return false;">Click to test range and visibility</a>
 
 </body>
 

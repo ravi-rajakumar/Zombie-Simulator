@@ -1,12 +1,16 @@
 var z = {
-	recognitionRange: 30,
+	: 1,
+	zRecognitionRange: 10,
+	sightRange: 20,
 	gridHeight: 0,
 	gridWidth: 0,
+	scale: 20,
 	currentDay: 0,
 	foodAvailability: 0,
 	hidingPlaceFrequency: 0,
 	zombificationDuration: 0,
-	timelapsefactor: 3600,
+// one turn = one minute; this factor determies how quickly turns jump forward. At 60, turns jump at a rate of one (min.) per second.
+	timelapsefactor: 60,
 
 //stats for all humans
 	humanStartPopulation: 9000,
@@ -48,7 +52,7 @@ z.init = function (h,w,hpop,zpop,zbr,hherd,zherd)
 	$('body').append(i);
 	
 	// this here advances the turn by one time-lapsed hour
-	var turns = setInterval(function () {z.advanceTurn();},3600 * 1000 / z.timelapsefactor);
+	var turns = setInterval(function () {z.advanceTurn();},60 * 1000 / z.timelapsefactor);
 };
 
 
@@ -87,6 +91,11 @@ Humanoid = function ()
 		
 		this.die = function () 
 		{
+		}
+		
+		this.isZombie = function ()
+		{
+			return !(this.hasOwnProperty('zombify'));
 		}
 };
 
@@ -173,6 +182,10 @@ $(document).ready(function ($) {
 	// start		
 	$('#z-sim-init').live('submit', function (e) {
 		e.preventDefault(); 
-		z.init(480,480,9000,1,1,1,1);
+		var h = v = 480,
+			hpop = $('#hpop').val().
+			zpop = $('#zpop').val(),
+			zbr = $('#zbr').val();
+		z.init(h,v,hpop,zpop,zbr,1,1);
 	});
 });
