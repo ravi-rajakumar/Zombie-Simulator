@@ -11,10 +11,11 @@ var z = {
 	zombificationDuration: 0,
 // one turn = one minute; this factor determies how quickly turns jump forward. At 60, turns jump at a rate of one (min.) per second.
 	timelapsefactor: 60,
+	canvas: null,
 
 //stats for all humans
-	humanStartPopulation: 9000,
-	humanCurrentPopulation: 9000,
+	humanStartPopulation: 1000,
+	humanCurrentPopulation: 1000,
 	humanBaseRunspeed: 3000,
 	humanHerding: 1,
 	humanDefenseEfficiency: 1,
@@ -38,6 +39,8 @@ var z = {
 
 z.init = function (h,w,hpop,zpop,zbr,hherd,zherd) 
 {
+	var i,j,k;
+	
 	z.gridHeight = h;
 	z.gridWidth = w;
 	z.humanStartPopulation = hpop;
@@ -46,10 +49,31 @@ z.init = function (h,w,hpop,zpop,zbr,hherd,zherd)
 	z.humanHerding = hherd;
 	z.zombieHerding = zherd;
 	
-	var i = document.createElement('canvas');
+	// make the starting populations
+	for (j = 0; j < z.humanStartPopulation; j++)
+	{
+		z.humans.push(new Human());
+		z.humans[j].targetCount = 1;
+		z.humans[j].setpos(Math.round(Math.random()*w),Math.round(Math.random()*h));
+	}
+	
+	for (k = 0; k < z.zombieStartPopulation; k++)
+	{
+		z.zombies.push(new Zombie());
+		z.zombies[k].targetCount = 1;
+		z.zombies[k].setpos(Math.round(Math.random()*w),Math.round(Math.random()*h));
+	}
+	
+	// create the actual canvas element
+	i = document.createElement('canvas');
 	$(i).attr('height', h);
 	$(i).attr('width', w);
+	$(i).attr('id', 'zombie-world');
 	$('body').append(i);
+	
+	z.canvas = document.getElementById('zombie-world');
+	
+	z.gui.draw();
 	
 	// this here advances the turn by one time-lapsed hour
 	var turns = setInterval(function () {z.advanceTurn();},60 * 1000 / z.timelapsefactor);
@@ -58,6 +82,7 @@ z.init = function (h,w,hpop,zpop,zbr,hherd,zherd)
 
 // human and zombie update methods get called by the turn increment function
 z.advanceTurn = function () {
+	z.currentDay++;
 	$.each(z.humans, function (i, item) {
 		item.update(); 
 	});
@@ -66,13 +91,10 @@ z.advanceTurn = function () {
 // prototype for both humans and zombies
 Humanoid = function () 
 {
-		targetCount = 0,
-		moveDirection = 0,
-		this.pos =  
-		{
-			x: 0,
-			y: 1
-		}
+		targetCount = 0;
+		moveDirection = 0;
+		color = '';
+		pop = {};
 		
 		this.getpos = function () 
 		{
@@ -83,6 +105,14 @@ Humanoid = function ()
 		{
 			this.pos.x = x;
 			this.pos.y = y;
+		}
+		
+		/* TODO: add a variable, and methods for bearing and then refactor the sees & recognizes 
+			functions to account for it. */
+				
+		this.getcolor = function () 
+		{
+			return this.color;
 		}
 		
 		this.move = function () 
@@ -108,10 +138,19 @@ Human = function ()
 		timeSinceLastAte = 0,
 		timeSinceLastRested = 0;
 	
+	this.pos =  
+	{
+		x: 0,
+		y: 1
+	};
+		
+	this.color = 'rgb(' + (Math.round(Math.random()*70) + 143) + ',70,70)';
+	
+	
 	this.update = function ()
 	{
-		// code here to update stam, hunger and position
-	};
+		// call updates to stam and hunger here
+	}
 	
 	this.attack = function ()
 	{
@@ -163,6 +202,14 @@ Human = function ()
 Zombie = function () 
 {
 	var runspeed = (Math.random() / 5 + .9) * 1000;
+
+	this.pos =  
+	{
+		x: 0,
+		y: 1
+	};
+	
+	this.color = 'rgb(70,70,' + (Math.round(Math.random()*70) + 143) + ')';
 	
 	this.chooseTarget = function () 
 	{
@@ -183,7 +230,7 @@ $(document).ready(function ($) {
 	$('#z-sim-init').live('submit', function (e) {
 		e.preventDefault(); 
 		var h = v = 480,
-			hpop = $('#hpop').val().
+			hpop = $('#hpop').val(),
 			zpop = $('#zpop').val(),
 			zbr = $('#zbr').val();
 		z.init(h,v,hpop,zpop,zbr,1,1);
