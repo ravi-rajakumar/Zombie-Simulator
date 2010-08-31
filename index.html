@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>We are the Living dead</title>
+<title>We are the living dead</title>
+<link media="all" rel="stylesheet" type="text/css" href="css/zsim.css" /> 
 <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="js/core.js"></script>
 <script type="text/javascript" src="js/canvas.js"></script>
@@ -12,7 +13,6 @@
 
 <body>
 <form action="#" method="POST" id="z-sim-init">
-
 <label for="hpop">Initial human population:</label>
 <input id="hpop" name="hpop" type="text" value="1000"/>
 <label for="zpop">Initial zombie population:</label>
@@ -21,11 +21,14 @@
 <input id="scale" name="scale" type="text" value="20"/>
 <label for="zbr">Zombie brain-eating success rate (%):</label>
 <input id="zbr" name="zbr" type="text" value="100"/>
+<label for="tim">Timelapse (factor):</label>
+<input id="tim" name="tim" type="text" value="60"/>
 <input type="submit" value="start" name="start" id="start"/>
 </form>
 
-<a href="#" onclick="$(body).html('Range: ' + z.range(z.humans[0],z.zombies[0]) + '; Recognizes: '+ z.recognizes(z.humans[0],z.zombies[0]));return false;">Click to test range and visibility</a>
-
+<div id="status">
+<p id="current-day">Current day: <span></span></p>
+</div>
 </body>
 
 

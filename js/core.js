@@ -5,18 +5,19 @@ var z = {
 	gridHeight: 0,
 	gridWidth: 0,
 	scale: 20,
-	currentDay: 0,
+	currentTurn: 0,
 	foodAvailability: 0,
 	hidingPlaceFrequency: 0,
 	zombificationDuration: 0,
-// one turn = one minute; this factor determies how quickly turns jump forward. At 60, turns jump at a rate of one (min.) per second.
+// one turn = one minute; this factor determies how quickly turns jump forward. At 60, turns jump at a rate of one (min.) per second. Faster timelapses will increase the framerate
 	timelapsefactor: 60,
 	canvas: null,
 
 //stats for all humans
 	humanStartPopulation: 1000,
 	humanCurrentPopulation: 1000,
-	humanBaseRunspeed: 3000,
+// meters per minute/turn
+	humanBaseRunspeed: 3000/60,
 	humanHerding: 1,
 	humanDefenseEfficiency: 1,
 	humanNormalDeathRate: 0,
@@ -28,7 +29,8 @@ var z = {
 //stats for all zombies
 	zombieStartPopulation: 1,
 	zombieCurrentPopulation: 1,
-	zombieBaseRunspeed: 1000,
+// meters per minute/turn
+	zombieBaseRunspeed: 1000/60,
 	zombieHerding: 1,
 	zombieBrainEatingEfficiency: 1,
 	
@@ -37,7 +39,7 @@ var z = {
 };
 
 
-z.init = function (h,w,hpop,zpop,zbr,hherd,zherd) 
+z.init = function (h,w,hpop,zpop,zbr,tim,hherd,zherd) 
 {
 	var i,j,k;
 	
@@ -46,6 +48,7 @@ z.init = function (h,w,hpop,zpop,zbr,hherd,zherd)
 	z.humanStartPopulation = hpop;
 	z.zombieStartPopulation = zpop;
 	z.zombieBrainEatingEfficiency = zbr;
+	z.timelapsefactor = tim;
 	z.humanHerding = hherd;
 	z.zombieHerding = zherd;
 	
@@ -76,16 +79,18 @@ z.init = function (h,w,hpop,zpop,zbr,hherd,zherd)
 	z.gui.draw();
 	
 	// this here advances the turn by one time-lapsed hour
-	var turns = setInterval(function () {z.advanceTurn();},60 * 1000 / z.timelapsefactor);
+	var turns = setInterval(function () {z.advanceTurn();},Math.round(60 * 1000 / z.timelapsefactor));
 };
 
 
 // human and zombie update methods get called by the turn increment function
 z.advanceTurn = function () {
-	z.currentDay++;
+	z.currentTurn++;
+	$('#current-day span').text(Math.ceil(z.currentTurn/1440));
 	$.each(z.humans, function (i, item) {
 		item.update(); 
 	});
+	z.gui.draw();
 }
 
 // prototype for both humans and zombies
@@ -136,13 +141,20 @@ Human = function ()
 		stamina,
 		hunger,
 		timeSinceLastAte = 0,
-		timeSinceLastRested = 0;
+		timeSinceLastRested = 0,
+		nextAction = null;
 	
 	this.pos =  
 	{
 		x: 0,
 		y: 1
 	};
+	
+	this.nextMove = 
+	{
+		dx: 0,
+		dy: 0
+	}
 		
 	this.color = 'rgb(' + (Math.round(Math.random()*70) + 143) + ',70,70)';
 	
@@ -150,6 +162,14 @@ Human = function ()
 	this.update = function ()
 	{
 		// call updates to stam and hunger here
+		this.nextAction = this.chooseAction();
+		
+		if (this.nextAction === 'run') 
+		{
+			this.chooseNextMove();
+			this.setpos(this.getpos().x + this.nextMove.dx, this.getpos().y + this.nextMove.dy);
+		}	
+		
 	}
 	
 	this.attack = function ()
@@ -175,10 +195,15 @@ Human = function ()
 	
 	this.chooseAction = function () 
 	{
+		// more choices to come
+		return 'run';
 	}
 	
 	this.chooseNextMove = function ()
 	{
+		// super clumsy for now. Will incorporate a heading and true distance calculation based on basic ai later
+		this.nextMove.dx = Math.round((z.humanBaseRunspeed/z.scale/2) - Math.random()*z.humanBaseRunspeed/z.scale);
+		this.nextMove.dy = Math.round((z.humanBaseRunspeed/z.scale/2) - Math.random()*z.humanBaseRunspeed/z.scale);
 	}
 	
 	this.die = function ()
@@ -232,7 +257,8 @@ $(document).ready(function ($) {
 		var h = v = 480,
 			hpop = $('#hpop').val(),
 			zpop = $('#zpop').val(),
-			zbr = $('#zbr').val();
-		z.init(h,v,hpop,zpop,zbr,1,1);
+			zbr = $('#zbr').val(),
+			tim = $('#tim').val();
+		z.init(h,v,hpop,zpop,zbr,tim,1,1);
 	});
 });

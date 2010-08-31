@@ -1,0 +1,25 @@
+body {
+	font-family:Helvetica,arial,sans;
+	font-size:10px;
+	background-color:#ddd;
+	color:#222;
+}
+
+#z-sim-init, #status {
+	display: block;
+	float:left;
+}
+
+#status {
+	width:10em;
+}
+
+label, input {
+	display: block;
+	clear:both;
+}
+
+canvas {
+	float:left;
+	margin-left:3em;
+}
