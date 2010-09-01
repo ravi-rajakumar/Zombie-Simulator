@@ -81,7 +81,7 @@ z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd)
 	z.canvas = document.getElementById('zombie-world');
 	z.gui.draw();
 
-	// this here advances the turn by one time-lapsed hour
+	// this here advances the turn by one time-lapsed minute
 	var turns = setInterval(function () {z.advanceTurn();},Math.round(60 * 1000 / z.timelapsefactor));
 };
 
@@ -90,7 +90,7 @@ z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd)
 z.advanceTurn = function () {
 	z.currentTurn++;
 	
-	//every turn we recursively sort the humanoids in order to save processing in the bahavior maodeling
+	//every turn we recursively sort the humanoids in order to save processing in the bahavior modeling
 	z.humans = z.mergesort(z.humans, 'x');
 	z.zombies = z.mergesort(z.zombies, 'x');
 	
@@ -145,7 +145,8 @@ Humanoid = function ()
 
 Human = function () 
 {
-	var runspeed = (Math.random() / 5 + .9) * 3000,
+	// variables specific to individual humans
+	var runspeed = (Math.random() / 5 + .9) * z.humanBaseRunspeed, 
 		gender,
 		stamina,
 		hunger,
@@ -228,8 +229,8 @@ Human = function ()
 		heading = this.chooseDirection();
 		
 		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
-		this.nextMove.dx = Math.round(Math.sin(heading) * z.humanBaseRunspeed);
-		this.nextMove.dy = Math.round(0 - (Math.cos(heading) * z.humanBaseRunspeed));		
+		this.nextMove.dx = Math.round(Math.sin(heading) * runspeed);
+		this.nextMove.dy = Math.round(0 - (Math.cos(heading) * runspeed));		
 	}
 	
 	this.chooseDirection = function ()
