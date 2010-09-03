@@ -28,7 +28,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Chance in any one round of a fight that the human will die: 10%
 - Chance in any one round of a fight that the zombie will be stunned: 10%
 - Chance in any one round of a fight that the zombie will be destroyed: 10%
-- Variance in direction of humanoid travel, absent external influences: ± 45 degrees/minute
+- Variance in direction of humanoid travel, absent external influences: ± 12.25 degrees/minute
 
 
 ## Units
