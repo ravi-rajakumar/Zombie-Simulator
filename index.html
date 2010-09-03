@@ -13,18 +13,18 @@
 
 <body>
 <header id="project-status">
-<!--
+
 <blockquote>
-<h1>We are the living dead</h1>
+<h1>"<em>We</em> are the living dead"</h1>
 <cite>George Romero</cite>
 </blockquote>
--->
+
 Lots still to do. What I plan on working on next is a general method for exerting influence on a human's choice of direction, based on the influence's origin and its force of attraction/repulsion.
 Then I'll be able to call it when various proximity thresholds are crossed. The first test of it will be to have the humans lightly repelled by walls and corners. Next after that, maybe some collision detection and path-finding!
 </header>
 
 <section id="controls">
-<p id="controlswitch">[+]</p>
+<p id="controlswitch">[+] settings</p>
 <form action="#" method="POST" id="z-sim-init">
 <label for="hpop">Initial human population:</label>
 <input id="hpop" name="hpop" type="text" value="1000"/>
@@ -34,8 +34,8 @@ Then I'll be able to call it when various proximity thresholds are crossed. The 
 <input id="scale" name="scale" type="text" value="20"/>
 <label for="zbr">Zombie brain-eating success rate (%):</label>
 <input id="zbr" name="zbr" type="text" value="100"/>
-<label for="tim">Timelapse (factor, max = 900):</label>
-<input id="tim" name="tim" type="text" value="600"/>
+<label for="tim">Timelapse (factor):</label>
+<input id="tim" name="tim" type="text" value="1800"/>
 <input type="submit" value="setup" name="start" id="start"/>
 <input type="button" value="play" name="play" id="play"/>
 <input type="button" value="stop" name="stop" id="stop"/>

@@ -16,7 +16,7 @@ The idea of this is to create an application that can simulate two interacting p
 
 ## Assumptions/Constants
 
-The math in this siumlation depends on a number of baseline properties that were arrived at through educated guesswork. The accuracy and therefor value of the program would be increased by replacing those with real numbers through further reasearch or measurement. The following is a list of those assumptions:
+The math in this simulation depends on a number of baseline properties that were arrived at through educated guesswork. The accuracy and value of the program would be increased by replacing those with real numbers through further reasearch or measurement. The following is a list of those assumptions:
 
 - Human walking speed: 3km/hour
 - Zombie walking speed: 1km/hour
@@ -28,7 +28,7 @@ The math in this siumlation depends on a number of baseline properties that were
 - Chance in any one round of a fight that the human will die: 10%
 - Chance in any one round of a fight that the zombie will be stunned: 10%
 - Chance in any one round of a fight that the zombie will be destroyed: 10%
-- Variance in direction of humanoid travel, absent external influences: ± 45 degrees
+- Variance in direction of humanoid travel, absent external influences: ± 45 degrees/minute
 
 
 ## Units

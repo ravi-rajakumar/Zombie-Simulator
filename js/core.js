@@ -36,6 +36,7 @@ var z = {
 	
 	humans: [],
 	zombies: [],
+	humanoids: [],
 	turns: null
 };
 
@@ -183,7 +184,8 @@ var Human = function ()
 		
 		// direction is in radians clockwise, North = 0
 		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
-		return (this.heading + (Math.random()*Math.PI)-Math.PI/2)%(Math.PI*2);
+		this.heading = (this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2);
+		return this.heading;
 	};
 	
 	this.die = function ()
@@ -206,7 +208,10 @@ var Human = function ()
 
 var Zombie = function () 
 {
-	var runspeed = (Math.random() / 5 + 0.9) * 1000;
+	var runspeed = (Math.random() / 5 + 0.9) * z.zombieBaseRunspeed,
+		nextAction = null,
+		seen = [],
+		heading = 0;
 
 	this.pos =  
 	{
@@ -214,14 +219,71 @@ var Zombie = function ()
 		y: 1
 	};
 	
+	this.nextMove = 
+	{
+		dx: 0,
+		dy: 0
+	};
+	
 	this.color = 'rgb(' + (Math.round(Math.random()*40) + 200) + ',30,30)';
+	
+	this.update = function ()
+	{
+		// call updates to stam and hunger here
+		this.nextAction = this.chooseAction();
+		
+		if (this.nextAction === 'run') 
+		{
+			this.chooseNextMove();
+			
+			console.log(this.nextMove.dx + '');
+			var movx = this.getpos().x + this.nextMove.dx, movy = this.getpos().y + this.nextMove.dy;
+			if (movx < 0) { movx = 0; }
+			if (movx > z.gridWidth*z.scale) { movx = z.gridWidth*z.scale; }
+			if (movy < 0) { movy = 0; }
+			if (movy > z.gridHeight*z.scale) { movy = z.gridHeight*z.scale; }
+			this.setpos(movx, movy);
+		}	
+		
+	};
+	
 	
 	this.chooseTarget = function () 
 	{
 	};
 	
-	this.chooseNextMove = function () 
+	this.chooseAction = function () 
 	{
+		// more choices to come
+		return 'run';
+	};
+	
+	this.chooseNextMove = function ()
+	{
+		seen = [];
+		heading = this.chooseDirection();
+		
+			console.log(heading);
+		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
+		this.nextMove.dx = Math.round(Math.sin(heading) * runspeed);
+		this.nextMove.dy = Math.round(0 - (Math.cos(heading) * runspeed));		
+	};
+	
+	this.chooseDirection = function ()
+	{
+		/* this is a problem!
+		$.each(z.humans,function (i, item) 
+		{
+			if (z.sees(this,item)) 
+			{	
+			}
+		});
+		*/
+		
+		// direction is in radians clockwise, North = 0
+		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
+		this.heading = (this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2);
+		return this.heading;
 	};
 	
 };
@@ -317,6 +379,7 @@ z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd)
 		z.zombies.push(new Zombie());
 		z.zombies[k].targetCount = 1;
 		z.zombies[k].setpos(Math.round(Math.random()*w*z.scale),Math.round(Math.random()*h*z.scale));
+		z.zombies[k].heading = Math.round(Math.random()*Math.PI*2000)/1000;
 	}
 	
 	// create the actual canvas element
@@ -335,11 +398,12 @@ z.advanceTurn = function () {
 	z.currentTurn++;
 	
 	//every turn we recursively sort the humanoids in order to save processing in the bahavior modeling
+	z.humanoids = z.humans.concat(z.zombies);
 	z.humans = z.mergesort(z.humans, 'x');
 	z.zombies = z.mergesort(z.zombies, 'x');
-	
+	z.humanoids = z.mergesort(z.humanoids, 'x');
 	$('#current-day span').text(Math.ceil(z.currentTurn/1440));
-	$.each(z.humans, function (i, item) {
+	$.each(z.humanoids, function (i, item) {
 		item.update(); 
 	});
 	
@@ -347,6 +411,7 @@ z.advanceTurn = function () {
 };
 
 z.play = function () {
+	z.stop();
 	// this here advances the turn by one time-lapsed minute
 	z.turns = setInterval(function () {z.advanceTurn();},Math.round(60 * 1000 / z.timelapsefactor));
 }
