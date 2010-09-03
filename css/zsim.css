@@ -1,25 +1,51 @@
 body {
 	font-family:Helvetica,arial,sans;
 	font-size:10px;
-	background-color:#ddd;
+	background-color:#eee;
 	color:#222;
+	padding:1em 0;
 }
 
-#z-sim-init, #status {
-	display: block;
-	float:left;
+header, section {
+	width:48em;
+	margin:0 auto;
 }
 
-#status {
-	width:10em;
+header {
+	margin-bottom:1em;
+}
+
+#z-sim-init {
+	float: left;
+	margin-bottom:1em;
+	display:none;
+	width:48em;
+}
+
+#controlswitch {
+	font-family:Monaco,"Courier New",Courier,monospace;
+	cursor:pointer;
 }
 
 label, input {
 	display: block;
+}
+
+#start, #play, #stop {
+	float:left;
+}	
+
+#status {	
 	clear:both;
 }
 
 canvas {
-	float:left;
-	margin-left:3em;
+	clear:both;
+	display:block;
+	margin:1em auto;
+	border:1px solid #ddd;
 }
+
+#project-status {
+	clear:both;
+}	

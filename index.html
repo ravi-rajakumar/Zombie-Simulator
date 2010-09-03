@@ -12,6 +12,19 @@
 </head>
 
 <body>
+<header id="project-status">
+<!--
+<blockquote>
+<h1>We are the living dead</h1>
+<cite>George Romero</cite>
+</blockquote>
+-->
+Lots still to do. What I plan on working on next is a general method for exerting influence on a human's choice of direction, based on the influence's origin and its force of attraction/repulsion.
+Then I'll be able to call it when various proximity thresholds are crossed. The first test of it will be to have the humans lightly repelled by walls and corners. Next after that, maybe some collision detection and path-finding!
+</header>
+
+<section id="controls">
+<p id="controlswitch">[+]</p>
 <form action="#" method="POST" id="z-sim-init">
 <label for="hpop">Initial human population:</label>
 <input id="hpop" name="hpop" type="text" value="1000"/>
@@ -23,12 +36,16 @@
 <input id="zbr" name="zbr" type="text" value="100"/>
 <label for="tim">Timelapse (factor, max = 900):</label>
 <input id="tim" name="tim" type="text" value="600"/>
-<input type="submit" value="start" name="start" id="start"/>
+<input type="submit" value="setup" name="start" id="start"/>
+<input type="button" value="play" name="play" id="play"/>
+<input type="button" value="stop" name="stop" id="stop"/>
 </form>
-
-<div id="status">
+</section>
+<canvas id="zombie-world" width="480" height="480">
+</canvas>
+<section id="status">
 <p id="current-day">Current day: <span></span></p>
-</div>
+</section>
 </body>
 
 

@@ -35,7 +35,8 @@ var z = {
 	zombieBrainEatingEfficiency: 1,
 	
 	humans: [],
-	zombies: []
+	zombies: [],
+	turns: null
 };
 
 // prototype for both humans and zombies
@@ -181,8 +182,8 @@ var Human = function ()
 		*/
 		
 		// direction is in radians clockwise, North = 0
-		// random for now
-		return Math.round(Math.random()*Math.PI*2000)/1000;
+		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
+		return (this.heading + (Math.random()*Math.PI)-Math.PI/2)%(Math.PI*2);
 	};
 	
 	this.die = function ()
@@ -288,7 +289,6 @@ z.merge = function (l, r, a) {
 
 z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd) 
 {
-	$('canvas').remove();
 	z.humans = [];
 	z.zombies = [];
 	var i,j,k;
@@ -309,6 +309,7 @@ z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd)
 		z.humans.push(new Human());
 		z.humans[j].targetCount = 1;
 		z.humans[j].setpos(Math.round(Math.random()*w*z.scale),Math.round(Math.random()*h*z.scale));
+		z.humans[j].heading = Math.round(Math.random()*Math.PI*2000)/1000;
 	}
 	
 	for (k = 0; k < z.zombieStartPopulation; k++)
@@ -319,17 +320,13 @@ z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd)
 	}
 	
 	// create the actual canvas element
-	i = document.createElement('canvas');
-	$(i).attr('height', h);
-	$(i).attr('width', w);
-	$(i).attr('id', 'zombie-world');
-	$('body').append(i);
+	$('#zombie-world').attr('height', h);
+	$('#zombie-world').attr('width', w);
 	
 	z.canvas = document.getElementById('zombie-world');
 	z.gui.draw();
 
-	// this here advances the turn by one time-lapsed minute
-	var turns = setInterval(function () {z.advanceTurn();},Math.round(60 * 1000 / z.timelapsefactor));
+
 };
 
 
@@ -349,12 +346,21 @@ z.advanceTurn = function () {
 	z.gui.draw();
 };
 
+z.play = function () {
+	// this here advances the turn by one time-lapsed minute
+	z.turns = setInterval(function () {z.advanceTurn();},Math.round(60 * 1000 / z.timelapsefactor));
+}
+
+z.stop = function () {
+	clearInterval(z.turns);
+}
 
 $(document).ready(function ($) {
 	// event handlers down here:
 	// start		
 	$('#z-sim-init').live('submit', function (e) {
 		e.preventDefault(); 
+		z.stop();
 		var h = 480,
 			v = 480,
 			s = $('#scale').val(),
@@ -364,4 +370,17 @@ $(document).ready(function ($) {
 			tim = $('#tim').val();
 		z.init(h,v,s,hpop,zpop,zbr,tim,1,1);
 	});
+	// stop		
+	$('#stop').live('click', function (e) {
+		z.stop();
+	});
+	// play		
+	$('#play').live('click', function (e) {
+		z.play();
+	});
+	// controls		
+	$('#controlswitch').live('click', function (e) {
+		$('#z-sim-init').toggle('fast');
+	});
+	
 });
