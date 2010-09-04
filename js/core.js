@@ -43,9 +43,9 @@ var z = {
 // prototype for both humans and zombies
 var Humanoid = function () 
 {
-		var targetCount = 0;
-			moveDirection = 0;
-			color = '';
+		var targetCount = 0,
+			moveDirection = 0,
+			color = '',
 			pop = {};
 		
 		this.getpos = function () 
@@ -58,6 +58,11 @@ var Humanoid = function ()
 			this.pos.x = x;
 			this.pos.y = y;
 		};
+		
+		this.getrunspeed = function ()
+		{	
+			return this.runspeed;
+		}
 		
 		/* TODO: add a variable, and methods for bearing and then refactor the sees & recognizes 
 			functions to account for it. */
@@ -84,8 +89,7 @@ var Humanoid = function ()
 var Human = function () 
 {
 	// variables specific to individual humans
-	var runspeed = (Math.random() / 5 + 0.9) * z.humanBaseRunspeed, 
-		gender,
+	var gender,
 		stamina,
 		hunger,
 		timeSinceLastAte = 0,
@@ -100,12 +104,13 @@ var Human = function ()
 		return '{"human": { "x":'+ this.pos.x + ', "y": ' + this.pos.y +'}}';
 	};
 	
-	
 	this.pos =  
 	{
 		x: 0,
 		y: 1
 	};
+	
+	this.runspeed = (Math.random() / 5 + 0.9) * z.humanBaseRunspeed;
 	
 	this.nextMove = 
 	{
@@ -167,8 +172,8 @@ var Human = function ()
 		heading = this.chooseDirection();
 		
 		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
-		this.nextMove.dx = Math.round(Math.sin(heading) * runspeed);
-		this.nextMove.dy = Math.round(0 - (Math.cos(heading) * runspeed));		
+		this.nextMove.dx = Math.round(Math.sin(heading) * this.runspeed);
+		this.nextMove.dy = Math.round(0 - (Math.cos(heading) * this.runspeed));		
 	};
 	
 	this.chooseDirection = function ()
@@ -208,8 +213,7 @@ var Human = function ()
 
 var Zombie = function () 
 {
-	var runspeed = (Math.random() / 5 + 0.9) * z.zombieBaseRunspeed,
-		nextAction = null,
+	var nextAction = null,
 		seen = [],
 		heading = 0;
 
@@ -218,6 +222,8 @@ var Zombie = function ()
 		x: 0,
 		y: 1
 	};
+	
+	this.runspeed = (Math.random() / 5 + 0.9) * z.zombieBaseRunspeed;
 	
 	this.nextMove = 
 	{
@@ -263,8 +269,8 @@ var Zombie = function ()
 		heading = this.chooseDirection();
 		
 		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
-		this.nextMove.dx = Math.round(Math.sin(heading) * runspeed);
-		this.nextMove.dy = Math.round(0 - (Math.cos(heading) * runspeed));		
+		this.nextMove.dx = Math.round(Math.sin(heading) * this.runspeed);
+		this.nextMove.dy = Math.round(0 - (Math.cos(heading) * this.runspeed));		
 	};
 	
 	this.chooseDirection = function ()
@@ -386,7 +392,8 @@ z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd)
 	
 	z.canvas = document.getElementById('zombie-world');
 	z.gui.draw();
-
+	
+	z.humanoidInfluence(z.humans[0], z.humans[1]);
 
 };
 
