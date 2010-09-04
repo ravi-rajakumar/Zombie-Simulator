@@ -236,7 +236,6 @@ var Zombie = function ()
 		{
 			this.chooseNextMove();
 			
-			console.log(this.nextMove.dx + '');
 			var movx = this.getpos().x + this.nextMove.dx, movy = this.getpos().y + this.nextMove.dy;
 			if (movx < 0) { movx = 0; }
 			if (movx > z.gridWidth*z.scale) { movx = z.gridWidth*z.scale; }
@@ -263,7 +262,6 @@ var Zombie = function ()
 		seen = [];
 		heading = this.chooseDirection();
 		
-			console.log(heading);
 		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
 		this.nextMove.dx = Math.round(Math.sin(heading) * runspeed);
 		this.nextMove.dy = Math.round(0 - (Math.cos(heading) * runspeed));		
@@ -399,8 +397,6 @@ z.advanceTurn = function () {
 	
 	//every turn we recursively sort the humanoids in order to save processing in the bahavior modeling
 	z.humanoids = z.humans.concat(z.zombies);
-	z.humans = z.mergesort(z.humans, 'x');
-	z.zombies = z.mergesort(z.zombies, 'x');
 	z.humanoids = z.mergesort(z.humanoids, 'x');
 	$('#current-day span').text(Math.ceil(z.currentTurn/1440));
 	$.each(z.humanoids, function (i, item) {
