@@ -14,6 +14,13 @@ The idea of this is to create an application that can simulate two interacting p
 - minimizing human casualties
 
 
+## Status
+
+Lots still to do. I now have a general method for exerting influence on a human's choice of direction, based on the influence's origin and its force of attraction/repulsion.
+
+Next will be to have the humans and zombies lightly repelled by walls and corners, and to add the influence of like targets' headings (more herdoing/queueing behavior). Next after that, maybe some collision detection and path-finding!
+
+
 ## Assumptions/Constants
 
 The math in this simulation depends on a number of baseline properties that were arrived at through educated guesswork. The accuracy and value of the program would be increased by replacing those with real numbers through further reasearch or measurement. The following is a list of those assumptions:

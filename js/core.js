@@ -400,7 +400,7 @@ z.advanceTurn = function () {
 	$.each(z.humanoids, function (i, item) {
 		item.update(); 
 		// step through the population looking for influences and applying them:
-		// loop forward until out of range
+		// loop forward until out of range (this is much quicker now that we have a sorted list to go through)
 		proximityFail = false;
 		hindex = i + 1;
 		while (proximityFail === false)
@@ -423,7 +423,7 @@ z.advanceTurn = function () {
 			hindex++;
 		}
 		
-		// loop forward until out of range
+		// loop backward until out of range
 		proximityFail = false;
 		hindex = i - 1;
 		while (proximityFail === false)
