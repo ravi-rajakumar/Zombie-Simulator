@@ -275,15 +275,6 @@ var Zombie = function ()
 	
 	this.chooseDirection = function ()
 	{
-		/* this is a problem!
-		$.each(z.humans,function (i, item) 
-		{
-			if (z.sees(this,item)) 
-			{	
-			}
-		});
-		*/
-		
 		// direction is in radians clockwise, North = 0
 		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
 		this.heading = (this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2);
@@ -392,8 +383,6 @@ z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd)
 	
 	z.canvas = document.getElementById('zombie-world');
 	z.gui.draw();
-	
-	z.humanoidInfluence(z.humans[0], z.humans[1]);
 
 };
 
@@ -401,6 +390,8 @@ z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd)
 // human and zombie update methods get called by the turn increment function
 z.advanceTurn = function () {
 	z.currentTurn++;
+	var proximityFail = false,
+		hindex = 0;
 	
 	//every turn we recursively sort the humanoids in order to save processing in the bahavior modeling
 	z.humanoids = z.humans.concat(z.zombies);
@@ -408,8 +399,61 @@ z.advanceTurn = function () {
 	$('#current-day span').text(Math.ceil(z.currentTurn/1440));
 	$.each(z.humanoids, function (i, item) {
 		item.update(); 
+		// step through the population looking for influences and applying them:
+		// loop forward until out of range
+		proximityFail = false;
+		hindex = i + 1;
+		while (proximityFail === false)
+		{
+			if (!(hindex < z.humanoids.length))
+			{
+				proximityFail = true;
+			}
+			else if (Math.abs(item.getpos().x - z.humanoids[hindex].getpos().x) > z.sightRange) 
+			{
+				proximityFail = true;
+			}
+			else
+			{
+				if (z.sees(item, z.humanoids[hindex])) 
+				{
+					z.humanoidInfluence(z.humans[0], z.humans[1], z.range(z.humans[0], z.humans[1]));
+				}
+			}
+			hindex++;
+		}
+		
+		// loop forward until out of range
+		proximityFail = false;
+		hindex = i - 1;
+		while (proximityFail === false)
+		{
+			if (hindex < 0)
+			{
+				proximityFail = true;
+			}
+			else if (Math.abs(item.getpos().x - z.humanoids[hindex].getpos().x) > z.sightRange) 
+			{
+				proximityFail = true;
+			}
+			else
+			{
+				if (z.sees(item, z.humanoids[hindex])) 
+				{
+					z.humanoidInfluence(z.humans[0], z.humans[1], z.range(z.humans[0], z.humans[1]));
+				}
+			}
+			hindex-=1;
+		}
 	});
 	
+	// increment zombie recogintion range until 10m
+	if (z.hRecognitionRange < 10) 
+	{
+		z.hRecognitionRange += (9/4320); // this will take 3 days to get from 1 to 10m
+	}
+	
+	// repaint
 	z.gui.draw();
 };
 

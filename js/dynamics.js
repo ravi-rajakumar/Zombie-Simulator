@@ -19,20 +19,22 @@ z.recognizes = function (a,b) {
 	}
 };
 
-z.humanoidInfluence = function (ha, hb) {
+z.humanoidInfluence = function (ha, hb, d) {
 	// h1's heading will be updated
 	var mag = 0,
-		hadx = 0,
-		hadx = 0,
-		hhheading = 0,
-		hbdx = 0,
-		hbdx = 0;
+		/* convert ha's heading into dx and dy */
+		hadx = Math.sin(ha.heading),
+		hady = 0 - Math.cos(ha.heading),
+		/* scale for the distance to the influencing humanoid. This lets us add this vector to the existing heading */  
+		headingscale = 1 / d,
+		hangle = 0,
+		newheading = 0;
 	
 	/* mag is going to be the variable that determines how the second body affects the first. It ranges from -1 to 1, where -1 is going to be a strong repulsion and 1 will be a strong attraction. */
 	/* the logic for human-human, human-zombie, amd zombie-zombie attraction and repulsion will all take place here. This is currrently written with fixed values, but is should be configurable by the user. */
 	/* we don't even run this code unless they are in visual range, we don't have to chack that, but recogintion range will factor in. */
 	
-	if (z.range(ha, hb) < 0.5 && !(ha.isZombie()) && !(hb.isZombie())) // humans are automatically repulsed byother bodies being tooo close to them
+	if (z.range(ha, hb) < 0.5 && !(ha.isZombie()) && !(hb.isZombie())) // humans are automatically repulsed byother bodies being too close to them
 	{
 		mag = -0.5;
 	} 
@@ -42,9 +44,9 @@ z.humanoidInfluence = function (ha, hb) {
 		{
 			mag = 0.5;
 		} 
-		else  // human recognizes zombie
+		else  // human recognizes zombie (very strong repulsion)
 		{
-			mag = -1;
+			mag = -10;
 		} 
 	}
 	else if (!(hb.isZombie())) // zombies are strongly attracted to human brains
@@ -56,27 +58,15 @@ z.humanoidInfluence = function (ha, hb) {
 		mag = 0.5;
 	}
 	
-	/* convert ha's heading into dx and dy */
-	hadx = Math.sin(ha.heading);
-	hady = 0 - Math.cos(ha.heading);
+	/* create dx and dy values for hb's physical influence, and add them to the existing heading */
+	hbdx = headingscale * (hb.getpos().x - ha.getpos().x) * mag + hadx;
+	hbdy = headingscale * (hb.getpos().y - ha.getpos().y) * mag + hady;
+	hangle = Math.asin(hbdx/ha.getrunspeed());
+	newheading = (hbdy >= 0) ? Math.PI - hangle : (Math.PI * 2 + hangle) % (Math.PI * 2);
 	
-	/* create dx and dy values for hb's physical influence, using the same formula as above. The point here is to start by calulating the angle (heading) and then use the same rules as above to get the magnitude of dx and dy */
-	hbdx = hb.getpos().x - ha.getpos().x;
-	hbdy = hb.getpos().y - ha.getpos().y;
+	/* here we set the new heading based on proximity (herding) */
+	ha.heading = Math.round(newheading * 1000)/1000;
 	
-	console.log(ha.getrunspeed());
-	
-	hhheading = Math.asin(hbdx/Math.pow((Math.pow(hbdx, 2)) + (Math.pow(hbdy, 2)), 0.5));
-	if (hbdy > 0)
-	{
-		hhheading += Math.PI*2;
-	}
-	hbdx = Math.sin(hhheading)*mag;
-	hbdy = 0 - Math.cos(hhheading)*mag;
-	
-	console.log(hhheading);
-	
-	ha.heading = Math.atan((hadx + hbdx) / (hady + hbdy));
+	/* TODO: influence heading based on neighbors direction of movement (queueing) */
 
-	// console.log((hb.getpos().x - ha.getpos().x));
 };
