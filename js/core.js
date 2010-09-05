@@ -63,17 +63,10 @@ var Humanoid = function ()
 		{	
 			return this.runspeed;
 		}
-		
-		/* TODO: add a variable, and methods for bearing and then refactor the sees & recognizes 
-			functions to account for it. */
 				
 		this.getcolor = function () 
 		{
 			return this.color;
-		};
-		
-		this.move = function () 
-		{
 		};
 		
 		this.die = function () 
@@ -94,10 +87,11 @@ var Human = function ()
 		hunger,
 		timeSinceLastAte = 0,
 		timeSinceLastRested = 0,
-		nextAction = null,
-		grayValue = Math.round(Math.random()*67) + 100,
-		seen = [],
-		heading = 0;
+		grayValue = Math.round(Math.random()*67) + 100;
+		
+	this.nextAction = null,
+	
+	this.heading = 0;
 	
 	this.toString = function () 
 	{
@@ -123,20 +117,7 @@ var Human = function ()
 	
 	this.update = function ()
 	{
-		// call updates to stam and hunger here
-		this.nextAction = this.chooseAction();
-		
-		if (this.nextAction === 'run') 
-		{
-			this.chooseNextMove();
-			var movx = this.getpos().x + this.nextMove.dx, movy = this.getpos().y + this.nextMove.dy;
-			if (movx < 0) { movx = 0; }
-			if (movx > z.gridWidth*z.scale) { movx = z.gridWidth*z.scale; }
-			if (movy < 0) { movy = 0; }
-			if (movy > z.gridHeight*z.scale) { movy = z.gridHeight*z.scale; }
-			this.setpos(movx, movy);
-		}	
-		
+		// call updates to stam and hunger here	
 	};
 	
 	this.attack = function ()
@@ -166,31 +147,29 @@ var Human = function ()
 		return 'run';
 	};
 	
-	this.chooseNextMove = function ()
-	{
-		seen = [];
-		heading = this.chooseDirection();
-		
-		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
-		this.nextMove.dx = Math.round(Math.sin(heading) * this.runspeed);
-		this.nextMove.dy = Math.round(0 - (Math.cos(heading) * this.runspeed));		
-	};
-	
 	this.chooseDirection = function ()
 	{
-		/* this is a problem!
-		$.each(z.humans,function (i, item) 
-		{
-			if (z.sees(this,item)) 
-			{	
-			}
-		});
-		*/
-		
 		// direction is in radians clockwise, North = 0
 		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
 		this.heading = (this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2);
 		return this.heading;
+	};
+	
+	this.chooseNextMove = function ()
+	{
+		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
+		this.nextMove.dx = Math.round(Math.sin(this.heading) * this.runspeed);
+		this.nextMove.dy = Math.round(0 - (Math.cos(this.heading) * this.runspeed));		
+	};
+		
+	this.move = function () 
+	{
+		var movx = this.getpos().x + this.nextMove.dx, movy = this.getpos().y + this.nextMove.dy;
+		if (movx < 0) { movx = 0; }
+		if (movx > z.gridWidth*z.scale) { movx = z.gridWidth*z.scale; }
+		if (movy < 0) { movy = 0; }
+		if (movy > z.gridHeight*z.scale) { movy = z.gridHeight*z.scale; }
+		this.setpos(movx, movy);
 	};
 	
 	this.die = function ()
@@ -213,9 +192,9 @@ var Human = function ()
 
 var Zombie = function () 
 {
-	var nextAction = null,
-		seen = [],
-		heading = 0;
+	this.nextAction = null;
+	
+	this.heading = 0;
 
 	this.pos =  
 	{
@@ -236,22 +215,7 @@ var Zombie = function ()
 	this.update = function ()
 	{
 		// call updates to stam and hunger here
-		this.nextAction = this.chooseAction();
-		
-		if (this.nextAction === 'run') 
-		{
-			this.chooseNextMove();
-			
-			var movx = this.getpos().x + this.nextMove.dx, movy = this.getpos().y + this.nextMove.dy;
-			if (movx < 0) { movx = 0; }
-			if (movx > z.gridWidth*z.scale) { movx = z.gridWidth*z.scale; }
-			if (movy < 0) { movy = 0; }
-			if (movy > z.gridHeight*z.scale) { movy = z.gridHeight*z.scale; }
-			this.setpos(movx, movy);
-		}	
-		
 	};
-	
 	
 	this.chooseTarget = function () 
 	{
@@ -263,22 +227,29 @@ var Zombie = function ()
 		return 'run';
 	};
 	
-	this.chooseNextMove = function ()
-	{
-		seen = [];
-		heading = this.chooseDirection();
-		
-		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
-		this.nextMove.dx = Math.round(Math.sin(heading) * this.runspeed);
-		this.nextMove.dy = Math.round(0 - (Math.cos(heading) * this.runspeed));		
-	};
-	
 	this.chooseDirection = function ()
 	{
 		// direction is in radians clockwise, North = 0
 		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
 		this.heading = (this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2);
 		return this.heading;
+	};
+	
+	this.chooseNextMove = function ()
+	{
+		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
+		this.nextMove.dx = Math.round(Math.sin(this.heading) * this.runspeed);
+		this.nextMove.dy = Math.round(0 - (Math.cos(this.heading) * this.runspeed));		
+	};	
+	
+	this.move = function () 
+	{
+		var movx = this.getpos().x + this.nextMove.dx, movy = this.getpos().y + this.nextMove.dy;
+		if (movx < 0) { movx = 0; }
+		if (movx > z.gridWidth*z.scale) { movx = z.gridWidth*z.scale; }
+		if (movy < 0) { movy = 0; }
+		if (movy > z.gridHeight*z.scale) { movy = z.gridHeight*z.scale; }
+		this.setpos(movx, movy);
 	};
 	
 };
@@ -349,6 +320,7 @@ z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd)
 	z.humans = [];
 	z.zombies = [];
 	var i,j,k;
+	z.currentTurn = 0;
 	
 	z.gridHeight = h;
 	z.gridWidth = w;
@@ -398,52 +370,66 @@ z.advanceTurn = function () {
 	z.humanoids = z.mergesort(z.humanoids, 'x');
 	$('#current-day span').text(Math.ceil(z.currentTurn/1440));
 	$.each(z.humanoids, function (i, item) {
-		item.update(); 
-		// step through the population looking for influences and applying them:
-		// loop forward until out of range (this is much quicker now that we have a sorted list to go through)
-		proximityFail = false;
-		hindex = i + 1;
-		while (proximityFail === false)
-		{
-			if (!(hindex < z.humanoids.length))
-			{
-				proximityFail = true;
-			}
-			else if (Math.abs(item.getpos().x - z.humanoids[hindex].getpos().x) > z.sightRange) 
-			{
-				proximityFail = true;
-			}
-			else
-			{
-				if (z.sees(item, z.humanoids[hindex])) 
-				{
-					z.humanoidInfluence(z.humans[0], z.humans[1], z.range(z.humans[0], z.humans[1]));
-				}
-			}
-			hindex++;
-		}
+
+		item.nextAction = item.chooseAction();
 		
-		// loop backward until out of range
-		proximityFail = false;
-		hindex = i - 1;
-		while (proximityFail === false)
+		if (item.nextAction === 'run') 
 		{
-			if (hindex < 0)
+			// pick a base heading
+			item.heading = item.chooseDirection();
+			
+			// step through the population looking for influences and applying them.
+			// loop forward until out of range (this is much quicker now that we have a sorted list to go through)
+			proximityFail = false;
+			hindex = i + 1;
+			while (proximityFail === false)
 			{
-				proximityFail = true;
-			}
-			else if (Math.abs(item.getpos().x - z.humanoids[hindex].getpos().x) > z.sightRange) 
-			{
-				proximityFail = true;
-			}
-			else
-			{
-				if (z.sees(item, z.humanoids[hindex])) 
+				if (!(hindex < z.humanoids.length))
 				{
-					z.humanoidInfluence(z.humans[0], z.humans[1], z.range(z.humans[0], z.humans[1]));
+					proximityFail = true;
 				}
+				else if (Math.abs(item.getpos().x - z.humanoids[hindex].getpos().x) > z.sightRange) 
+				{
+					proximityFail = true;
+				}
+				else
+				{
+					if (z.sees(item, z.humanoids[hindex])) 
+					{
+						z.humanoidInfluence(z.humans[0], z.humans[1], z.range(z.humans[0], z.humans[1]));
+					}
+				}
+				hindex++;
 			}
-			hindex-=1;
+			
+			// loop backward until out of range
+			proximityFail = false;
+			hindex = i - 1;
+			while (proximityFail === false)
+			{
+				if (hindex < 0)
+				{
+					proximityFail = true;
+				}
+				else if (Math.abs(item.getpos().x - z.humanoids[hindex].getpos().x) > z.sightRange) 
+				{
+					proximityFail = true;
+				}
+				else
+				{
+					if (z.sees(item, z.humanoids[hindex])) 
+					{
+						z.humanoidInfluence(z.humans[0], z.humans[1], z.range(z.humans[0], z.humans[1]));
+					}
+				}
+				hindex-=1;
+			}
+			
+			// convert heading to dx and dy
+			item.chooseNextMove();
+			
+			// move the humanoid
+			item.move();
 		}
 	});
 	
