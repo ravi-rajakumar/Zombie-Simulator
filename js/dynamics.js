@@ -63,7 +63,6 @@ z.humanoidInfluence = function (ha, hb, d) {
 	if (mag > 0)
 	{
 		ha.runspeed = ha.maxrunspeed * d/20;  // slow down if near an attractor
-		console.log(ha.runspeed);
 	}
 	
 	/* TODO: influence heading based on neighbors direction of movement (queueing) */

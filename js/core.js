@@ -400,7 +400,7 @@ z.advanceTurn = function () {
 				{
 					if (z.sees(item, z.humanoids[hindex])) 
 					{
-						z.humanoidInfluence(z.humanoids[0], z.humanoids[1], z.range(z.humanoids[0], z.humanoids[1]));
+						z.humanoidInfluence(item, z.humanoids[hindex], z.range(item, z.humanoids[hindex]));
 					}
 				}
 				hindex++;
@@ -423,7 +423,7 @@ z.advanceTurn = function () {
 				{
 					if (z.sees(item, z.humanoids[hindex])) 
 					{
-						z.humanoidInfluence(z.humanoids[0], z.humanoids[1], z.range(z.humanoids[0], z.humanoids[1]));
+						z.humanoidInfluence(item, z.humanoids[hindex], z.range(item, z.humanoids[hindex]));
 					}
 				}
 				hindex-=1;
