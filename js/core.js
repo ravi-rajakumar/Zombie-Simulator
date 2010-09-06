@@ -104,7 +104,9 @@ var Human = function ()
 		y: 1
 	};
 	
-	this.runspeed = (Math.random() / 5 + 0.9) * z.humanBaseRunspeed;
+	this.maxrunspeed = (Math.random() / 5 + 0.9) * z.humanBaseRunspeed;
+	
+	this.runspeed = this.maxrunspeed;
 	
 	this.nextMove = 
 	{
@@ -202,7 +204,9 @@ var Zombie = function ()
 		y: 1
 	};
 	
-	this.runspeed = (Math.random() / 5 + 0.9) * z.zombieBaseRunspeed;
+	this.maxrunspeed = (Math.random() / 5 + 0.9) * z.zombieBaseRunspeed;
+	
+	this.runspeed = this.maxrunspeed;
 	
 	this.nextMove = 
 	{
@@ -396,7 +400,7 @@ z.advanceTurn = function () {
 				{
 					if (z.sees(item, z.humanoids[hindex])) 
 					{
-						z.humanoidInfluence(z.humans[0], z.humans[1], z.range(z.humans[0], z.humans[1]));
+						z.humanoidInfluence(z.humanoids[0], z.humanoids[1], z.range(z.humanoids[0], z.humanoids[1]));
 					}
 				}
 				hindex++;
@@ -419,7 +423,7 @@ z.advanceTurn = function () {
 				{
 					if (z.sees(item, z.humanoids[hindex])) 
 					{
-						z.humanoidInfluence(z.humans[0], z.humans[1], z.range(z.humans[0], z.humans[1]));
+						z.humanoidInfluence(z.humanoids[0], z.humanoids[1], z.range(z.humanoids[0], z.humanoids[1]));
 					}
 				}
 				hindex-=1;

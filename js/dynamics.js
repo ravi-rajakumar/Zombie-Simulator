@@ -9,16 +9,6 @@ z.sees = function (a,b) {
 	return z.range(a,b) < z.sightRange;
 };
 
-// does a recognize b?
-z.recognizes = function (a,b) {
-	if (!a.isZombie() && b.isZombie)
-	{
-		return z.range(a,b) < z.hRecognitionRange;	
-	} else {
-		return z.range(a,b) < z.zRecognitionRange;
-	}
-};
-
 z.humanoidInfluence = function (ha, hb, d) {
 	// h1's heading will be updated
 	var mag = 0,
@@ -29,34 +19,38 @@ z.humanoidInfluence = function (ha, hb, d) {
 		headingscale = 1 / d,
 		hangle = 0,
 		newheading = 0;
+		
 	
 	/* mag is going to be the variable that determines how the second body affects the first. It ranges from -1 to 1, where -1 is going to be a strong repulsion and 1 will be a strong attraction. */
 	/* the logic for human-human, human-zombie, amd zombie-zombie attraction and repulsion will all take place here. This is currrently written with fixed values, but is should be configurable by the user. */
 	/* we don't even run this code unless they are in visual range, we don't have to chack that, but recogintion range will factor in. */
 	
-	if (z.range(ha, hb) < 0.5 && !(ha.isZombie()) && !(hb.isZombie())) // humans are automatically repulsed byother bodies being too close to them
+	if (!(ha.isZombie())) 
 	{
-		mag = -0.5;
-	} 
-	else if (!(ha.isZombie())) 
-	{
-		if (!(hb.isZombie()) || (!z.recognizes(ha, hb))) // humans are automatically attracted to other humanoids unless they recognize them as zombies
+		if (!(hb.isZombie()) || !(z.range(ha,hb) <= z.hRecognitionRange)) // humans are automatically attracted to other humanoids unless they recognize them as zombies
 		{
 			mag = 0.5;
 		} 
 		else  // human recognizes zombie (very strong repulsion)
 		{
-			mag = -10;
+			mag = -1;
 		} 
 	}
-	else if (!(hb.isZombie())) // zombies are strongly attracted to human brains
+	
+	if ((ha.isZombie()) && !(hb.isZombie())) // zombies are strongly attracted to human brains
 	{
 		mag = 1;
 	} 
-	else	// zombies are lightly attracted to each other
-	{
+	
+	if ((ha.isZombie()) && (hb.isZombie()))	// zombies are lightly attracted to each other
+	{	
 		mag = 0.5;
 	}
+	
+	if (z.range(ha, hb) < 0.5 && !(ha.isZombie()) && !(hb.isZombie())) // humans are automatically repulsed by other bodies being too close to them
+	{
+		mag = -0.5;
+	} 
 	
 	/* create dx and dy values for hb's physical influence, and add them to the existing heading */
 	hbdx = headingscale * (hb.getpos().x - ha.getpos().x) * mag + hadx;
@@ -66,6 +60,11 @@ z.humanoidInfluence = function (ha, hb, d) {
 	
 	/* here we set the new heading based on proximity (herding) */
 	ha.heading = Math.round(newheading * 1000)/1000;
+	if (mag > 0)
+	{
+		ha.runspeed = ha.maxrunspeed * d/20;  // slow down if near an attractor
+		console.log(ha.runspeed);
+	}
 	
 	/* TODO: influence heading based on neighbors direction of movement (queueing) */
 
