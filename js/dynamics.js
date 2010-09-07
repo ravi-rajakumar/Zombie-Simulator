@@ -16,7 +16,7 @@ z.humanoidInfluence = function (ha, hb, d) {
 		hadx = Math.sin(ha.heading),
 		hady = 0 - Math.cos(ha.heading),
 		/* scale for the distance to the influencing humanoid. This lets us add this vector to the existing heading */  
-		headingscale = (d > 0 ) ? Math.round(1000 / d) / 1000 : 1,
+		headingscale = (d > 0) ? Math.round(1000 / d) / 1000 : 1,
 		hangle = 0,
 		newheading = 0;
 		

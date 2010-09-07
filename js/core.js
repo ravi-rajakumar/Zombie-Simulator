@@ -48,8 +48,6 @@ var Humanoid = function ()
 			moveDirection = 0,
 			color = '',
 			pop = {};
-			
-		this.errors = '';
 		
 		this.setpos = function (x,y) 
 		{
