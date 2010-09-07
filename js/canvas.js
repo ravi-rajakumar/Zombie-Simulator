@@ -18,7 +18,8 @@ z.gui.draw = function () {
 			catch (err)
 			{
 			//	console.log(err);
-			//	console.log(o);
+			//	console.log(o.errors);
+			//	o.errors = '';
 			}
 			ctx.fillStyle = o.color;  
 			ctx.fill();

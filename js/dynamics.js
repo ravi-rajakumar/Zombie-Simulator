@@ -16,7 +16,7 @@ z.humanoidInfluence = function (ha, hb, d) {
 		hadx = Math.sin(ha.heading),
 		hady = 0 - Math.cos(ha.heading),
 		/* scale for the distance to the influencing humanoid. This lets us add this vector to the existing heading */  
-		headingscale = 1 / d,
+		headingscale = (d > 0 ) ? Math.round(1000 / d) / 1000 : 1,
 		hangle = 0,
 		newheading = 0;
 		
@@ -55,7 +55,7 @@ z.humanoidInfluence = function (ha, hb, d) {
 	/* create dx and dy values for hb's physical influence, and add them to the existing heading */
 	hbdx = headingscale * (hb.pos.x - ha.pos.x) * mag + hadx;
 	hbdy = headingscale * (hb.pos.y - ha.pos.y) * mag + hady;
-	hangle = Math.asin(hbdx/ha.runspeed);
+	hangle = Math.asin(hbdx/ha.maxrunspeed);
 	newheading = (hbdy >= 0) ? Math.PI - hangle : (Math.PI * 2 + hangle) % (Math.PI * 2);
 	
 	/* here we set the new heading based on proximity (herding) */
