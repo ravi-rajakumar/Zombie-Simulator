@@ -445,7 +445,7 @@ z.advanceTurn = function () {
 			hindex = i + 1;
 			while (proximityFail === false)
 			{
-				if (!(hindex < z.humanoids.length))
+				if (hindex >= z.humanoids.length)
 				{
 					proximityFail = true;
 				}
@@ -485,6 +485,10 @@ z.advanceTurn = function () {
 					if (z.sees(item, z.humanoids[hindex])) 
 					{
 						z.humanoidInfluence(item, z.humanoids[hindex], z.range(item, z.humanoids[hindex]));
+					}
+					if (z.range(item, z.humanoids[hindex]) <= 1 && item.isZombie() && !(z.humanoids[hindex].isZombie()))
+					{
+						console.log(z.fight(z.humanoids[hindex], item));
 					}
 				}
 				hindex-=1;

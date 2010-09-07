@@ -4,14 +4,22 @@ z.gui.draw = function () {
 
 	if (z.canvas.getContext) {
 		var ctx = z.canvas.getContext('2d'),
-			i,j;  
+			i=0,j=0;  
 		
 		ctx.clearRect(0,0,$(z.canvas).attr('width'),$(z.canvas).attr('height')); // clear canvas  
 			
 		function paint (o) 
 		{
 			ctx.beginPath();
-			ctx.arc(o.pos.x/z.scale,o.pos.y/z.scale,1,0,Math.PI*2,true);
+			try 
+			{
+			ctx.arc(Math.floor(o.pos.x / z.scale), Math.floor(o.pos.y / z.scale),1,0,Math.PI*2,true);
+			} 
+			catch (err)
+			{
+			//	console.log(err);
+			//	console.log(o);
+			}
 			ctx.fillStyle = o.color;  
 			ctx.fill();
 		}
