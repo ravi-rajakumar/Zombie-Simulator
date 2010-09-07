@@ -11,8 +11,8 @@ z.gui.draw = function () {
 		function paint (o) 
 		{
 			ctx.beginPath();
-			ctx.arc(o.getpos().x/z.scale,o.getpos().y/z.scale,1,0,Math.PI*2,true);
-			ctx.fillStyle = o.getcolor();  
+			ctx.arc(o.pos.x/z.scale,o.pos.y/z.scale,1,0,Math.PI*2,true);
+			ctx.fillStyle = o.color;  
 			ctx.fill();
 		}
 		

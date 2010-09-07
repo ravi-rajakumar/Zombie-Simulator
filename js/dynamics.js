@@ -2,7 +2,7 @@
 	the range, sight and recognition functions could be more abtracted and all be written as one rangefinder function that returns a number and a label (sight/recognition/fighting),  but I kind of like having the functions separate and modular for now */
 
 z.range = function (a,b) {
-	return Math.pow((Math.pow((a.getpos().x)-(b.getpos().x),2) + Math.pow((a.getpos().y)-(b.getpos().y),2)),0.5); 
+	return Math.pow((Math.pow((a.pos.x)-(b.pos.x),2) + Math.pow((a.pos.y)-(b.pos.y),2)),0.5); 
 };
 
 z.sees = function (a,b) {
@@ -29,7 +29,7 @@ z.humanoidInfluence = function (ha, hb, d) {
 	{
 		if (!(hb.isZombie()) || !(z.range(ha,hb) <= z.hRecognitionRange)) // humans are automatically attracted to other humanoids unless they recognize them as zombies
 		{
-			mag = 0.5;
+			mag = z.humanHerding;
 		} 
 		else  // human recognizes zombie (very strong repulsion)
 		{
@@ -44,7 +44,7 @@ z.humanoidInfluence = function (ha, hb, d) {
 	
 	if ((ha.isZombie()) && (hb.isZombie()))	// zombies are lightly attracted to each other
 	{	
-		mag = 0.5;
+		mag = z.zombieHerding;
 	}
 	
 	if (z.range(ha, hb) < 0.5 && !(ha.isZombie()) && !(hb.isZombie())) // humans are automatically repulsed by other bodies being too close to them
@@ -53,9 +53,9 @@ z.humanoidInfluence = function (ha, hb, d) {
 	} 
 	
 	/* create dx and dy values for hb's physical influence, and add them to the existing heading */
-	hbdx = headingscale * (hb.getpos().x - ha.getpos().x) * mag + hadx;
-	hbdy = headingscale * (hb.getpos().y - ha.getpos().y) * mag + hady;
-	hangle = Math.asin(hbdx/ha.getrunspeed());
+	hbdx = headingscale * (hb.pos.x - ha.pos.x) * mag + hadx;
+	hbdy = headingscale * (hb.pos.y - ha.pos.y) * mag + hady;
+	hangle = Math.asin(hbdx/ha.runspeed);
 	newheading = (hbdy >= 0) ? Math.PI - hangle : (Math.PI * 2 + hangle) % (Math.PI * 2);
 	
 	/* here we set the new heading based on proximity (herding) */
