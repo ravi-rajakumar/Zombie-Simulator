@@ -25,8 +25,8 @@ Next will be to have the humans and zombies lightly repelled by walls and corner
 
 The math in this simulation depends on a number of baseline properties that were arrived at through educated guesswork. The accuracy and value of the program would be increased by replacing those with real numbers through further reasearch or measurement. The following is a list of those assumptions:
 
-- Human walking speed: 3km/hour
-- Zombie walking speed: 1km/hour
+- Average human walking speed: 4.8km/hour (verified, Wikipedia)
+- Average zombie walking speed: 1.6km/hour
 - Walking speed variance: ± 10%
 - Range to see/notice another humanoid: 20m
 - Range at which humans recognize zombies: 1m on day 1, increasing to 10m by day 3
