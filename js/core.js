@@ -139,7 +139,7 @@ var Human = function ()
 	{
 		// direction is in radians clockwise, North = 0
 		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
-		this.heading = (this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2);
+		this.heading = Math.round((this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2)*1000)/1000;
 		
 		// the following functions set people on headings away from the walls when they hit them
 		if (this.pos.x <= 0) 
@@ -255,7 +255,7 @@ var Zombie = function ()
 	{
 		// direction is in radians clockwise, North = 0
 		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
-		this.heading = (this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2);
+		this.heading = Math.round((this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2)*1000)/1000;
 		
 		// the following functions set people on headings away from the walls when they hit them
 		if (this.pos.x <= 0) 

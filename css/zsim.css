@@ -9,6 +9,7 @@ body {
 header, section {
 	width:48em;
 	margin:0 auto;
+	display:block;
 }
 
 header {
