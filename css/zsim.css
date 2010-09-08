@@ -41,8 +41,17 @@ header cite {
 }
 
 #controlswitch {
-	font-family:Monaco,"Courier New",Courier,monospace;
+	font-family: Monaco,"Courier New",Courier,monospace;
 	cursor:pointer;
+}
+
+#controlshuman, #controlszombie {
+	float:left;
+	margin-right:2em;
+}
+
+#controlsgeneral {
+	clear:both;
 }
 
 label, input {

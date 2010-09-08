@@ -22,19 +22,29 @@
 <section id="controls">
 <p id="controlswitch">[+] settings</p>
 <form action="#" method="POST" id="z-sim-init">
+<div id="controlshuman">
 <label for="hpop">Initial human population:</label>
 <input id="hpop" name="hpop" type="text" value="500"/>
+<label for="hhrd">Human herding (-1 to 1):</label>
+<input id="hhrd" name="hhrd" type="text" value="0.5"/>
+</div>
+<div id="controlszombie">
 <label for="zpop">Initial zombie population:</label>
-<input id="zpop" name="zpop" type="text" value="1"/>
-<label for="scale">Scale (meters/px):</label>
-<input id="scale" name="scale" type="text" value="5"/>
+<input id="zpop" name="zpop" type="text" value="10"/>
+<label for="zhrd">Zombie herding (-1 to 1):</label>
+<input id="zhrd" name="zhrd" type="text" value="0.5"/>
 <label for="zbr">Zombie brain-eating success rate (%):</label>
 <input id="zbr" name="zbr" type="text" value="100"/>
+</div>
+<div id="controlsgeneral">
+<label for="scale">Scale (meters/px):</label>
+<input id="scale" name="scale" type="text" value="5"/>
 <label for="tim">Timelapse (factor):</label>
 <input id="tim" name="tim" type="text" value="300"/>
 <input type="submit" value="setup" name="start" id="start"/>
 <input type="button" value="play" name="play" id="play"/>
 <input type="button" value="stop" name="stop" id="stop"/>
+</div>
 </form>
 </section>
 <canvas id="zombie-world" width="480" height="480">

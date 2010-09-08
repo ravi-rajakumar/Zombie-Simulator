@@ -7,7 +7,7 @@
 
 ## Synopsis
 
-The idea of this is to create an application that can simulate two interacting populations of humans and zombies, modeling their behaviors: herding; queueing; fight/flight; food seeking etc. The idea is to see what outcomes are produced based on varying baseline assumptions about their behaviors and physical contraints, and to allow users to modify those starting conditions. There are various game-like interactions that could arise from that framework including:
+The idea of this is to create an application that can simulate two interacting populations of humans and zombies, modeling their behaviors: herding; queueing; fight/flight; competition; selflessness; food seeking etc. The idea is to see what outcomes are produced based on varying baseline assumptions about their behaviors and physical contraints, and to allow users to modify those starting conditions. There are various game-like interactions that could arise from that framework including:
 
 - achieving equillibrium
 - eradicating the zombies
@@ -36,6 +36,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Chance in any one round of a fight that the zombie will be stunned: 10%
 - Chance in any one round of a fight that the zombie will be destroyed: 10%
 - Variance in direction of humanoid travel, absent external influences: ± 12.25 degrees/minute
+- Effective human visual field: 120º
 
 
 ## Units

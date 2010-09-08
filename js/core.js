@@ -4,7 +4,8 @@ var z = {
 	sightRange: 20,
 	gridHeight: 0,
 	gridWidth: 0,
-	scale: 2, // 2m per pixel
+	scale: 5, // 5m per pixel
+	fieldOfView: 2.094, // 120 degrees
 	currentTurn: 0,
 	foodAvailability: 0,
 	hidingPlaceFrequency: 0,
@@ -41,101 +42,101 @@ var z = {
 	animate: null
 };
 
-// prototype for both humans and zombies
-var Humanoid = function () 
+z.humanoid = function (spec) 
 {
-		var targetCount = 0,
-			moveDirection = 0,
-			color = '',
-			pop = {};
+	var that = {};
+
+	that.targetCount = 1;
+	
+	that.heading = spec.heading || Math.round(Math.random()*Math.PI*2000)/1000;
+	
+	that.maxrunspeed = spec.maxrunspeed || (Math.random() / 5 + 0.9) * z.humanBaseRunspeed;
+	
+	that.runspeed = that.maxrunspeed;
+	
+	that.pos =  
+	{
+		x: (spec.pos.x) ? spec.pos.x : Math.round(Math.random()*z.gridWidth*z.scale),
+		y: (spec.pos.y) ? spec.pos.y : Math.round(Math.random()*z.gridHeight*z.scale)
+	};
+	
+	that.setpos = function (x,y) 
+	{
+		this.pos.x = x;
+		this.pos.y = y;
+	};
 		
-		this.setpos = function (x,y) 
-		{
-			this.pos.x = x;
-			this.pos.y = y;
-		};
+	that.die = function () 
+	{
+	};
 		
-		this.die = function () 
-		{
-		};
-		
-		this.isZombie = function ()
-		{
-			return !(this.hasOwnProperty('zombify'));
-		};
+	that.isZombie = function ()
+	{
+		return !(this.hasOwnProperty('zombify'));
+	};
+	
+	return that;
+
 };
 
-var Human = function () 
+z.human = function (spec)
 {
-	// variables specific to individual humans
-	var gender,
+	var that = z.humanoid(spec),
+		gender,
 		stamina,
 		hunger,
 		timeSinceLastAte = 0,
 		timeSinceLastRested = 0,
 		grayValue = Math.round(Math.random()*67) + 100;
-		
-	this.nextAction = null,
 	
-	this.heading = 0;
+	that.nextAction = null;
 	
-	this.toString = function () 
+	that.toString = function () 
 	{
 		return '{"human": { "x":'+ this.pos.x + ', "y": ' + this.pos.y +'}}';
 	};
 	
-	this.pos =  
-	{
-		x: 0,
-		y: 1
-	};
-	
-	this.maxrunspeed = (Math.random() / 5 + 0.9) * z.humanBaseRunspeed;
-	
-	this.runspeed = this.maxrunspeed;
-	
-	this.nextMove = 
+	that.nextMove = 
 	{
 		dx: 0,
 		dy: 0
 	};
 		
-	this.color = 'rgb(' + grayValue + ',' + grayValue + ',' + grayValue + ')';
+	that.color = 'rgb(' + grayValue + ',' + grayValue + ',' + grayValue + ')';
 	
-	
-	this.update = function ()
+	that.update = function ()
 	{
 		// call updates to stam and hunger here	
 	};
 	
-	this.attack = function ()
+	that.attack = function ()
 	{
 	};
 	
-	this.rest = function ()
+	that.rest = function ()
 	{
 	};
 	
-	this.hide = function ()
+	that.hide = function ()
 	{
 	};
 	
-	this.findFood = function () 
+	that.findFood = function () 
 	{
 	};
 	
-	this.reproduce = function () 
+	that.reproduce = function () 
 	{
 		//start timer or just represent frequency abstractly
 	};
 	
-	this.chooseAction = function () 
+	that.chooseAction = function () 
 	{
 		// more choices to come
 		return 'run';
 	};
 	
-	this.chooseDirection = function ()
+	that.chooseDirection = function ()
 	{
 		// direction is in radians clockwise, North = 0
 		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
@@ -177,14 +178,14 @@ var Human = function ()
 		return this.heading;
 	};
 	
-	this.chooseNextMove = function ()
+	that.chooseNextMove = function ()
 	{
 		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
 		this.nextMove.dx = Math.round(Math.sin(this.heading) * this.runspeed);
 		this.nextMove.dy = Math.round(0 - (Math.cos(this.heading) * this.runspeed));		
 	};
 		
-	this.move = function () 
+	that.move = function () 
 	{
 		var movx = this.pos.x + this.nextMove.dx, movy = this.pos.y + this.nextMove.dy;
 		if (movx < 0) { movx = 0; }
@@ -194,64 +195,66 @@ var Human = function ()
 		this.setpos(movx, movy);
 	};
 	
-	this.die = function ()
+	that.zombify = function ()
 	{
 	};
 	
-	this.zombify = function ()
-	{
-	};
-	
-	this.updateStamina = function () 
+	that.updateStamina = function () 
 	{
 		this.stamina = this.stamina - (this.timeSinceLastAte * this.timeSinceLastRested) ^ z.humanStamCoeff;
 	};
 	
-	this.updateHunger = function () {
+	that.updateHunger = function () {
 		this.hunger = this.hunger * (this.timeSinceLastAte) ^ z.humanHungerCoeff;
 	};
+	
+	return that;
 };
 
-var Zombie = function () 
+// zombie takes a human object as a parameter for its constructor -- awesome idea from Karl Guertin
+z.zombie = function (human)
 {
-	this.nextAction = null;
-	
-	this.heading = 0;
-
-	this.pos =  
+	var spec = 
 	{
-		x: 0,
-		y: 1
+		"pos": 
+		{
+			"x": human.pos.x || Math.round(Math.random()*z.gridWidth*z.scale),
+			"y": human.pos.y || Math.round(Math.random()*z.gridHeight*z.scale)
+		},
+		
+		"maxrunspeed": human.maxrunspeed / 3 || (Math.random() / 5 + 0.9) * z.zombieBaseRunspeed
 	};
 	
-	this.maxrunspeed = (Math.random() / 5 + 0.9) * z.zombieBaseRunspeed;
+	var that = z.humanoid(spec);
 	
-	this.runspeed = this.maxrunspeed;
+	that.nextAction = null;
 	
-	this.nextMove = 
+	that.runspeed = spec.maxrunspeed;
+	
+	that.nextMove = 
 	{
 		dx: 0,
 		dy: 0
 	};
 	
-	this.color = 'rgb(' + (Math.round(Math.random()*40) + 200) + ',30,30)';
+	that.color = 'rgb(' + (Math.round(Math.random()*40) + 200) + ',30,30)';
 	
-	this.update = function ()
+	that.update = function ()
 	{
 		// call updates to stam and hunger here
 	};
 	
-	this.chooseTarget = function () 
+	that.chooseTarget = function () 
 	{
 	};
 	
-	this.chooseAction = function () 
+	that.chooseAction = function () 
 	{
 		// more choices to come
 		return 'run';
 	};
 	
-	this.chooseDirection = function ()
+	that.chooseDirection = function ()
 	{
 		// direction is in radians clockwise, North = 0
 		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
@@ -293,14 +296,14 @@ var Zombie = function ()
 		return this.heading;
 	};
 	
-	this.chooseNextMove = function ()
+	that.chooseNextMove = function ()
 	{
 		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
 		this.nextMove.dx = Math.round(Math.sin(this.heading) * this.runspeed);
 		this.nextMove.dy = Math.round(0 - (Math.cos(this.heading) * this.runspeed));		
 	};	
 	
-	this.move = function () 
+	that.move = function () 
 	{
 		var movx = this.pos.x + this.nextMove.dx, movy = this.pos.y + this.nextMove.dy;
 		if (movx < 0) { movx = 0; }
@@ -310,10 +313,8 @@ var Zombie = function ()
 		this.setpos(movx, movy);
 	};
 	
+	return that;
 };
-
-Human.prototype = new Humanoid();
-Zombie.prototype = new Humanoid();
 
 // Math functions
 
@@ -373,43 +374,38 @@ z.merge = function (l, r, a) {
 };
 
 
-z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd) 
+z.init = function (spec) 
 {
 	z.humans = [];
 	z.zombies = [];
 	var i,j,k;
 	z.currentTurn = 0;
 	
-	z.gridHeight = h;
-	z.gridWidth = w;
-	z.scale = s;
-	z.humanStartPopulation = hpop;
-	z.zombieStartPopulation = zpop;
-	z.zombieBrainEatingEfficiency = zbr;
-	z.timelapsefactor = tim;
-	z.humanHerding = hherd;
-	z.zombieHerding = zherd;
+	z.gridHeight = spec.h;
+	z.gridWidth = spec.w;
+	z.scale = spec.s;
+	z.humanStartPopulation = spec.hpop;
+	z.zombieStartPopulation = spec.zpop;
+	z.zombieBrainEatingEfficiency = spec.zbr;
+	z.timelapsefactor = spec.tim;
+	z.humanHerding = spec.hhrd;
+	z.zombieHerding = spec.zhrd;
 	
 	// make the starting populations
 	for (j = 0; j < z.humanStartPopulation; j++)
 	{
-		z.humans.push(new Human());
-		z.humans[j].targetCount = 1;
-		z.humans[j].setpos(Math.round(Math.random()*w*z.scale),Math.round(Math.random()*h*z.scale));
-		z.humans[j].heading = Math.round(Math.random()*Math.PI*2000)/1000;
+		z.humans.push(z.human({pos:{}}));
 	}
 	
 	for (k = 0; k < z.zombieStartPopulation; k++)
 	{
-		z.zombies.push(new Zombie());
-		z.zombies[k].targetCount = 1;
-		z.zombies[k].setpos(Math.round(Math.random()*w*z.scale),Math.round(Math.random()*h*z.scale));
-		z.zombies[k].heading = Math.round(Math.random()*Math.PI*2000)/1000;
+		z.humans.push(z.human({pos:{}}));
+		z.zombies.push(z.zombie(z.humans.pop()));
 	}
 	
 	// create the actual canvas element
-	$('#zombie-world').attr('height', h);
-	$('#zombie-world').attr('width', w);
+	$('#zombie-world').attr('height', spec.h);
+	$('#zombie-world').attr('width', spec.w);
 	
 	z.canvas = document.getElementById('zombie-world');
 	z.gui.draw();
@@ -421,17 +417,19 @@ z.init = function (h,w,s,hpop,zpop,zbr,tim,hherd,zherd)
 z.advanceTurn = function () {
 	z.currentTurn++;
 	var proximityFail = false,
-		hindex = 0;
+		hindex = 0,
+		d = 0;
 	
 	//every turn we recursively sort the humanoids in order to save processing in the bahavior modeling
 	z.humanoids = z.humans.concat(z.zombies);
 	z.humanoids = z.mergesort(z.humanoids, 'x');
+	
 	if ($('#current-day span').text() !== Math.ceil(z.currentTurn/8640)) 
 	{
 		$('#current-day span').text(Math.ceil(z.currentTurn/8640));
 	}
 	$.each(z.humanoids, function (i, item) {
-
+	
 		item.nextAction = item.chooseAction();
 		
 		if (item.nextAction === 'run') 
@@ -455,13 +453,14 @@ z.advanceTurn = function () {
 				}
 				else
 				{
-					if (z.sees(item, z.humanoids[hindex])) 
+					d = z.range(item, z.humanoids[hindex]);
+					if (d <= 1 && item.isZombie() && !(z.humanoids[hindex].isZombie()))
 					{
-						z.humanoidInfluence(item, z.humanoids[hindex], z.range(item, z.humanoids[hindex]));
+					//	console.log(z.fight(z.humanoids[hindex], item));
 					}
-					if (z.range(item, z.humanoids[hindex]) <= 1 && item.isZombie() && !(z.humanoids[hindex].isZombie()))
+					if (d < z.sightRange)  // a sees b
 					{
-						console.log(z.fight(z.humanoids[hindex], item));
+						z.humanoidInfluence(item, z.humanoids[hindex], d);
 					}
 				}
 				hindex++;
@@ -482,13 +481,14 @@ z.advanceTurn = function () {
 				}
 				else
 				{
-					if (z.sees(item, z.humanoids[hindex])) 
+					d = z.range(item, z.humanoids[hindex]);
+					if (d <= 1 && item.isZombie() && !(z.humanoids[hindex].isZombie()))
 					{
-						z.humanoidInfluence(item, z.humanoids[hindex], z.range(item, z.humanoids[hindex]));
+					//	console.log(z.fight(z.humanoids[hindex], item));
 					}
-					if (z.range(item, z.humanoids[hindex]) <= 1 && item.isZombie() && !(z.humanoids[hindex].isZombie()))
+					if (d < z.sightRange)   // a sees b
 					{
-						console.log(z.fight(z.humanoids[hindex], item));
+						z.humanoidInfluence(item, z.humanoids[hindex], d);
 					}
 				}
 				hindex-=1;
@@ -519,12 +519,12 @@ z.play = function () {
 	z.turns = setInterval(function () {z.advanceTurn();},Math.round(10 * 1000 / z.timelapsefactor));
 	// draw at 30fps
 	z.animate = setInterval(function () {z.gui.draw();},33);	
-}
+};
 
 z.stop = function () {
 	clearInterval(z.turns);
 	clearInterval(z.animate);
-}
+};
 
 $(document).ready(function ($) {
 	// event handlers down here:
@@ -532,14 +532,20 @@ $(document).ready(function ($) {
 	$('#z-sim-init').live('submit', function (e) {
 		e.preventDefault(); 
 		z.stop();
-		var h = 480,
-			v = 480,
-			s = $('#scale').val(),
-			hpop = $('#hpop').val(),
-			zpop = $('#zpop').val(),
-			zbr = $('#zbr').val(),
-			tim = $('#tim').val();
-		z.init(h,v,s,hpop,zpop,zbr,tim,1,1);
+		var spec = 
+		{
+			h:	'480',
+			w:	'480',
+			s:	$('#scale').val(),
+			hpop:	$('#hpop').val(),
+			zpop:	$('#zpop').val(),
+			zbr:	$('#zbr').val(),
+			tim:	$('#tim').val(),
+			zhrd:	$('#zhrd').val(),
+			hhrd:	$('#hhrd').val()
+		};
+		z.init(spec);
+		
 	});
 	// stop		
 	$('#stop').live('click', function (e) {

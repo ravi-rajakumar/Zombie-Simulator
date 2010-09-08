@@ -2,10 +2,10 @@
 z.fight = function (human,zombie) {
 		var zh = zombie.targetCount,
 			hz = human.targetCount,
-			biteChance = .1/zh,
-			humanDieChance = .1/zh,
-			zombieStunChance = .1/hz,
-			zombieDieChance = .1/hz,
+			biteChance = 0.1/zh,
+			humanDieChance = 0.1/zh,
+			zombieStunChance = 0.1/hz,
+			zombieDieChance = 0.1/hz,
 			states = ['alive', 'undead'],
 			tick = 1;
 			
@@ -37,4 +37,4 @@ z.fight = function (human,zombie) {
 			
 			tick++;
 		}
-}
+};
