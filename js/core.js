@@ -1,24 +1,43 @@
 var z = {
-	hRecognitionRange: 1,
-	zRecognitionRange: 10,
-	sightRange: 20,
+	hRecognitionRange: 1,		// humans recognize zombies
+	zRecognitionRange: 10,		// zombies recognize humans
+	sightRange: 20,				// range of humanoid vision
 	gridHeight: 0,
 	gridWidth: 0,
-	scale: 5, // 5m per pixel
-	fieldOfView: 2.094, // 120 degrees
+	scale: 5, 					// 5m per pixel
+	fieldOfView: 2.094, 		// 120 degrees field of vision
 	currentTurn: 0,
-	foodAvailability: 0,
-	hidingPlaceFrequency: 0,
-	zombificationDuration: 0,
-// one turn = 10 seconds; this factor determies how quickly turns jump forward.
-	timelapsefactor: 300, // 300 secs/sec / 10sec/turn = 30 turns per second
+	perfCounter: 0,				// used to count turns per second
+	foodAvailability: 0,		// not used yet
+	hidingPlaceFrequency: 0,	// not used yet
+	zombificationDuration: 3 * 3600,	// 3 hours
+	interval: 10,
+	timelapsefactor: 300, 		// how many simulated seconds pass in one real-world second
+	lasttps: null,				// used to recalibrate speed
+	actualtps: null,			// used to measure performance
+	simulatedtimeelapsed: 0,
+	secondsperturn: function ()
+		{
+			if (z.actualtps === null) 
+			{
+				return z.interval * z.timelapsefactor / 1000;
+			}
+			else 
+			{
+				return 	z.timelapsefactor / z.actualtps;
+			}
+		},
+	flockAngle: 0,
 	canvas: null,
 
 //stats for all humans
 	humanStartPopulation: 1000,
 	humanCurrentPopulation: 1000,
-// meters per minute/turn
-	humanBaseRunspeed: 4800/360,
+// meters per turn
+	humanBaseRunspeed: function () 
+		{ 
+			return 4800 / 3600 * z.secondsperturn();
+		},
 	humanHerding: 0.5,
 	humanDefenseEfficiency: 1,
 	humanNormalDeathRate: 0,
@@ -30,8 +49,11 @@ var z = {
 //stats for all zombies
 	zombieStartPopulation: 1,
 	zombieCurrentPopulation: 1,
-// meters per minute/turn
-	zombieBaseRunspeed: 1800/360,
+// meters per turn
+	zombieBaseRunspeed: function () 
+		{ 
+			return 1600 / 3600 * z.secondsperturn();
+		},
 	zombieHerding: 0.5,
 	zombieBrainEatingEfficiency: 1,
 	
@@ -40,280 +62,6 @@ var z = {
 	humanoids: [],
 	turns: null,
 	animate: null
-};
-
-z.humanoid = function (spec) 
-{
-	var that = {};
-
-	that.targetCount = 1;
-	
-	that.heading = spec.heading || Math.round(Math.random()*Math.PI*2000)/1000;
-	
-	that.maxrunspeed = spec.maxrunspeed || (Math.random() / 5 + 0.9) * z.humanBaseRunspeed;
-	
-	that.runspeed = that.maxrunspeed;
-	
-	that.pos =  
-	{
-		x: (spec.pos.x) ? spec.pos.x : Math.round(Math.random()*z.gridWidth*z.scale),
-		y: (spec.pos.y) ? spec.pos.y : Math.round(Math.random()*z.gridHeight*z.scale)
-	};
-	
-	that.setpos = function (x,y) 
-	{
-		this.pos.x = x;
-		this.pos.y = y;
-	};
-		
-	that.die = function () 
-	{
-	};
-		
-	that.isZombie = function ()
-	{
-		return !(this.hasOwnProperty('zombify'));
-	};
-	
-	return that;
-
-};
-
-z.human = function (spec)
-{
-	var that = z.humanoid(spec),
-		gender,
-		stamina,
-		hunger,
-		timeSinceLastAte = 0,
-		timeSinceLastRested = 0,
-		grayValue = Math.round(Math.random()*67) + 100;
-	
-	that.nextAction = null;
-	
-	that.toString = function () 
-	{
-		return '{"human": { "x":'+ this.pos.x + ', "y": ' + this.pos.y +'}}';
-	};
-	
-	that.nextMove = 
-	{
-		dx: 0,
-		dy: 0
-	};
-		
-	that.color = 'rgb(' + grayValue + ',' + grayValue + ',' + grayValue + ')';
-	
-	that.update = function ()
-	{
-		// call updates to stam and hunger here	
-	};
-	
-	that.attack = function ()
-	{
-	};
-	
-	that.rest = function ()
-	{
-	};
-	
-	that.hide = function ()
-	{
-	};
-	
-	that.findFood = function () 
-	{
-	};
-	
-	that.reproduce = function () 
-	{
-		//start timer or just represent frequency abstractly
-	};
-	
-	that.chooseAction = function () 
-	{
-		// more choices to come
-		return 'run';
-	};
-	
-	that.chooseDirection = function ()
-	{
-		// direction is in radians clockwise, North = 0
-		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
-		this.heading = Math.round((this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2)*1000)/1000;
-		
-		// the following functions set people on headings away from the walls when they hit them
-		if (this.pos.x <= 0) 
-		{
-			this.heading = (Math.PI - this.heading) % Math.PI; // reflect off of left
-		} 
-		else if (this.pos.x >= (z.gridWidth * z.scale)) 
-		{	
-			this.heading = (2 * Math.PI - this.heading) % Math.PI + Math.PI; // reflect off of right
-		}	
-		
-		if (this.pos.y <= 0) 
-		{	
-			if (this.heading > (3 / 2 * Math.PI))
-			{
-				this.heading = ((3 / 2 * Math.PI) - this.heading) % (3 / 2 * Math.PI); // reflect off of top
-			}
-			else if (this.heading < (Math.PI / 2))
-			{
-				this.heading = Math.PI - this.heading; // reflect off of top
-			}
-		} 
-		else if (this.pos.y >= (z.gridHeight * z.scale)) 
-		{	
-			if (this.heading < Math.PI)
-			{
-				this.heading = this.heading % (Math.PI / 2); // reflect off of bottom
-			}
-			else if (this.heading < (3 / 2 * Math.PI))
-			{
-				this.heading = 2 * Math.PI - (this.heading % Math.PI); // reflect off of bottom
-			}
-		}	
-		
-		return this.heading;
-	};
-	
-	that.chooseNextMove = function ()
-	{
-		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
-		this.nextMove.dx = Math.round(Math.sin(this.heading) * this.runspeed);
-		this.nextMove.dy = Math.round(0 - (Math.cos(this.heading) * this.runspeed));		
-	};
-		
-	that.move = function () 
-	{
-		var movx = this.pos.x + this.nextMove.dx, movy = this.pos.y + this.nextMove.dy;
-		if (movx < 0) { movx = 0; }
-		if (movx > z.gridWidth*z.scale) { movx = z.gridWidth*z.scale; }
-		if (movy < 0) { movy = 0; }
-		if (movy > z.gridHeight*z.scale) { movy = z.gridHeight*z.scale; }
-		this.setpos(movx, movy);
-	};
-	
-	that.zombify = function ()
-	{
-	};
-	
-	that.updateStamina = function () 
-	{
-		this.stamina = this.stamina - (this.timeSinceLastAte * this.timeSinceLastRested) ^ z.humanStamCoeff;
-	};
-	
-	that.updateHunger = function () {
-		this.hunger = this.hunger * (this.timeSinceLastAte) ^ z.humanHungerCoeff;
-	};
-	
-	return that;
-};
-
-// zombie takes a human object as a parameter for its constructor -- awesome idea from Karl Guertin
-z.zombie = function (human)
-{
-	var spec = 
-	{
-		"pos": 
-		{
-			"x": human.pos.x || Math.round(Math.random()*z.gridWidth*z.scale),
-			"y": human.pos.y || Math.round(Math.random()*z.gridHeight*z.scale)
-		},
-		
-		"maxrunspeed": human.maxrunspeed / 3 || (Math.random() / 5 + 0.9) * z.zombieBaseRunspeed
-	};
-	
-	var that = z.humanoid(spec);
-	
-	that.nextAction = null;
-	
-	that.runspeed = spec.maxrunspeed;
-	
-	that.nextMove = 
-	{
-		dx: 0,
-		dy: 0
-	};
-	
-	that.color = 'rgb(' + (Math.round(Math.random()*40) + 200) + ',30,30)';
-	
-	that.update = function ()
-	{
-		// call updates to stam and hunger here
-	};
-	
-	that.chooseTarget = function () 
-	{
-	};
-	
-	that.chooseAction = function () 
-	{
-		// more choices to come
-		return 'run';
-	};
-	
-	that.chooseDirection = function ()
-	{
-		// direction is in radians clockwise, North = 0
-		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
-		this.heading = Math.round((this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2)*1000)/1000;
-		
-		// the following functions set people on headings away from the walls when they hit them
-		if (this.pos.x <= 0) 
-		{
-			this.heading = (Math.PI - this.heading) % Math.PI; // reflect off of left
-		} 
-		else if (this.pos.x >= (z.gridWidth * z.scale)) 
-		{	
-			this.heading = (2 * Math.PI - this.heading) % Math.PI + Math.PI; // reflect off of right
-		}	
-		
-		if (this.pos.y <= 0) 
-		{	
-			if (this.heading > (3 / 2 * Math.PI))
-			{
-				this.heading = ((3 / 2 * Math.PI) - this.heading) % (3 / 2 * Math.PI); // reflect off of top
-			}
-			else if (this.heading < (Math.PI / 2))
-			{
-				this.heading = Math.PI - this.heading; // reflect off of top
-			}
-		} 
-		else if (this.pos.y >= (z.gridHeight * z.scale)) 
-		{	
-			if (this.heading < Math.PI)
-			{
-				this.heading = this.heading % (Math.PI / 2); // reflect off of bottom
-			}
-			else if (this.heading < (3 / 2 * Math.PI))
-			{
-				this.heading = 2 * Math.PI - (this.heading % Math.PI); // reflect off of bottom
-			}
-		}	
-		
-		return this.heading;
-	};
-	
-	that.chooseNextMove = function ()
-	{
-		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
-		this.nextMove.dx = Math.round(Math.sin(this.heading) * this.runspeed);
-		this.nextMove.dy = Math.round(0 - (Math.cos(this.heading) * this.runspeed));		
-	};	
-	
-	that.move = function () 
-	{
-		var movx = this.pos.x + this.nextMove.dx, movy = this.pos.y + this.nextMove.dy;
-		if (movx < 0) { movx = 0; }
-		if (movx > z.gridWidth*z.scale) { movx = z.gridWidth*z.scale; }
-		if (movy < 0) { movy = 0; }
-		if (movy > z.gridHeight*z.scale) { movy = z.gridHeight*z.scale; }
-		this.setpos(movx, movy);
-	};
-	
-	return that;
 };
 
 // Math functions
@@ -373,6 +121,36 @@ z.merge = function (l, r, a) {
 	return result;
 };
 
+z.perf = 
+{
+	start: 0,
+	now: 0,
+	init: function () 
+		{
+			z.perfCounter = 0;
+			start = new Date();
+		},
+	
+	check: function ()
+		{
+			now = new Date();
+			z.actualtps =  Math.floor(1000 * z.perfCounter / (now.getTime() - start.getTime()));
+			return z.actualtps;
+		}
+}
+
+z.calibrate = function ()
+{
+	if (z.lasttps === null) 
+	{
+		z.lasttps = z.interval / 1000;
+	}
+	var timeadjust = 1 / (z.lasttps * z.actualtps);
+	$.each(z.humanoids, function (i, item) {
+		item.maxrunspeed = item.maxrunspeed * timeadjust;
+		z.lasttps = 1 / z.actualtps;
+	});
+}
 
 z.init = function (spec) 
 {
@@ -409,30 +187,34 @@ z.init = function (spec)
 	
 	z.canvas = document.getElementById('zombie-world');
 	z.gui.draw();
-
 };
 
 
 // human and zombie update methods get called by the turn increment function
 z.advanceTurn = function () {
 	z.currentTurn++;
+	z.simulatedtimeelapsed += Math.round(z.secondsperturn());
 	var proximityFail = false,
 		hindex = 0,
-		d = 0;
+		d = 0,
+		sec = 0;
 	
 	//every turn we recursively sort the humanoids in order to save processing in the bahavior modeling
 	z.humanoids = z.humans.concat(z.zombies);
 	z.humanoids = z.mergesort(z.humanoids, 'x');
 	
-	if ($('#current-day span').text() !== Math.ceil(z.currentTurn/8640)) 
-	{
-		$('#current-day span').text(Math.ceil(z.currentTurn/8640));
-	}
-	$.each(z.humanoids, function (i, item) {
+	sec = (Math.floor(z.simulatedtimeelapsed % 60) < 10) ? '0' + Math.floor(z.simulatedtimeelapsed % 60) : Math.floor(z.simulatedtimeelapsed % 60);
 	
-		item.nextAction = item.chooseAction();
+	
+	$('#days').text(
+			Math.floor(z.simulatedtimeelapsed / 86400) + ' days, ' +
+			Math.floor((z.simulatedtimeelapsed % 86400) / 3600) + ' hours, ' + 
+			Math.floor((z.simulatedtimeelapsed % 3600) / 60) + ' minutes, ' + 
+			sec + ' seconds'
+		);
+	$.each(z.humanoids, function (i, item) {
 		
-		if (item.nextAction === 'run') 
+		if (item.nextAction() === 'run') 
 		{
 			// pick a base heading
 			item.heading = item.chooseDirection();
@@ -458,7 +240,12 @@ z.advanceTurn = function () {
 					{
 					//	console.log(z.fight(z.humanoids[hindex], item));
 					}
-					if (d < z.sightRange)  // a sees b
+					if (d === 0) 
+					{
+						item.heading = z.flockAngle;
+						z.flockAngle = (z.flockAngle + Math.PI/3) % (2*Math.PI);
+					}
+					else if (d < z.sightRange)  // a sees b
 					{
 						z.humanoidInfluence(item, z.humanoids[hindex], d);
 					}
@@ -486,7 +273,12 @@ z.advanceTurn = function () {
 					{
 					//	console.log(z.fight(z.humanoids[hindex], item));
 					}
-					if (d < z.sightRange)   // a sees b
+					if (d === 0) 
+					{
+						item.heading = z.flockAngle;
+						z.flockAngle = (z.flockAngle + Math.PI/3) % (2*Math.PI);
+					}
+					else if (d < z.sightRange)   // a sees b
 					{
 						z.humanoidInfluence(item, z.humanoids[hindex], d);
 					}
@@ -511,12 +303,26 @@ z.advanceTurn = function () {
 	{
 		z.hRecognitionRange += (9/4320); // this will take 3 days to get from 1 to 10m
 	}
+	
+	// log performance
+	z.perfCounter++;
+	if (z.perfCounter % (1000/z.interval) === 0) 
+	{
+		$('#perf span').text(z.perf.check());
+		z.calibrate();
+	}
 };
 
 z.play = function () {
+	// run the setup if it hasn't run yet
+	if (z.humans.length < 1 && z.zombies.length < 1)
+	{
+		$('#z-sim-init').submit();
+	}
 	z.stop();
-	// this here advances the turn by one time-lapsed minute
-	z.turns = setInterval(function () {z.advanceTurn();},Math.round(10 * 1000 / z.timelapsefactor));
+	z.perf.init();
+	// this here advances the turn
+	z.turns = setInterval(function () {z.advanceTurn();},z.interval);
 	// draw at 30fps
 	z.animate = setInterval(function () {z.gui.draw();},33);	
 };

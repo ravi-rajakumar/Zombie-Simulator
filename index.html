@@ -5,6 +5,7 @@
 <link media="all" rel="stylesheet" type="text/css" href="css/zsim.css" /> 
 <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="js/core.js"></script>
+<script type="text/javascript" src="js/population.js"></script>
 <script type="text/javascript" src="js/canvas.js"></script>
 <script type="text/javascript" src="js/dynamics.js"></script>
 <script type="text/javascript" src="js/fight.js"></script>
@@ -24,9 +25,9 @@
 <form action="#" method="POST" id="z-sim-init">
 <div id="controlshuman">
 <label for="hpop">Initial human population:</label>
-<input id="hpop" name="hpop" type="text" value="500"/>
+<input id="hpop" name="hpop" type="text" value="1000"/>
 <label for="hhrd">Human herding (-1 to 1):</label>
-<input id="hhrd" name="hhrd" type="text" value="0.5"/>
+<input id="hhrd" name="hhrd" type="text" value="1"/>
 </div>
 <div id="controlszombie">
 <label for="zpop">Initial zombie population:</label>
@@ -40,7 +41,7 @@
 <label for="scale">Scale (meters/px):</label>
 <input id="scale" name="scale" type="text" value="5"/>
 <label for="tim">Timelapse (factor):</label>
-<input id="tim" name="tim" type="text" value="300"/>
+<input id="tim" name="tim" type="text" value="100"/>
 <input type="submit" value="setup" name="start" id="start"/>
 <input type="button" value="play" name="play" id="play"/>
 <input type="button" value="stop" name="stop" id="stop"/>
@@ -50,7 +51,8 @@
 <canvas id="zombie-world" width="480" height="480">
 </canvas>
 <section id="status">
-<p id="current-day">Current day: <span></span></p>
+<p id="time-status">Time elapsed: <span id="days"></span><span id="hours"></span><span id="minutes"></span><span id="seconds"></span></p>
+<p id="perf">Performance: <span></span> turns per second</p>
 </section>
 </body>
 

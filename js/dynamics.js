@@ -9,15 +9,16 @@ z.humanoidInfluence = function (ha, hb, d) {
 	// ha's heading will be updated
 	var mag = 0,
 		/* convert ha's heading into dx and dy */
-		hadx = Math.sin(ha.heading),
-		hady = 0 - Math.cos(ha.heading),
+		run = ha.maxrunspeed,
+		hadx = Math.sin(ha.heading)*run,
+		hady = 0 - Math.cos(ha.heading)*run,
 		/* scale for the distance to the influencing humanoid. This lets us add this vector to the existing heading */  
-		headingscale = (d > 0) ? Math.round(1000 / d) / 1000 : 1,
+		headingscale = (d > 0) ? Math.round(1000 * run / d) / 1000 : 1,
 		hangle = 0,
 		newheading = 0,
 		headingtoinfl = 0;
 	
-	headingtoinfl = ((hb.pos.y - ha.pos.y) >= 0) ? Math.PI - Math.asin(headingscale * (hb.pos.x - ha.pos.x)/ha.maxrunspeed) : (Math.PI * 2 + Math.asin(headingscale * (hb.pos.x - ha.pos.x)/ha.maxrunspeed)) % (Math.PI * 2);
+	headingtoinfl = ((hb.pos.y - ha.pos.y) >= 0) ? Math.PI - Math.asin((hb.pos.x - ha.pos.x)/d) : (Math.PI * 2 + Math.asin((hb.pos.x - ha.pos.x)/d)) % (Math.PI * 2);
 	
 	
 	// can ha actually see hb?
@@ -55,9 +56,9 @@ z.humanoidInfluence = function (ha, hb, d) {
 		} 
 		
 		/* create dx and dy values for hb's physical influence, and add them to the existing heading */
-		hbdx = headingscale * (hb.pos.x - ha.pos.x) * mag + hadx;
-		hbdy = headingscale * (hb.pos.y - ha.pos.y) * mag + hady;
-		hangle = Math.asin(hbdx/ha.maxrunspeed);
+		hbdx = (headingscale * (hb.pos.x - ha.pos.x) * mag + hadx)/2;
+		hbdy = (headingscale * (hb.pos.y - ha.pos.y) * mag + hady)/2;
+		hangle = Math.asin(Math.round(100 * hbdx / run)/100);
 		newheading = (hbdy >= 0) ? Math.PI - hangle : (Math.PI * 2 + hangle) % (Math.PI * 2);
 	
 		/* here we set the new heading based on proximity (herding) */
