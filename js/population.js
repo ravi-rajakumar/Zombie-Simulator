@@ -200,8 +200,6 @@ z.human = function (spec)
 			{
 				return 'die';
 			};
-			clearTimeout(thing.timer);
-			console.log('live-turn');
 		}, 1000 * z.zombificationDuration / z.timelapsefactor);
 		
 		this.zombify = function () {}; // this should prevent duplicate zombies
@@ -221,10 +219,10 @@ z.human = function (spec)
 			
 		if (Math.random() <= chance)
 		{
-			timer = setTimeout(function()
+			this.timer = setTimeout(function()
 			{		
 				z.zombies.push(z.zombie(thing));
-				console.log('dead-turn');
+				thing.zombify = function () {}; 
 			}, 1000 * z.zombificationDuration / z.timelapsefactor);
 		}
 	};
