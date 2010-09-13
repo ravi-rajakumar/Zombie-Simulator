@@ -2,12 +2,10 @@ z.humanoid = function (spec)
 {
 	var that = {};
 
-	that.influences = [];
-
 // remove this later
 	that.error = null;
 
-	that.targetCount = 1;
+	that.targetCount = 0;
 	
 	that.heading = spec.heading || Math.round(Math.random()*Math.PI*2000)/1000;
 	
@@ -54,11 +52,6 @@ z.humanoid = function (spec)
 		}
 		this.setpos(movx, movy);
 	};
-	
-		
-	that.die = function () 
-	{
-	};
 		
 	that.isZombie = function ()
 	{
@@ -80,6 +73,8 @@ z.human = function (spec)
 		grayValue = Math.round(Math.random()*67) + 100;
 	
 	that.actionQueue = [];
+	
+	that.timer = null;
 	
 	that.error = null;
 	
@@ -120,7 +115,14 @@ z.human = function (spec)
 	{
 		if (this.actionQueue.length > 0) 
 		{
-			return actionQueue.shift();
+			if (this.actionQueue[0] === 'die')
+			{
+				this.die();
+			}
+			else 
+			{
+				return this.actionQueue.shift();
+			}
 		} 
 		else 
 		{
@@ -178,10 +180,6 @@ z.human = function (spec)
 		this.nextMove.dy = Math.round(0 - (Math.cos(this.heading) * this.runspeed) * 1000) / 1000;		
 	};
 	
-	that.zombify = function ()
-	{
-	};
-	
 	that.updateStamina = function () 
 	{
 		this.stamina = this.stamina - (this.timeSinceLastAte * this.timeSinceLastRested) ^ z.humanStamCoeff;
@@ -189,6 +187,46 @@ z.human = function (spec)
 	
 	that.updateHunger = function () {
 		this.hunger = this.hunger * (this.timeSinceLastAte) ^ z.humanHungerCoeff;
+	};
+	
+	that.zombify = function (state)
+	{
+		var thing = this;
+		
+		this.timer = setTimeout(function()
+		{
+			z.zombies.push(z.zombie(thing));
+			thing.nextAction = function () 
+			{
+				return 'die';
+			};
+			clearTimeout(thing.timer);
+			console.log('live-turn');
+		}, 1000 * z.zombificationDuration / z.timelapsefactor);
+		
+		this.zombify = function () {}; // this should prevent duplicate zombies
+		
+		this.color = 'rgb(30,30,' + (grayValue+50) + ')';
+	};
+		
+	that.die = function () 
+	{
+		var chance = (100 - z.zombieBrainEatingEfficiency)/100,
+			thing = this;
+		
+		this.nextAction = function () 
+		{
+			return 'die';
+		}
+			
+		if (Math.random() <= chance)
+		{
+			timer = setTimeout(function()
+			{		
+				z.zombies.push(z.zombie(thing));
+				console.log('dead-turn');
+			}, 1000 * z.zombificationDuration / z.timelapsefactor);
+		}
 	};
 	
 	return that;
@@ -229,7 +267,14 @@ z.zombie = function (human)
 	{
 		if (this.actionQueue.length > 0) 
 		{
-			return actionQueue.shift();
+			if (this.actionQueue[0] === 'die')
+			{
+				this.die();
+			}
+			else 
+			{
+				return this.actionQueue.shift();
+			}
 		} 
 		else 
 		{
@@ -286,6 +331,14 @@ z.zombie = function (human)
 		this.nextMove.dx = Math.round(Math.sin(this.heading) * this.runspeed * 1000)/1000;
 		this.nextMove.dy = Math.round(0 - (Math.cos(this.heading) * this.runspeed) * 1000) / 1000;		
 	};	
+		
+	that.die = function () 
+	{
+		this.nextAction = function () 
+		{
+			return 'die';
+		}
+	};
 	
 	return that;
 };

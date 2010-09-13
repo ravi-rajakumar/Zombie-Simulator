@@ -31,11 +31,11 @@
 </div>
 <div id="controlszombie">
 <label for="zpop">Initial zombie population:</label>
-<input id="zpop" name="zpop" type="text" value="10"/>
+<input id="zpop" name="zpop" type="text" value="1"/>
 <label for="zhrd">Zombie herding (-1 to 1):</label>
 <input id="zhrd" name="zhrd" type="text" value="0.5"/>
 <label for="zbr">Zombie brain-eating success rate (%):</label>
-<input id="zbr" name="zbr" type="text" value="100"/>
+<input id="zbr" name="zbr" type="text" value="50"/>
 </div>
 <div id="controlsgeneral">
 <label for="scale">Scale (meters/px):</label>
@@ -51,8 +51,11 @@
 <canvas id="zombie-world" width="480" height="480">
 </canvas>
 <section id="status">
-<p id="time-status">Time elapsed: <span id="days"></span><span id="hours"></span><span id="minutes"></span><span id="seconds"></span></p>
+<p id="time-status">Time elapsed: <span id="days"></span></p>
 <p id="perf">Performance: <span></span> turns per second</p>
+<p id="hcount"><span></span></p>
+<p id="zcount"><span></span></p>
+<p id="summary"></p> 
 </section>
 </body>
 

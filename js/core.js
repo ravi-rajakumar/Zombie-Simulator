@@ -45,6 +45,8 @@ var z = {
 	humanReproductionRate: 0,
 	humanStamCoeff: 1,
 	humanHungerCoeff: 1,
+	naturalbirthrate: 14,	// per 1k, per year
+	naturaldeathrate: 8,	// per 1k, per year
 	
 //stats for all zombies
 	zombieStartPopulation: 1,
@@ -55,7 +57,7 @@ var z = {
 			return 1600 / 3600 * z.secondsperturn();
 		},
 	zombieHerding: 0.5,
-	zombieBrainEatingEfficiency: 1,
+	zombieBrainEatingEfficiency: 50,
 	
 	humans: [],
 	zombies: [],
@@ -158,6 +160,7 @@ z.init = function (spec)
 	z.zombies = [];
 	var i,j,k;
 	z.currentTurn = 0;
+	z.simulatedtimeelapsed = 0;
 	
 	z.gridHeight = spec.h;
 	z.gridWidth = spec.w;
@@ -197,95 +200,144 @@ z.advanceTurn = function () {
 	var proximityFail = false,
 		hindex = 0,
 		d = 0,
-		sec = 0;
+		sec = 0,
+		elapsed = 0,
+		hcount = z.humans.length,
+		zcount = z.zombies.length;
+		
+		
+	// natural births & deaths
+	if (Math.random() < (((hcount / 1000) * z.naturalbirthrate * z.secondsperturn()) / (86400 * 365))) 
+	{
+		z.humans.push(z.human({pos:{}}));
+		console.log('natural birth');
+	}
+	if (Math.random() < (((hcount / 1000) * z.naturaldeathrate * z.secondsperturn()) / (86400 * 365))) 
+	{
+		z.humans.pop();
+		console.log('natural death');
+	}
 	
 	//every turn we recursively sort the humanoids in order to save processing in the bahavior modeling
 	z.humanoids = z.humans.concat(z.zombies);
 	z.humanoids = z.mergesort(z.humanoids, 'x');
 	
-	sec = (Math.floor(z.simulatedtimeelapsed % 60) < 10) ? '0' + Math.floor(z.simulatedtimeelapsed % 60) : Math.floor(z.simulatedtimeelapsed % 60);
+	$('#hcount').text('Humans: ' + hcount);
+	$('#zcount').text('Zombies: ' + zcount);
 	
 	
-	$('#days').text(
-			Math.floor(z.simulatedtimeelapsed / 86400) + ' days, ' +
-			Math.floor((z.simulatedtimeelapsed % 86400) / 3600) + ' hours, ' + 
-			Math.floor((z.simulatedtimeelapsed % 3600) / 60) + ' minutes, ' + 
-			sec + ' seconds'
-		);
-	$.each(z.humanoids, function (i, item) {
-		
-		if (item.nextAction() === 'run') 
+	for (var j = 0; j < hcount; j++) 
+	{
+		var action = z.humans[j].nextAction();
+		if (action === 'die') 
 		{
-			// pick a base heading
-			item.heading = item.chooseDirection();
-			
-			// step through the population looking for influences and applying them.
-			// loop forward until out of range (this is much quicker now that we have a sorted list to go through)
-			proximityFail = false;
-			hindex = i + 1;
-			while (proximityFail === false)
+			// remove them from the population
+			z.humans.splice(j,1);
+			hcount -= 1;
+			j -= 1;
+		}
+		else 
+		{
+			z.humans[j].actionQueue.push(action); // put the action back in the queue
+		}
+	}
+	
+	// check for destroyed zombies
+	for (var k = 0; k < zcount; k++) 
+	{
+		var action = z.zombies[k].nextAction();
+		if (action === 'die') 
+		{
+			// remove them from the population
+			z.zombies.splice(k,1);
+			zcount -= 1;
+			k -= 1;
+		}
+		else 
+		{
+			z.zombies[k].actionQueue.push(action); // put the action back in the queue
+		}
+	}
+		
+	$.each(z.humanoids, function (i, item) 
+	{
+		var action = item.nextAction();
+		// pick a base heading
+		item.heading = item.chooseDirection();
+		
+		// step through the population looking for influences and applying them.
+		// loop forward until out of range (this is much quicker now that we have a sorted list to go through)
+		proximityFail = false;
+		hindex = i + 1;
+		while (proximityFail === false)
+		{
+			if (hindex >= z.humanoids.length)
 			{
-				if (hindex >= z.humanoids.length)
-				{
-					proximityFail = true;
-				}
-				else if (Math.abs(item.pos.x - z.humanoids[hindex].pos.x) > z.sightRange) 
-				{
-					proximityFail = true;
-				}
-				else
-				{
-					d = z.range(item, z.humanoids[hindex]);
-					if (d <= 1 && item.isZombie() && !(z.humanoids[hindex].isZombie()))
-					{
-					//	console.log(z.fight(z.humanoids[hindex], item));
-					}
-					if (d === 0) 
-					{
-						item.heading = z.flockAngle;
-						z.flockAngle = (z.flockAngle + Math.PI/3) % (2*Math.PI);
-					}
-					else if (d < z.sightRange)  // a sees b
-					{
-						z.humanoidInfluence(item, z.humanoids[hindex], d);
-					}
-				}
-				hindex++;
+				proximityFail = true;
 			}
-			
-			// loop backward until out of range
-			proximityFail = false;
-			hindex = i - 1;
-			while (proximityFail === false)
+			else if (Math.abs(item.pos.x - z.humanoids[hindex].pos.x) > z.sightRange) 
 			{
-				if (hindex < 0)
-				{
-					proximityFail = true;
-				}
-				else if (Math.abs(item.pos.x - z.humanoids[hindex].pos.x) > z.sightRange) 
-				{
-					proximityFail = true;
-				}
-				else
-				{
-					d = z.range(item, z.humanoids[hindex]);
-					if (d <= 1 && item.isZombie() && !(z.humanoids[hindex].isZombie()))
-					{
-					//	console.log(z.fight(z.humanoids[hindex], item));
-					}
-					if (d === 0) 
-					{
-						item.heading = z.flockAngle;
-						z.flockAngle = (z.flockAngle + Math.PI/3) % (2*Math.PI);
-					}
-					else if (d < z.sightRange)   // a sees b
-					{
-						z.humanoidInfluence(item, z.humanoids[hindex], d);
-					}
-				}
-				hindex-=1;
+				proximityFail = true;
 			}
-			
+			else
+			{
+				d = z.range(item, z.humanoids[hindex]);
+				if (d <= 1 && item.isZombie() && !(z.humanoids[hindex].isZombie()))
+				{
+					z.humanoids[hindex].targetCount += 1;
+					item.targetCount += 1;
+					z.fight(z.humanoids[hindex], item);
+				}
+				if (d === 0) 
+				{
+					item.heading = z.flockAngle;
+					z.flockAngle = (z.flockAngle + Math.PI/3) % (2*Math.PI);
+				}
+				else if (d < z.sightRange)  // a sees b
+				{
+					z.humanoidInfluence(item, z.humanoids[hindex], d);
+				}
+			}
+			hindex++;
+		}
+		
+		// loop backward until out of range
+		proximityFail = false;
+		hindex = i - 1;
+		while (proximityFail === false)
+		{
+			if (hindex < 0)
+			{
+				proximityFail = true;
+			}
+			else if (Math.abs(item.pos.x - z.humanoids[hindex].pos.x) > z.sightRange) 
+			{
+				proximityFail = true;
+			}
+			else
+			{
+				d = z.range(item, z.humanoids[hindex]);
+				if (d <= 1 && item.isZombie() && !(z.humanoids[hindex].isZombie()))
+				{
+					z.humanoids[hindex].targetCount += 1;
+					item.targetCount += 1;
+					z.fight(z.humanoids[hindex], item);
+				}
+				if (d === 0) 
+				{
+					item.heading = z.flockAngle;
+					z.flockAngle = (z.flockAngle + Math.PI/3) % (2*Math.PI);
+				}
+				else if (d < z.sightRange)   // a sees b
+				{
+					z.humanoidInfluence(item, z.humanoids[hindex], d);
+				}
+			}
+			hindex-=1;
+		}
+		
+		if (action === 'run')
+		{
 			// convert heading to dx and dy
 			item.chooseNextMove();
 			
@@ -294,7 +346,6 @@ z.advanceTurn = function () {
 			
 			// reset it's runspeed if it was changed by the influence function
 			item.runspeed = item.maxrunspeed;
-			
 		}
 	});
 	
@@ -311,6 +362,27 @@ z.advanceTurn = function () {
 		$('#perf span').text(z.perf.check());
 		z.calibrate();
 	}
+	
+	sec = (Math.floor(z.simulatedtimeelapsed % 60) < 10) ? '0' + Math.floor(z.simulatedtimeelapsed % 60) : Math.floor(z.simulatedtimeelapsed % 60);
+	
+	elapsed = Math.floor(z.simulatedtimeelapsed / 86400) + ' days, ' +
+			Math.floor((z.simulatedtimeelapsed % 86400) / 3600) + ' hours, ' + 
+			Math.floor((z.simulatedtimeelapsed % 3600) / 60) + ' minutes, ' + 
+			sec + ' seconds';
+	
+	if (z.humans.length === 0)
+	{
+		z.stop();
+		$('#summary').text('Simulation paused. Zero living humans at ' + elapsed + '.');
+	}
+	
+	if (z.zombies.length === 0)
+	{
+		z.stop();
+		$('#summary').text('Simulation paused. Zero remaining undead at ' + elapsed + '.');
+	}
+	
+	$('#days').text(elapsed);
 };
 
 z.play = function () {

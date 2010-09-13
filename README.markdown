@@ -37,6 +37,9 @@ The math in this simulation depends on a number of baseline properties that were
 - Chance in any one round of a fight that the zombie will be destroyed: 10%
 - Variance in direction of humanoid travel, absent external influences: ± 12.25 degrees/minute
 - Effective human visual field: 120º
+- Natural birth rate: 14 / 1k people / year (current U.S. value)
+- Natural death rate: 8 / 1k people / year (current U.S. value)
+- Time to turn zombie from bite or die: 3 hours
 
 
 ## Units
