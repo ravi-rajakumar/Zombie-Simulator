@@ -44,7 +44,6 @@ z.fight = function (human,zombie) {
 				}
 				human.actionQueue.push('die');
 				zombie.targetCount -= 1;
-				console.log('human death');
 				return;
 			}	
 			else if (states[1] === 'stunned') 
@@ -58,13 +57,11 @@ z.fight = function (human,zombie) {
 				{
 					zombie.actionQueue.push('stunned');	
 				}
-				console.log('stunned ' + Math.floor(60 / z.secondsperturn()) + ' turns');
 				zombie.targetCount -= 1;
 				human.targetCount -= 1;
 				if (states[0] === 'bitten')
 				{
 					human.zombify();
-					console.log('live-turn coming...');
 				}
 				return;
 			}
@@ -77,11 +74,9 @@ z.fight = function (human,zombie) {
 				}
 				zombie.actionQueue.push('die');
 				human.targetCount -= 1;
-				console.log('zombie death');
 				if (states[0] === 'bitten')
 				{
 					human.zombify();
-					console.log('live-turn coming...');
 				}
 				return;
 			}	
