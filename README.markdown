@@ -46,8 +46,7 @@ The math in this simulation depends on a number of baseline properties that were
 
 - Units are metric.
 - Base distance is 1m.
-- One turn = 1 minute. One day = 1440 turns.
 - Two objects can't occupy the same space; for humanoids this can be represented by not allowing - the distance between two humanoids to be less than 1m.
 - We can start with a roughly 480px square canvas to be iPhone compatible, and have 1px = 20m for the initial scale.
-- Heading could be noted in radians, clockwise from North
+- Heading is noted in radians, clockwise from North
 
