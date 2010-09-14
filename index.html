@@ -1,63 +1,66 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>We are the living dead</title>
-<link media="all" rel="stylesheet" type="text/css" href="css/zsim.css" /> 
-<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript" src="js/core.js"></script>
-<script type="text/javascript" src="js/population.js"></script>
-<script type="text/javascript" src="js/canvas.js"></script>
-<script type="text/javascript" src="js/dynamics.js"></script>
-<script type="text/javascript" src="js/fight.js"></script>
-</head>
+	<head>
+		<title>We are the living dead</title>
+		<link media="all" rel="stylesheet" type="text/css" href="css/main.css" />
+		<script type="text/javascript" src="js/lib/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="js/z.js"></script>
+		<script type="text/javascript" src="js/z.controls.js"></script>
+		<script type="text/javascript" src="js/z.dynamics.js"></script>
+		<script type="text/javascript" src="js/z.gui.js"></script>
+		<script type="text/javascript" src="js/z.interactions.js"></script>
+		<script type="text/javascript" src="js/z.population.js"></script>
+		<script type="text/javascript" src="js/z.utilities.js"></script>
+	</head>
+	<body>
+		<header>
+			<blockquote>
+				<h1>"<em>We</em> are the living dead"</h1>
+				<cite>- George Romero</cite>
+			</blockquote>
+		</header>
 
-<body>
-<header id="project-status">
+		<section id="controls">
+			<p id="control-switch">[+] settings</p>
+			<form action="#" method="POST" id="settings">
+				<div id="controls-human">
+					<label for="human-population">Initial human population:</label>
+					<input id="human-population" name="human-population" type="text" value="1000" />
+					<label for="human-herding">Human herding (-1.0 to 1.0):</label>
+					<input id="human-herding" name="human-herding" type="text" value="1" />
+				</div>
+				<div id="controls-zombie">
+					<label for="zombie-population">Initial zombie population:</label>
+					<input id="zombie-population" name="zombie-population" type="text" value="1" />
+					<label for="zombie-herding">Zombie herding (-1.0 to 1.0):</label>
+					<input id="zombie-herding" name="zombie-herding" type="text" value="0.5" />
+					<label for="zombie-brain-eating-efficiency">Zombie brain-eating success rate (%):</label>
+					<input id="zombie-brain-eating-efficiency" name="zombie-brain-eating-efficiency" type="text" value="100" />
+				</div>
+				<div id="controls-general">
+					<label for="scale">Scale (meters/pixel):</label>
+					<input id="scale" name="scale" type="text" value="5" />
+					<label for="time-lapse-factor">Timelapse (factor):</label>
+					<input id="time-lapse-factor" name="time-lapse-factor" type="text" value="100" />
+				</div>
+				
+				<input type="submit" value="setup" name="setup" id="setup" />
+				<input type="button" value="play" name="play" id="play" />
+				<input type="button" value="stop" name="stop" id="stop" />
+			</form>
+		</section>
 
-<blockquote>
-<h1>"<em>We</em> are the living dead"</h1>
-<cite>George Romero</cite>
-</blockquote>
-</header>
+		<canvas id="zombie-world" width="480" height="480"></canvas>
 
-<section id="controls">
-<p id="controlswitch">[+] settings</p>
-<form action="#" method="POST" id="z-sim-init">
-<div id="controlshuman">
-<label for="hpop">Initial human population:</label>
-<input id="hpop" name="hpop" type="text" value="1000"/>
-<label for="hhrd">Human herding (-1 to 1):</label>
-<input id="hhrd" name="hhrd" type="text" value="1"/>
-</div>
-<div id="controlszombie">
-<label for="zpop">Initial zombie population:</label>
-<input id="zpop" name="zpop" type="text" value="1"/>
-<label for="zhrd">Zombie herding (-1 to 1):</label>
-<input id="zhrd" name="zhrd" type="text" value="0.5"/>
-<label for="zbr">Zombie brain-eating success rate (%):</label>
-<input id="zbr" name="zbr" type="text" value="50"/>
-</div>
-<div id="controlsgeneral">
-<label for="scale">Scale (meters/px):</label>
-<input id="scale" name="scale" type="text" value="5"/>
-<label for="tim">Timelapse (factor):</label>
-<input id="tim" name="tim" type="text" value="100"/>
-<input type="submit" value="setup" name="start" id="start"/>
-<input type="button" value="play" name="play" id="play"/>
-<input type="button" value="stop" name="stop" id="stop"/>
-</div>
-</form>
-</section>
-<canvas id="zombie-world" width="480" height="480">
-</canvas>
-<section id="status">
-<p id="time-status">Time elapsed: <span id="days"></span></p>
-<p id="perf">Performance: <span></span> turns per second</p>
-<p id="hcount"><span></span></p>
-<p id="zcount"><span></span></p>
-<p id="summary"></p> 
-</section>
-</body>
-
-
+		<section id="footer">
+			<div id="statistics">
+				<p id="timer">Time elapsed: <span id="days">0 days,</span> <span id="hours">0 hours,</span> <span id="minutes">0 minutes,</span> <span id="seconds">0 seconds</span></p>
+				<p id="performance">Performance: <span id="tps">0</span> turns/second, <span id="fps">0</span> frames/second</p>
+			</div>
+			<div id="populations">
+				<p id="humans">Humans: <span>0</span></p>
+				<p id="zombies">Zombies: <span>0</span></p>
+			</div>
+		</section>
+		</body>
 </html>

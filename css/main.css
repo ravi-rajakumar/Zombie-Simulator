@@ -1,0 +1,102 @@
+body {
+	font-family: Helvetica, Arial, Sans;
+	font-size: 10px;
+	background-color: #eee;
+	color: #222;
+	padding: 1em 0;
+}
+
+header, section {
+	width: 480px;
+	margin: 0 auto;
+	display: block;
+}
+
+header {
+	margin-bottom: 1em;
+}
+
+header blockquote {
+	margin: 0 0 2em;
+}
+
+header h1 {
+	font-size: 1.5em;
+	margin: 1em 0 0;
+	font-weight: normal;
+}
+
+header cite {
+	text-align: right;
+	font-size: 1.2em;
+	display: block;
+	width: 17em;
+	margin: .25em 0 0;
+}
+
+#settings {
+	float: left;
+	margin-bottom: 8px;
+}
+
+#control-switch, #footer {
+	font-family: Monaco, "Courier New", Courier, Monospace;
+}
+
+#control-switch {
+	cursor: pointer;
+}
+
+#controls-human, #controls-zombie {
+	float: left;
+	margin-right: 10px;
+}
+
+#controls-general {
+	clear: both;
+	padding-bottom: 5px;
+}
+
+label, input {
+	display: block;
+	padding: 5px;
+}
+
+input {
+	background-color: #eee;
+	color: #666;
+	border: 1px solid #ddd;
+}
+
+form {
+	width: 480px;
+	margin-bottom: 20px;
+}
+
+#setup, #play, #stop {
+	float: left;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+canvas {
+	clear: both;
+	display: block;
+	margin: 0px auto;
+	border: 1px solid #ddd;
+}
+
+#footer {
+	clear: both;
+}
+
+#statistics {
+	float: left;
+	width: 380px;
+}
+
+#populations {
+	float: right;
+	width: 100px;
+	text-align: right;
+}
