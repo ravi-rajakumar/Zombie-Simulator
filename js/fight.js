@@ -7,7 +7,8 @@ z.fight = function (human,zombie) {
 			zombieStunChance = 0.1/hz,
 			zombieDieChance = 0/hz,
 			states = ['alive', 'undead'],
-			tick = 1;
+			tick = 1,
+			i = 0;
 			
 		// When the fight returns, it's over
 		while (true) {
@@ -37,7 +38,7 @@ z.fight = function (human,zombie) {
 			
 			if (states[0] === 'dead') 
 			{
-				for (var i = 0; i < Math.round(tick / z.secondsperturn()); i++)
+				for (i = 0; i < Math.round(tick / z.secondsperturn()); i++)
 				{
 					human.actionQueue.push('fighting');
 					zombie.actionQueue.push('fighting');
@@ -48,12 +49,12 @@ z.fight = function (human,zombie) {
 			}	
 			else if (states[1] === 'stunned') 
 			{
-				for (var i = 0; i < Math.round(tick / z.secondsperturn()); i++)
+				for (i = 0; i < Math.round(tick / z.secondsperturn()); i++)
 				{
 					human.actionQueue.push('fighting');
 					zombie.actionQueue.push('fighting');
 				}
-				for (var i = 0; i < Math.floor(60 / z.secondsperturn()); i++)
+				for (i = 0; i < Math.floor(60 / z.secondsperturn()); i++)
 				{
 					zombie.actionQueue.push('stunned');	
 				}
@@ -67,7 +68,7 @@ z.fight = function (human,zombie) {
 			}
 			else if (states[1] === 'destroyed') 
 			{
-				for (var i = 0; i < Math.round(tick / z.secondsperturn()); i++)
+				for (i = 0; i < Math.round(tick / z.secondsperturn()); i++)
 				{
 					human.actionQueue.push('fighting');
 					zombie.actionQueue.push('fighting');

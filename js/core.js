@@ -4,15 +4,15 @@ var z = {
 	sightRange: 20,				// range of humanoid vision
 	gridHeight: 0,
 	gridWidth: 0,
-	scale: 5, 					// 5m per pixel
-	fieldOfView: 2.094, 		// 120 degrees field of vision
+	scale: 5,					// 5m per pixel
+	fieldOfView: 2.094,			// 120 degrees field of vision
 	currentTurn: 0,
 	perfCounter: 0,				// used to count turns per second
 	foodAvailability: 0,		// not used yet
 	hidingPlaceFrequency: 0,	// not used yet
 	zombificationDuration: 3 * 3600,	// 3 hours
 	interval: 10,
-	timelapsefactor: 300, 		// how many simulated seconds pass in one real-world second
+	timelapsefactor: 300,		// how many simulated seconds pass in one real-world second
 	lasttps: null,				// used to recalibrate speed
 	actualtps: null,			// used to measure performance
 	simulatedtimeelapsed: 0,
@@ -24,7 +24,7 @@ var z = {
 			}
 			else 
 			{
-				return 	z.timelapsefactor / z.actualtps;
+				return z.timelapsefactor / z.actualtps;
 			}
 		},
 	flockAngle: 0,
@@ -139,7 +139,7 @@ z.perf =
 			z.actualtps =  Math.floor(1000 * z.perfCounter / (now.getTime() - start.getTime()));
 			return z.actualtps;
 		}
-}
+};
 
 z.calibrate = function ()
 {
@@ -152,7 +152,7 @@ z.calibrate = function ()
 		item.maxrunspeed = item.maxrunspeed * timeadjust;
 		z.lasttps = 1 / z.actualtps;
 	});
-}
+};
 
 z.init = function (spec) 
 {
@@ -187,7 +187,7 @@ z.init = function (spec)
 	// create the actual canvas element
 	$('#zombie-world').attr('height', spec.h);
 	$('#zombie-world').attr('width', spec.w);
-	
+	$('#summary').text('');
 	z.canvas = document.getElementById('zombie-world');
 	z.gui.draw();
 };
@@ -203,7 +203,8 @@ z.advanceTurn = function () {
 		sec = 0,
 		elapsed = 0,
 		hcount = z.humans.length,
-		zcount = z.zombies.length;
+		zcount = z.zombies.length,
+		action = '';
 		
 		
 	// natural births & deaths
@@ -228,7 +229,7 @@ z.advanceTurn = function () {
 	
 	for (var j = 0; j < hcount; j++) 
 	{
-		var action = z.humans[j].nextAction();
+		action = z.humans[j].nextAction();
 		if (action === 'die') 
 		{
 			// remove them from the population
@@ -245,7 +246,7 @@ z.advanceTurn = function () {
 	// check for destroyed zombies
 	for (var k = 0; k < zcount; k++) 
 	{
-		var action = z.zombies[k].nextAction();
+		action = z.zombies[k].nextAction();
 		if (action === 'die') 
 		{
 			// remove them from the population
@@ -369,19 +370,7 @@ z.advanceTurn = function () {
 			Math.floor((z.simulatedtimeelapsed % 86400) / 3600) + ' hours, ' + 
 			Math.floor((z.simulatedtimeelapsed % 3600) / 60) + ' minutes, ' + 
 			sec + ' seconds';
-	
-	if (z.humans.length === 0)
-	{
-		z.stop();
-		$('#summary').text('Simulation paused. Zero living humans at ' + elapsed + '.');
-	}
-	
-	if (z.zombies.length === 0)
-	{
-		z.stop();
-		$('#summary').text('Simulation paused. Zero remaining undead at ' + elapsed + '.');
-	}
-	
+			
 	$('#days').text(elapsed);
 };
 

@@ -21,8 +21,8 @@ z.humanoid = function (spec)
 	
 	that.setpos = function (x,y) 
 	{
-		this.pos.x = x;
-		this.pos.y = y;
+		that.pos.x = x;
+		that.pos.y = y;
 	};
 	
 	that.nextMove = 
@@ -33,7 +33,7 @@ z.humanoid = function (spec)
 		
 	that.move = function () 
 	{
-		var movx = this.pos.x + this.nextMove.dx, movy = this.pos.y + this.nextMove.dy;
+		var movx = that.pos.x + that.nextMove.dx, movy = that.pos.y + that.nextMove.dy;
 		if (movx < 0) 
 		{ 
 			movx = 0; 
@@ -50,12 +50,12 @@ z.humanoid = function (spec)
 		{ 
 			movy = z.gridHeight*z.scale; 
 		}
-		this.setpos(movx, movy);
+		that.setpos(movx, movy);
 	};
 		
 	that.isZombie = function ()
 	{
-		return !(this.hasOwnProperty('zombify'));
+		return !(that.hasOwnProperty('zombify'));
 	};
 	
 	return that;
@@ -80,7 +80,7 @@ z.human = function (spec)
 	
 	that.toString = function () 
 	{
-		return '{"human": { "x":'+ this.pos.x + ', "y": ' + this.pos.y +'}}';
+		return '{"human": { "x":'+ that.pos.x + ', "y": ' + that.pos.y +'}}';
 	};
 	
 	that.color = 'rgb(' + grayValue + ',' + grayValue + ',' + grayValue + ')';
@@ -113,15 +113,15 @@ z.human = function (spec)
 	
 	that.nextAction = function () 
 	{
-		if (this.actionQueue.length > 0) 
+		if (that.actionQueue.length > 0) 
 		{
-			if (this.actionQueue[0] === 'die')
+			if (that.actionQueue[0] === 'die')
 			{
-				this.die();
+				that.die();
 			}
 			else 
 			{
-				return this.actionQueue.shift();
+				return that.actionQueue.shift();
 			}
 		} 
 		else 
@@ -135,94 +135,91 @@ z.human = function (spec)
 	{
 		// direction is in radians clockwise, North = 0
 		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
-		this.heading = Math.round((this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2)*1000)/1000;
+		that.heading = Math.round((that.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2)*1000)/1000;
 		
 		// the following functions set people on headings away from the walls when they hit them
-		if (this.pos.x <= 0) 
+		if (that.pos.x <= 0) 
 		{
-			this.heading = (Math.PI - this.heading) % Math.PI; // reflect off of left
+			that.heading = (Math.PI - that.heading) % Math.PI; // reflect off of left
 		} 
-		else if (this.pos.x >= (z.gridWidth * z.scale)) 
+		else if (that.pos.x >= (z.gridWidth * z.scale)) 
 		{	
-			this.heading = (2 * Math.PI - this.heading) % Math.PI + Math.PI; // reflect off of right
+			that.heading = (2 * Math.PI - that.heading) % Math.PI + Math.PI; // reflect off of right
 		}	
 		
-		if (this.pos.y <= 0) 
+		if (that.pos.y <= 0) 
 		{	
-			if (this.heading > (3 / 2 * Math.PI))
+			if (that.heading > (3 / 2 * Math.PI))
 			{
-				this.heading = ((3 / 2 * Math.PI) - this.heading) % (3 / 2 * Math.PI); // reflect off of top
+				that.heading = ((3 / 2 * Math.PI) - that.heading) % (3 / 2 * Math.PI); // reflect off of top
 			}
-			else if (this.heading < (Math.PI / 2))
+			else if (that.heading < (Math.PI / 2))
 			{
-				this.heading = Math.PI - this.heading; // reflect off of top
+				that.heading = Math.PI - that.heading; // reflect off of top
 			}
 		} 
-		else if (this.pos.y >= (z.gridHeight * z.scale)) 
+		else if (that.pos.y >= (z.gridHeight * z.scale)) 
 		{	
-			if (this.heading < Math.PI)
+			if (that.heading < Math.PI)
 			{
-				this.heading = this.heading % (Math.PI / 2); // reflect off of bottom
+				that.heading = that.heading % (Math.PI / 2); // reflect off of bottom
 			}
-			else if (this.heading < (3 / 2 * Math.PI))
+			else if (that.heading < (3 / 2 * Math.PI))
 			{
-				this.heading = 2 * Math.PI - (this.heading % Math.PI); // reflect off of bottom
+				that.heading = 2 * Math.PI - (that.heading % Math.PI); // reflect off of bottom
 			}
 		}	
 		
-		return this.heading;
+		return that.heading;
 	};
 	
 	that.chooseNextMove = function ()
 	{
 		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
-		this.nextMove.dx = Math.round(Math.sin(this.heading) * this.runspeed * 1000) / 1000;
-		this.nextMove.dy = Math.round(0 - (Math.cos(this.heading) * this.runspeed) * 1000) / 1000;		
+		that.nextMove.dx = Math.round(Math.sin(that.heading) * that.runspeed * 1000) / 1000;
+		that.nextMove.dy = Math.round(0 - (Math.cos(that.heading) * that.runspeed) * 1000) / 1000;		
 	};
 	
 	that.updateStamina = function () 
 	{
-		this.stamina = this.stamina - (this.timeSinceLastAte * this.timeSinceLastRested) ^ z.humanStamCoeff;
+		that.stamina = that.stamina - (that.timeSinceLastAte * that.timeSinceLastRested) ^ z.humanStamCoeff;
 	};
 	
 	that.updateHunger = function () {
-		this.hunger = this.hunger * (this.timeSinceLastAte) ^ z.humanHungerCoeff;
+		that.hunger = that.hunger * (that.timeSinceLastAte) ^ z.humanHungerCoeff;
 	};
 	
 	that.zombify = function (state)
-	{
-		var thing = this;
-		
-		this.timer = setTimeout(function()
+	{		
+		that.timer = setTimeout(function()
 		{
-			z.zombies.push(z.zombie(thing));
-			thing.nextAction = function () 
+			z.zombies.push(z.zombie(that));
+			that.nextAction = function () 
 			{
 				return 'die';
 			};
 		}, 1000 * z.zombificationDuration / z.timelapsefactor);
 		
-		this.zombify = function () {}; // this should prevent duplicate zombies
+		that.zombify = function () {}; // this should prevent duplicate zombies
 		
-		this.color = 'rgb(30,30,' + (grayValue+50) + ')';
+		that.color = 'rgb(30,30,' + (grayValue+50) + ')';
 	};
 		
 	that.die = function () 
 	{
-		var chance = (100 - z.zombieBrainEatingEfficiency)/100,
-			thing = this;
+		var chance = (100 - z.zombieBrainEatingEfficiency)/100;
 		
-		this.nextAction = function () 
+		that.nextAction = function () 
 		{
 			return 'die';
-		}
+		};
 			
 		if (Math.random() <= chance)
 		{
-			this.timer = setTimeout(function()
+			that.timer = setTimeout(function()
 			{		
-				z.zombies.push(z.zombie(thing));
-				thing.zombify = function () {}; 
+				z.zombies.push(z.zombie(that));
+				that.zombify = function () {}; 
 			}, 1000 * z.zombificationDuration / z.timelapsefactor);
 		}
 	};
@@ -263,15 +260,15 @@ z.zombie = function (human)
 	
 	that.nextAction = function () 
 	{
-		if (this.actionQueue.length > 0) 
+		if (that.actionQueue.length > 0) 
 		{
-			if (this.actionQueue[0] === 'die')
+			if (that.actionQueue[0] === 'die')
 			{
-				this.die();
+				that.die();
 			}
 			else 
 			{
-				return this.actionQueue.shift();
+				return that.actionQueue.shift();
 			}
 		} 
 		else 
@@ -285,57 +282,57 @@ z.zombie = function (human)
 	{
 		// direction is in radians clockwise, North = 0
 		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence
-		this.heading = Math.round((this.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2)*1000)/1000;
+		that.heading = Math.round((that.heading + (Math.random()*Math.PI/4)-Math.PI/8)%(Math.PI*2)*1000)/1000;
 		
 		// the following functions set people on headings away from the walls when they hit them
-		if (this.pos.x <= 0) 
+		if (that.pos.x <= 0) 
 		{
-			this.heading = (Math.PI - this.heading) % Math.PI; // reflect off of left
+			that.heading = (Math.PI - that.heading) % Math.PI; // reflect off of left
 		} 
-		else if (this.pos.x >= (z.gridWidth * z.scale)) 
+		else if (that.pos.x >= (z.gridWidth * z.scale)) 
 		{	
-			this.heading = (2 * Math.PI - this.heading) % Math.PI + Math.PI; // reflect off of right
+			that.heading = (2 * Math.PI - that.heading) % Math.PI + Math.PI; // reflect off of right
 		}	
 		
-		if (this.pos.y <= 0) 
+		if (that.pos.y <= 0) 
 		{	
-			if (this.heading > (3 / 2 * Math.PI))
+			if (that.heading > (3 / 2 * Math.PI))
 			{
-				this.heading = ((3 / 2 * Math.PI) - this.heading) % (3 / 2 * Math.PI); // reflect off of top
+				that.heading = ((3 / 2 * Math.PI) - that.heading) % (3 / 2 * Math.PI); // reflect off of top
 			}
-			else if (this.heading < (Math.PI / 2))
+			else if (that.heading < (Math.PI / 2))
 			{
-				this.heading = Math.PI - this.heading; // reflect off of top
+				that.heading = Math.PI - that.heading; // reflect off of top
 			}
 		} 
-		else if (this.pos.y >= (z.gridHeight * z.scale)) 
+		else if (that.pos.y >= (z.gridHeight * z.scale)) 
 		{	
-			if (this.heading < Math.PI)
+			if (that.heading < Math.PI)
 			{
-				this.heading = this.heading % (Math.PI / 2); // reflect off of bottom
+				that.heading = that.heading % (Math.PI / 2); // reflect off of bottom
 			}
-			else if (this.heading < (3 / 2 * Math.PI))
+			else if (that.heading < (3 / 2 * Math.PI))
 			{
-				this.heading = 2 * Math.PI - (this.heading % Math.PI); // reflect off of bottom
+				that.heading = 2 * Math.PI - (that.heading % Math.PI); // reflect off of bottom
 			}
 		}	
 		
-		return this.heading;
+		return that.heading;
 	};
 	
 	that.chooseNextMove = function ()
 	{
 		// take the heading and use trig to calculate the dx and dy of the next move based on max move distance
-		this.nextMove.dx = Math.round(Math.sin(this.heading) * this.runspeed * 1000)/1000;
-		this.nextMove.dy = Math.round(0 - (Math.cos(this.heading) * this.runspeed) * 1000) / 1000;		
+		that.nextMove.dx = Math.round(Math.sin(that.heading) * that.runspeed * 1000)/1000;
+		that.nextMove.dy = Math.round(0 - (Math.cos(that.heading) * that.runspeed) * 1000) / 1000;		
 	};	
 		
 	that.die = function () 
 	{
-		this.nextAction = function () 
+		that.nextAction = function () 
 		{
 			return 'die';
-		}
+		};
 	};
 	
 	return that;
