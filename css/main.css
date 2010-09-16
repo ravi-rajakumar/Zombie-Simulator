@@ -16,22 +16,42 @@ header {
 	margin-bottom: 1em;
 }
 
-header blockquote {
-	margin: 0 0 2em;
+header h1 {
+	font-size:4em;
+	font-weight:bold;
+	letter-spacing:-0.1em;
+	margin:0 0 .3em;
+	float:left;
+	opacity:.8;
+	filter:alpha(opacity=80);
 }
 
-header h1 {
-	font-size: 1.5em;
-	margin: 1em 0 0;
-	font-weight: normal;
+header blockquote {
+	margin: .33em 0 2em;
+	float:right;
+	color:#888;
+}
+
+
+
+header h2 {
+	font-size: 1.33em;
+	font-weight:normal;
+	margin:30px 0 0;
+	text-align:right;
 }
 
 header cite {
-	text-align: right;
-	font-size: 1.2em;
-	display: block;
-	width: 17em;
-	margin: .25em 0 0;
+	display:block;
+	font-size:1.2em;
+	margin:0.25em 0 0;
+	text-align:right;
+	width:100%;
+}
+
+
+#controls {
+	clear:both;
 }
 
 #settings {
