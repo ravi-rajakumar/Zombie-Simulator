@@ -106,7 +106,7 @@ z.advanceTurn = function () {
 	// natural births & deaths
 	if (Math.random() < (((hcount / 1000) * z.naturalbirthrate * z.secondsPerTurn()) / (86400 * 365))) 
 	{
-		z.humans.push(z.human({pos:{}}));
+		z.humans.push(z.human({position: {}}));
 		console.log('natural birth');
 	}
 	if (Math.random() < (((hcount / 1000) * z.naturaldeathrate * z.secondsPerTurn()) / (86400 * 365))) 
