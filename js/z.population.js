@@ -134,14 +134,17 @@ z.human = function (spec) {
 			grayValue = Math.round(Math.random() * 67) + 100;
 	
 	that.maxRunSpeed = spec.maxRunSpeed ? spec.maxRunSpeed : (Math.random() / 5 + 0.9) * z.humanBaseRunSpeed();
+	
 	that.runSpeed = that.maxRunSpeed;
 	
-	that.timer = null;
+	that.livetimer = null;
+	
+	that.deadtimer = null;
 	
 	that.color = 'rgb(' + grayValue + ',' + grayValue + ',' + grayValue + ')';
 	
 	that.zombify = function () {
-		that.timer = setTimeout(function()
+		that.livetimer = setTimeout(function()
 		{
 			z.zombies.push(z.zombie(that));
 			console.log('live-turn');	// remove later
@@ -165,9 +168,9 @@ z.human = function (spec) {
 			return 'die';
 		};
 			
-		if (Math.random() <= chance)
+		if (Math.random() <= chance && that.livetimer === null)
 		{
-			that.timer = setTimeout(function()
+			that.deadtimer = setTimeout(function()
 			{		
 				z.zombies.push(z.zombie(that));
 				console.log('dead-turn');	// remove later

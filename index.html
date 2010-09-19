@@ -35,15 +35,17 @@
 				<div id="controls-human">
 					<label for="human-population">Initial human population:</label>
 					<input id="human-population" name="human-population" type="text" value="1000" />
-					<label for="human-herding">Human herding (-1.0 to 1.0):</label>
-					<input id="human-herding" name="human-herding" type="text" value="1" />
+					<label for="human-herding">Human herding (-1 to 1):</label>
+					<input id="human-herding" name="human-herding" type="text" value=".8" />
+					<label for="human-queueing">Human queueing (-1 to 1):</label>
+					<input id="human-queueing" name="human-queueing" type="text" value=".4" />
 				</div>
 				<div id="controls-zombie">
 					<label for="zombie-population">Initial zombie population:</label>
 					<input id="zombie-population" name="zombie-population" type="text" value="1" />
-					<label for="zombie-herding">Zombie herding (-1.0 to 1.0):</label>
+					<label for="zombie-herding">Zombie herding (-1 to 1):</label>
 					<input id="zombie-herding" name="zombie-herding" type="text" value="0.5" />
-					<label for="zombie-brain-eating-efficiency">Zombie brain-eating success rate (%):</label>
+					<label for="zombie-brain-eating-efficiency">Brain-eating success (%):</label>
 					<input id="zombie-brain-eating-efficiency" name="zombie-brain-eating-efficiency" type="text" value="50" />
 				</div>
 				<div id="controls-general">
@@ -66,6 +68,9 @@
 			<div id="populations">
 				<p id="humans">Humans: <span>0</span></p>
 				<p id="zombies">Zombies: <span>0</span></p>
+			</div>
+			<div id="messages">
+				<p></p>&nbsp;
 			</div>
 		</section>
 		</body>

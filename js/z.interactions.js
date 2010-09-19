@@ -42,7 +42,7 @@ z.fight = function (human,zombie) {
 					zombie.actionQueue.push('fighting');
 				}
 				human.actionQueue.push('die');
-				console.log('human death');	//remove later
+				z.message('human death');	//remove later
 				zombie.targetCount -= 1;
 				return;
 			}	
@@ -57,13 +57,13 @@ z.fight = function (human,zombie) {
 				{
 					zombie.actionQueue.push('stunned');	
 				}
-				console.log('zombie stunned');	//remove later
+				z.message('zombie stunned');	//remove later
 				zombie.targetCount -= 1;
 				human.targetCount -= 1;
 				if (states[0] === 'bitten')
 				{
 					human.zombify();
-					console.log('human zombify coming...');	//remove later
+					z.message('human zombify coming...');	//remove later
 				}
 				return;
 			}
@@ -75,12 +75,12 @@ z.fight = function (human,zombie) {
 					zombie.actionQueue.push('fighting');
 				}
 				zombie.actionQueue.push('die');
-				console.log('zombie death');	//remove later
+				z.message('zombie death');	//remove later
 				human.targetCount -= 1;
 				if (states[0] === 'bitten')
 				{
 					human.zombify();
-					console.log('human zombify coming...');	//remove later
+					z.message('human zombify coming...');	//remove later
 				}
 				return;
 			}	

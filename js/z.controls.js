@@ -39,6 +39,7 @@ $(document).ready(function ($) {
 			
 			humanPopulation: $('#human-population').val(),
 			humanHerding: $('#human-herding').val(),
+			humanQueueing: $('#human-queueing').val(),
 			
 			zombiePopulation: $('#zombie-population').val(),
 			zombieHerding: $('#zombie-herding').val(),
@@ -76,10 +77,23 @@ $(document).ready(function ($) {
 	$(this).keypress(function(event) {
 		if ((event.keyCode == '32') && !z.isRunning) {
 			z.play();
+		} else if (event.keyCode == '13') {
+			controls.hide('fast');
+			$('#control-switch').text('[+] settings');
+			$(z.hasfocus).change();
+			return false;
 		} else if ((event.keyCode == '32') && z.isRunning) {
 			z.stop();
 		}
 	});
 	
+	$('#config input').focus(function () {
+		z.hasfocus = this;
+	});
+	
+	$('#config input').change(function () {
+		z.updateSettings();
+	});
+
 	controls.toggle('slow');
 });

@@ -1,10 +1,12 @@
 var z = {
 	canvasWidth: 0,
 	canvasHeight: 0,
+	log: '',
 	scale: 5, // 5m per pixel
 	canvas: null,
 	animate: null,
 	isRunning: false,
+	hasfocus: null,
 	
 	humanRecognitionRange: 1, // humans recognize zombies
 	zombieRecognitionRange: 10, // zombies recognize humans
@@ -65,6 +67,7 @@ var z = {
 z.init = function (spec) {
 	z.humans = [];
 	z.zombies = [];
+	z.log = '';
 	var i,j;
 	
 	z.canvas = document.getElementById('zombie-world');
@@ -75,6 +78,7 @@ z.init = function (spec) {
 	
 	z.humanStartingPopulation = spec.humanPopulation;
 	z.humanHerding = spec.humanHerding;
+	z.humanQueueing = spec.humanQueueing;
 	
 	z.zombieStartingPopulation = spec.zombiePopulation;
 	z.zombieHerding = spec.zombieHerding;
@@ -98,6 +102,19 @@ z.init = function (spec) {
 	z.updateTimer();
 };
 
+z.updateSettings = function () {
+	z.humanHerding = $('#human-herding').val();
+	z.humanQueueing = $('#human-queueing').val();
+	z.zombieHerding = $('#zombie-herding').val();
+	z.zombieBrainEatingEfficiency = $('#zombie-brain-eating-efficiency').val();
+	z.timeLapseFactor = $('#time-lapse-factor').val();
+};
+
+z.message = function (msg) {
+	$('#messages p').html('<span id="msg">' + msg + '</span>');
+	z.log += msg + '\n';
+	$('#messages p #msg').fadeOut(1000);
+}
 
 z.advanceTurn = function () {
 	var action,
@@ -109,12 +126,12 @@ z.advanceTurn = function () {
 	if (Math.random() < (((hcount / 1000) * z.naturalbirthrate * z.secondsPerTurn()) / (86400 * 365))) 
 	{
 		z.humans.push(z.human({position: {}}));
-		console.log('natural birth');
+		z.message('natural birth');
 	}
 	if (Math.random() < (((hcount / 1000) * z.naturaldeathrate * z.secondsPerTurn()) / (86400 * 365))) 
 	{
 		z.humans.pop();
-		console.log('natural death');
+		z.message('natural death');
 	}
 	
 	z.neighbors = z.humans.concat(z.zombies);
