@@ -65,27 +65,40 @@ header cite {
 
 #control-switch {
 	cursor: pointer;
+	clear:both;
+	color:#666666;
+	margin:7px 0 0;
 }
 
 #controls-human, #controls-zombie {
 	float: left;
-	margin-right: 10px;
+	margin-right: 20px;
+	width:150px;
 }
 
 #controls-general {
 	clear: both;
 	padding-bottom: 5px;
+	margin-top:10px;
+	float:left;
 }
 
-label, input {
+label {
 	display: block;
-	padding: 5px;
+	padding:0 0 0 3px;
+	margin:12px 0 3px 0;
 }
 
 input {
 	background-color: #eee;
 	color: #666;
 	border: 1px solid #ddd;
+	padding: 3px;
+	display: block;
+}
+
+#config input {
+	width:150px;
 }
 
 form {
@@ -94,10 +107,35 @@ form {
 }
 
 #setup, #play, #stop {
-	float: left;
+	display: inline-block;
 	padding-left: 10px;
 	padding-right: 10px;
+	margin-right:2px;
 	cursor:pointer;
+}
+
+#setup:hover, #play:hover, #stop:hover {
+	background-color:#ddd;
+}
+
+#setup:active, #play:active, #stop:active {
+	background-color:#e3e3e3;
+}
+
+#config {
+	position:absolute;
+	border:0;
+	margin:9px 0;
+	padding:0 10px;
+	background-color:#eee;
+	opacity:.8;
+	filter: alpha(opacity=80);
+}
+
+#console {
+	border:0;
+	margin:0;
+	padding:0;
 }
 
 canvas {

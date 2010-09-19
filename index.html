@@ -22,8 +22,16 @@
 		</header>
 
 		<section id="controls">
-			<p id="control-switch">[+] settings</p>
 			<form action="#" method="POST" id="settings">
+				
+				<fieldset id="console">
+				<input type="submit" value="setup" name="setup" id="setup" />
+				<input type="button" value="play" name="play" id="play" />
+				<input type="button" value="stop" name="stop" id="stop" />
+				</fieldset>
+				
+				<p id="control-switch">[+] settings</p>
+				<fieldset id="config">
 				<div id="controls-human">
 					<label for="human-population">Initial human population:</label>
 					<input id="human-population" name="human-population" type="text" value="1000" />
@@ -44,10 +52,7 @@
 					<label for="time-lapse-factor">Timelapse (factor):</label>
 					<input id="time-lapse-factor" name="time-lapse-factor" type="text" value="100" />
 				</div>
-				
-				<input type="submit" value="setup" name="setup" id="setup" />
-				<input type="button" value="play" name="play" id="play" />
-				<input type="button" value="stop" name="stop" id="stop" />
+				</fieldset>
 			</form>
 		</section>
 
