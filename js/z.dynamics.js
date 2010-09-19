@@ -13,13 +13,19 @@ z.recalibrate = function () {
 
 z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	var attraction = 0,
-			runSpeed = currentHumanoid.maxRunSpeed,
-			currentHumanoidHorizontalDelta = Math.sin(currentHumanoid.heading) * runSpeed,
-			currentHumanoidVerticalDelta = 0 - Math.cos(currentHumanoid.heading) * runSpeed,
-			headingScale = (distance > 0) ? Math.round(1000 * runSpeed / distance) / 1000 : 1,
-			currentHumanoidAngle = 0,
-			newHeading = 0,
-			influence = 0;
+		persuasion = 0,
+		runSpeed = currentHumanoid.maxRunSpeed,
+		neighborRunSpeed = neighbor.maxRunSpeed,
+		currentHumanoidHorizontalDelta = Math.sin(currentHumanoid.heading) * runSpeed,
+		currentHumanoidVerticalDelta = 0 - Math.cos(currentHumanoid.heading) * runSpeed,
+		neighborHorizontalDelta = Math.sin(neighbor.heading) * neighborRunSpeed,
+		neighborVerticalDelta = 0 - Math.cos(neighbor.heading) * neighborRunSpeed,
+		headingScale = (distance > 0) ? runSpeed / distance : 1,
+		persuasionscale = runSpeed / neighborRunSpeed,
+		currentHumanoidAngle = 0,
+		newHeading = 0,
+		influence = 0,
+		allforces = 0;
 	
 	influence = ((neighbor.position.y - currentHumanoid.position.y) >= 0) ? Math.PI - Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance) : (Math.PI * 2 + Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance)) % (Math.PI * 2);
 	
@@ -32,10 +38,12 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 			if (!neighbor.isZombie() || z.range(currentHumanoid, neighbor) > z.humanRecognitionRange)
 			{
 				attraction = z.humanHerding;
+				persuasion = z.humanQueueing;
 			}
 			else
 			{
 				attraction = -1;
+				persuasion = -1;
 			}
 		}
 		
@@ -43,12 +51,15 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		if (currentHumanoid.isZombie() && !neighbor.isZombie())
 		{
 			attraction = 1;
+			persuasion = 1;
 		}
 		
-		// zombies are lightly attracted to each other
 		if (currentHumanoid.isZombie() && neighbor.isZombie())
 		{
+			// zombies are somewhat attracted to each other
 			attraction = z.zombieHerding;
+			persuasion = z.zombieQueueing;
+			
 		}
 		
 		// humans are automatically repulsed by other bodies being too close to them
@@ -57,12 +68,16 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 			attraction = -0.5;
 		}
 		
-		// create dx and dy values for neighbor's physical influence, and add them to the existing heading
-		var neighborHorizontalDelta = (headingScale * (neighbor.position.x - currentHumanoid.position.x) * attraction + currentHumanoidHorizontalDelta) / 2,
-				neighborVerticalDelta = (headingScale * (neighbor.position.y - currentHumanoid.position.y) * attraction + currentHumanoidVerticalDelta) / 2;
+		// sum magnitudes of forces to calculate averages
+		allforces = 1 + Math.abs(attraction) + Math.abs(persuasion);
 		
-		currentHumanoidAngle = Math.asin(Math.round(100 * neighborHorizontalDelta / runSpeed) / 100);
-		newHeading = (neighborVerticalDelta >= 0) ? Math.PI - currentHumanoidAngle : (Math.PI * 2 + currentHumanoidAngle) % (Math.PI * 2);
+		// create dx and dy values for neighbor's physical influence, and add them to the existing heading
+		var newHorizontalDelta = (headingScale * (neighbor.position.x - currentHumanoid.position.x) * attraction + (persuasionscale * neighborHorizontalDelta * persuasion) + currentHumanoidHorizontalDelta) / allforces,
+			newVerticalDelta = (headingScale * (neighbor.position.y - currentHumanoid.position.y) * attraction + (persuasionscale * neighborVerticalDelta * persuasion) + currentHumanoidVerticalDelta) / allforces;
+		
+		currentHumanoidAngle = Math.asin(Math.round(100 * newHorizontalDelta / runSpeed) / 100);
+		 
+		newHeading = (newVerticalDelta >= 0) ? Math.PI - currentHumanoidAngle : (Math.PI * 2 + currentHumanoidAngle) % (Math.PI * 2);
 		
 		// here we set the new heading based on proximity (herding)
 		currentHumanoid.heading = Math.round(newHeading * 1000) / 1000;

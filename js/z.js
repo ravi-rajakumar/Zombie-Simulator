@@ -39,6 +39,7 @@ var z = {
 		return 4800 / 3600 * z.secondsPerTurn();
 	},
 	humanHerding: 0.5,
+	humanQueueing: 0.2,
 	humanDefenseEfficiency: 1,	// not used yet
 	humanAgressiveness: 1,
 	humanStaminaCoefficient: 1,
@@ -52,6 +53,7 @@ var z = {
 		return 1600 / 3600 * z.secondsPerTurn();
 	},
 	zombieHerding: 0.5,
+	zombieQueueing: 1,
 	zombieBrainEatingEfficiency: 1,
 	
 	// populations
