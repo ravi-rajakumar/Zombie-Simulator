@@ -7,13 +7,13 @@ var z = {
 	isRunning: false,
 	
 	humanRecognitionRange: 1, // humans recognize zombies
-	zombieRecognitionRange: 20, // zombies recognize humans
+	zombieRecognitionRange: 10, // zombies recognize humans
 	sightRange: 20, // range of humanoid vision
 	fieldOfView: 2.094, // 120 degrees field of vision
 	flockAngle: 0,
 	
 	turns: null,
-	interval: 10,
+	interval: 20,
 	foodAvailability: 0, // not used yet
 	hidingPlaceFrequency: 0, // not used yet
 	zombificationDuration: 3 * 3600, // 3 hours
