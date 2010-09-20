@@ -6,7 +6,7 @@
 
 ## Synopsis
 
-This is a web application for simulating interacting populations of humans and zombies. It mathematically models such behaviors as:
+This is a web application for simulating interacting populations of humans and zombies. It should mathematically model such behaviors as:
 
 - Herding
 - Queueing
@@ -15,7 +15,7 @@ This is a web application for simulating interacting populations of humans and z
 - Selflessness
 - Rest and recovery
 
-The application's purpose is to enable users to see what outcomes are produced based on varying baseline assumptions about the populations' behaviors and physical contraints, and to allow them to modify the starting conditions in order test hypotheses. There are various game-like objectives that could arise from that framework, including:
+The application's purpose is to enable users to see what outcomes are produced based on various starting conditions and baseline assumptions about the populations' behaviors and physical constraints. Users can then test hypotheses about the relative advantages of specific characteristics by experimenting with different starting conditions. There are various game-like objectives that could arise from this framework, including:
 
 - Achieving equillibrium
 - Eradicating the zombies
