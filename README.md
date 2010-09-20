@@ -1,4 +1,4 @@
-# Zombie Simulator
+# Zombie Simulator, AKA The Living Dead
 
 - Version: 0
 - Date: 27th August 2010
@@ -6,20 +6,33 @@
 
 ## Synopsis
 
-The idea of this is to create an application that can simulate two interacting populations of humans and zombies, modeling such behaviors as:
+This is a web application for simulating interacting populations of humans and zombies, modeling such behaviors as:
 
 - Herding
 - Queueing
 - Fight and flight
 - Competition
 - Selflessness
-- Food gathering
+- Rest and recovery
 
-The idea is to see what outcomes are produced based on varying baseline assumptions about their behaviors and physical contraints, and to allow users to modify those starting conditions. There are various game-like interactions that could arise from that framework including:
+The application's purpose is to enable users to see what outcomes are produced based on varying baseline assumptions about the populations' behaviors and physical contraints, and to allow them to modify the starting conditions in order test hypotheses. There are various game-like objectives that could arise from that framework, including:
 
 - Achieving equillibrium
 - Eradicating the zombies
 - Minimizing human casualties
+
+## Controls
+
+Generally the intended use is to set the starting conditions and then run the simulation and allow it to take its course. The controls are:
+
+- setup: initialize the map with values from the curret settings
+- play: start the simulation
+- stop: pause the simulation
+- settings: set the starting conditions and make in-flight changes*
+- spacebar: start/stop
+- return: open/close the settings panel and commit any changes if closing it
+
+* in-flight changes can be made for: human herding; human queueing; zombie herding; zombie brain-eating success; timelapse
 
 ## Assumptions
 
@@ -37,6 +50,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Chance in any one round of a fight that the zombie will be destroyed: 10%
 - Variance in direction of humanoid travel, absent external influences: ±12.25 degrees/minute
 - Effective human visual field: 120º
+- Time to turn zombie: 3 hours
 
 ## Units
 
@@ -44,3 +58,9 @@ The math in this simulation depends on a number of baseline properties that were
 - Base distance is 1m.
 - Two objects can't occupy the same space
 - Heading is noted in radians, clockwise from North
+
+## Glossary
+
+herding: tendency to gravitate to one's own kind
+queueing: used here to describe tendency to follow in same direction as those around you
+zombie brain-eating success rate: zombies' average likelihood to completely consume victims' brains, preventing them from coming back as a zombie
