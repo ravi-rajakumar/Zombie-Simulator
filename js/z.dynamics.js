@@ -18,10 +18,9 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		neighborRunSpeed = neighbor.maxRunSpeed,
 		currentHumanoidHorizontalDelta = Math.sin(currentHumanoid.heading) * runSpeed,
 		currentHumanoidVerticalDelta = 0 - Math.cos(currentHumanoid.heading) * runSpeed,
-		neighborHorizontalDelta = Math.sin(neighbor.heading) * neighborRunSpeed,
-		neighborVerticalDelta = 0 - Math.cos(neighbor.heading) * neighborRunSpeed,
+		neighborHorizontalDelta = Math.sin(neighbor.heading),
+		neighborVerticalDelta = 0 - Math.cos(neighbor.heading),
 		headingScale = (distance > 0) ? runSpeed / distance : 1,
-		persuasionscale = runSpeed / neighborRunSpeed,
 		currentHumanoidAngle = 0,
 		newHeading = 0,
 		influence = 0,
@@ -72,8 +71,8 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		allforces = 1 + Math.abs(attraction) + Math.abs(persuasion);
 		
 		// create dx and dy values for neighbor's physical influence, and add them to the existing heading
-		var newHorizontalDelta = (headingScale * (neighbor.position.x - currentHumanoid.position.x) * attraction + (persuasionscale * neighborHorizontalDelta * persuasion) + currentHumanoidHorizontalDelta) / allforces,
-			newVerticalDelta = (headingScale * (neighbor.position.y - currentHumanoid.position.y) * attraction + (persuasionscale * neighborVerticalDelta * persuasion) + currentHumanoidVerticalDelta) / allforces;
+		var newHorizontalDelta = (headingScale * (neighbor.position.x - currentHumanoid.position.x) * attraction + (runSpeed * neighborHorizontalDelta * persuasion) + currentHumanoidHorizontalDelta) / allforces,
+			newVerticalDelta = (headingScale * (neighbor.position.y - currentHumanoid.position.y) * attraction + (runSpeed * neighborVerticalDelta * persuasion) + currentHumanoidVerticalDelta) / allforces;
 		
 		currentHumanoidAngle = Math.asin(Math.round(100 * newHorizontalDelta / runSpeed) / 100);
 		 
