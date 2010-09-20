@@ -6,7 +6,7 @@
 
 ## Synopsis
 
-This is a web application for simulating interacting populations of humans and zombies, modeling such behaviors as:
+This is a web application for simulating interacting populations of humans and zombies. It mathematically models such behaviors as:
 
 - Herding
 - Queueing
@@ -28,11 +28,11 @@ Generally the intended use is to set the starting conditions and then run the si
 - setup: initialize the map with values from the curret settings
 - play: start the simulation
 - stop: pause the simulation
-- settings: set the starting conditions and make in-flight changes*
+- settings: set the starting conditions and make in-flight changes
 - spacebar: start/stop
 - return: open/close the settings panel and commit any changes if closing it
 
-* in-flight changes can be made for: human herding; human queueing; zombie herding; zombie brain-eating success; timelapse
+in-flight changes can be made for: human herding; human queueing; zombie herding; zombie brain-eating success; timelapse
 
 ## Assumptions
 
@@ -61,6 +61,6 @@ The math in this simulation depends on a number of baseline properties that were
 
 ## Glossary
 
-herding: tendency to gravitate to one's own kind
-queueing: used here to describe tendency to follow in same direction as those around you
-zombie brain-eating success rate: zombies' average likelihood to completely consume victims' brains, preventing them from coming back as a zombie
+- herding: tendency to gravitate to one's own kind
+- queueing: used here to describe tendency to follow in same direction as those around you
+- zombie brain-eating success rate: zombies' average likelihood to completely consume victims' brains, preventing them from coming back as a zombie
