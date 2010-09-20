@@ -6,6 +6,15 @@ body {
 	padding: 1em 0;
 }
 
+a, a:link, a:visited {
+	color:#000;
+	text-decoration:none;
+}
+
+a:hover {
+	text-decoration:underline;
+}
+
 header, section {
 	width: 480px;
 	margin: 0 auto;
@@ -163,4 +172,8 @@ canvas {
 	float: right;
 	width: 100px;
 	text-align: right;
+}
+
+#statistics p, #populations p {
+	margin:0 0 1em 0;
 }

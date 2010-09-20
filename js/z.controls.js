@@ -17,7 +17,7 @@ z.updateTimer = function () {
 	}
 	
 	$('#seconds').text(seconds + ' seconds');
-}
+};
 
 z.updateStatistics = function () {
 	$('#humans span').text(z.humans.length);
@@ -60,15 +60,15 @@ $(document).ready(function ($) {
 	});
 	
 	$('#control-switch').live('click', function (event) {
-		var text = $(this).text()
+		var text = $(this).text();
 		
 		if (text.indexOf('-') > -1)
 		{
-			$(this).text('[+] settings')
+			$(this).text('[+] settings');
 		}
 		else
 		{
-			$(this).text('[-] settings')
+			$(this).text('[-] settings');
 		}
 		
 		controls.toggle('fast');
@@ -78,8 +78,7 @@ $(document).ready(function ($) {
 		if ((event.keyCode == '32') && !z.isRunning) {
 			z.play();
 		} else if (event.keyCode == '13') {
-			controls.hide('fast');
-			$('#control-switch').text('[+] settings');
+			$('#control-switch').click();
 			$(z.hasfocus).change();
 			return false;
 		} else if ((event.keyCode == '32') && z.isRunning) {
@@ -96,4 +95,6 @@ $(document).ready(function ($) {
 	});
 
 	controls.toggle('slow');
+	
+	$('#settings').submit();
 });

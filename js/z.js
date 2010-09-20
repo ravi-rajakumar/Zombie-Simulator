@@ -111,15 +111,18 @@ z.updateSettings = function () {
 };
 
 z.message = function (msg) {
-	$('#messages p').html('<span id="msg">' + msg + '</span>');
+	$('#messages p').html('<span id="msg"><strong>' + msg + '</strong></span>&nbsp;');
 	z.log += msg + '\n';
-	$('#messages p #msg').fadeOut(1000);
-}
+	var messageTimeout = setTimeout(function () {
+		$('#messages p #msg').fadeOut(1000);
+		}, 1000);
+};
 
 z.advanceTurn = function () {
 	var action,
 		hcount = z.humans.length,
 		zcount = z.zombies.length;
+		
 	z.simulatedTimeElapsed += Math.round(z.secondsPerTurn());
 	
 	// natural births & deaths
@@ -172,8 +175,10 @@ z.advanceTurn = function () {
 	
 	$.each(z.neighbors, function (index, humanoid) {
 		var proximityFail = false,
-				neighborIndex = 0,
-				action = humanoid.nextAction();
+			neighborIndex = 0,
+			action = humanoid.nextAction(),
+			distance = 0,
+			neighbor = null;
 	
 		humanoid.heading = humanoid.chooseDirection();
 		
@@ -186,14 +191,15 @@ z.advanceTurn = function () {
 			{
 				proximityFail = true;
 			}
-			else if (Math.abs(humanoid.position.x - z. neighbors[neighborIndex].position.x) > z.sightRange)
+			else if (Math.abs(humanoid.position.x - z.neighbors[neighborIndex].position.x) > z.sightRange)
 			{
 				proximityFail = true;
 			}
 			else
 			{
-				var distance = z.range(humanoid, z.neighbors[neighborIndex]),
-						neighbor = z.neighbors[neighborIndex];
+				neighbor = z.neighbors[neighborIndex];
+				
+				distance = z.range(humanoid, neighbor);
 				
 				if (distance <= 1 && humanoid.isZombie() && !neighbor.isZombie())
 				{
@@ -232,8 +238,9 @@ z.advanceTurn = function () {
 			}
 			else
 			{
-				var distance = z.range(humanoid, z.neighbors[neighborIndex]),
-						neighbor = z.neighbors[neighborIndex];
+				neighbor = z.neighbors[neighborIndex];
+				
+				distance = z.range(humanoid, neighbor);
 				
 				if (distance <= 1 && humanoid.isZombie() && !neighbor.isZombie())
 				{

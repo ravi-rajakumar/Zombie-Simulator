@@ -147,7 +147,7 @@ z.human = function (spec) {
 		that.livetimer = setTimeout(function()
 		{
 			z.zombies.push(z.zombie(that));
-			console.log('live-turn');	// remove later
+			z.message('live-turn');	// remove later
 			that.nextAction = function () 
 			{
 				return 'die';
@@ -173,7 +173,7 @@ z.human = function (spec) {
 			that.deadtimer = setTimeout(function()
 			{		
 				z.zombies.push(z.zombie(that));
-				console.log('dead-turn');	// remove later
+				z.message('dead-turn');	// remove later
 				that.zombify = function () {}; 
 			}, 1000 * z.zombificationDuration / z.timeLapseFactor);
 		}
