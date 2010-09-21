@@ -118,6 +118,27 @@ z.message = function (msg) {
 		}, 1000);
 };
 
+
+/* this is a custom version of settimeout, designed to account for the pauses in the simulation. 
+	It checks against the game's time elapsed (in seconds), which doesn't increment when paused */ 
+z.setTimeout = function (fn, t) {
+	var timer = {}, 
+		start = z.simulatedTimeElapsed;
+	
+	timer.run = null;
+	
+	timer.go = (function () {
+		timer.run = setInterval(function () {
+			if (z.simulatedTimeElapsed >= start + t) {
+				fn();
+				clearInterval(timer.run);
+			}
+		},100);
+	})();
+	
+	return timer;
+};
+
 z.advanceTurn = function () {
 	var action,
 		hcount = z.humans.length,
@@ -279,7 +300,7 @@ z.advanceTurn = function () {
 	// increment zombie recognition range until 10m
 	if (z.humanRecognitionRange < 10)
 	{
-		z.humanRecognitionRange += 9 / 4320; // this will take 3 days to get from 1 to 10m
+		z.humanRecognitionRange += (9 * z.secondsPerTurn()) / 3 * 1440 * 60; // this will take 3 days to get from 1 to 10m
 	}
 	
 	// update the statistics displayed by the simulation

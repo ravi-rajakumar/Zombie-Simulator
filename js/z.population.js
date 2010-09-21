@@ -144,7 +144,7 @@ z.human = function (spec) {
 	that.color = 'rgb(' + grayValue + ',' + grayValue + ',' + grayValue + ')';
 	
 	that.zombify = function () {
-		that.livetimer = setTimeout(function()
+		that.livetimer = z.setTimeout(function()
 		{
 			z.zombies.push(z.zombie(that));
 			z.message('live-turn');	// remove later
@@ -152,7 +152,7 @@ z.human = function (spec) {
 			{
 				return 'die';
 			};
-		}, 1000 * z.zombificationDuration / z.timeLapseFactor);
+		}, z.zombificationDuration);
 		
 		that.zombify = function () {}; // this should prevent duplicate zombies
 		
@@ -170,12 +170,12 @@ z.human = function (spec) {
 			
 		if (Math.random() <= chance && that.livetimer === null)
 		{
-			that.deadtimer = setTimeout(function()
+			that.deadtimer = z.setTimeout(function()
 			{		
 				z.zombies.push(z.zombie(that));
 				z.message('dead-turn');	// remove later
 				that.zombify = function () {}; 
-			}, 1000 * z.zombificationDuration / z.timeLapseFactor);
+			}, z.zombificationDuration);
 		}
 	};
 	
