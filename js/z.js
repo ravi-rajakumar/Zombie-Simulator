@@ -212,11 +212,13 @@ z.advanceTurn = function () {
 			{
 				proximityFail = true;
 			}
+			// if x is out of range then we can exit this loop
 			else if (Math.abs(humanoid.position.x - z.neighbors[neighborIndex].position.x) > z.sightRange)
 			{
 				proximityFail = true;
 			}
-			else
+			// if y is out of range then we don't need to check them
+			else if (Math.abs(humanoid.position.y - z.neighbors[neighborIndex].position.y) <= z.sightRange)
 			{
 				neighbor = z.neighbors[neighborIndex];
 				
@@ -253,11 +255,13 @@ z.advanceTurn = function () {
 			{
 				proximityFail = true;
 			}
+			// if x is out of range then we can exit this loop
 			else if (Math.abs(humanoid.position.x - z.neighbors[neighborIndex].position.x) > z.sightRange)
 			{
 				proximityFail = true;
 			}
-			else
+			// if y is out of range then we don't need to check them
+			else if (Math.abs(humanoid.position.y - z.neighbors[neighborIndex].position.y) <= z.sightRange)
 			{
 				neighbor = z.neighbors[neighborIndex];
 				
