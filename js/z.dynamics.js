@@ -1,3 +1,4 @@
+// this logic needs to be re-distributed to the perf and advance turn functions!
 z.recalibrate = function () {
 	if (z.lastTPS === null)
 	{
@@ -6,7 +7,6 @@ z.recalibrate = function () {
 	
 	$.each(z.neighbors, function (index, humanoid) {
 		humanoid.maxRunSpeed = humanoid.maxRunSpeed * (1 / (z.lastTPS * z.actualTPS));
-		
 	});
 	z.lastTPS = 1 / z.actualTPS;
 };

@@ -144,7 +144,7 @@ z.advanceTurn = function () {
 		hcount = z.humans.length,
 		zcount = z.zombies.length;
 		
-	z.simulatedTimeElapsed += Math.round(z.secondsPerTurn());
+	z.simulatedTimeElapsed += Math.round(z.secondsPerTurn()*1000)/1000;
 	
 	// natural births & deaths
 	if (Math.random() < (((hcount / 1000) * z.naturalbirthrate * z.secondsPerTurn()) / (86400 * 365))) 
