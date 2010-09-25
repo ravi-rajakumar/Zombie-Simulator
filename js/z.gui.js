@@ -35,3 +35,23 @@ z.draw = function () {
 		}
 	}
 };
+
+// this flashes a circle around a selected humanoid
+z.flash = function (spec) {
+	if (z.canvas.getContext) 
+	{
+		var context = z.canvas.getContext('2d'),
+			radius = 6;
+			context.beginPath();
+			try
+			{
+				context.arc(Math.floor(spec.position.x / z.scale), Math.floor(spec.position.y / z.scale), radius, 0, Math.PI * 2, true);
+			}
+			catch (e)
+			{
+				console.log(e);
+			}
+			context.strokeStyle = 'rgba(255,0,0,0.5)';
+			context.stroke();
+	}
+};

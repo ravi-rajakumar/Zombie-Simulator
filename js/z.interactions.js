@@ -84,6 +84,8 @@ z.fight = function (human,zombie) {
 				}
 				return;
 			}	
+			z.flash(human);
+			z.flash(zombie);
 			tick++;
 		}
 };

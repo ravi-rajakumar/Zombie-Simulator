@@ -161,6 +161,7 @@ z.advanceTurn = function () {
 	z.neighbors = z.humans.concat(z.zombies);
 	z.neighbors = z.mergeSort(z.neighbors, 'x');
 	
+	// check for dead humans
 	for (var j = 0; j < hcount; j++) 
 	{
 		action = z.humans[j].nextAction();
@@ -194,8 +195,9 @@ z.advanceTurn = function () {
 		}
 	}
 	
-	$.each(z.neighbors, function (index, humanoid) {
-		var proximityFail = false,
+	for (var index = 0; index < z.neighbors.length; index++) {
+		var humanoid = z.neighbors[index],
+			proximityFail = false,
 			neighborIndex = 0,
 			action = humanoid.nextAction(),
 			distance = 0,
@@ -299,7 +301,7 @@ z.advanceTurn = function () {
 			// reset it's runSpeed if it was changed by the influence function
 			humanoid.runSpeed = humanoid.maxRunSpeed;
 		}
-	});
+	}
 	
 	// increment zombie recognition range until 10m
 	if (z.humanRecognitionRange < 10)
