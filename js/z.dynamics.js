@@ -1,14 +1,16 @@
-// this logic needs to be re-distributed to the perf and advance turn functions!
 z.recalibrate = function () {
-	if (z.lastTPS === null)
+	if (z.lastTurnDuration === null)
 	{
-		z.lastTPS = z.interval / 1000;
+		z.lastTurnDuration = z.interval / 1000;
 	}
 	
-	$.each(z.neighbors, function (index, humanoid) {
-		humanoid.maxRunSpeed = humanoid.maxRunSpeed * (1 / (z.lastTPS * z.actualTPS));
-	});
-	z.lastTPS = 1 / z.actualTPS;
+	/* run speed should be based on the actual achieved performance. The 'actual turns per second' (actualTurnsPerSecond) tells us how long one turn is in real time. Each time we recalibrate, we check it against the last measurement and then adjust it proportionally.
+	*/
+	for (var index = 0; index < z.neighbors.length; index++) {
+		z.neighbors[index].maxRunSpeed = z.neighbors[index].maxRunSpeed * (1 / (z.lastTurnDuration * z.actualTurnsPerSecond));
+	}
+	
+	z.lastTurnDuration = 1 / z.actualTurnsPerSecond;
 };
 
 z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {

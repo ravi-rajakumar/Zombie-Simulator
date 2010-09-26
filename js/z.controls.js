@@ -21,10 +21,36 @@ z.updateTimer = function () {
 
 z.updateStatistics = function () {
 	$('#humans span').text(z.humans.length);
-	$('#zombies span').text(z.zombies.length);
-	
+	$('#zombies span').text(z.zombies.length);	
 	$('#tps').text(z.performance.getTPS());
 	$('#fps').text(z.performance.getFPS());
+};
+
+z.play = function () {
+	if (z.humans.length < 1 && z.zombies.length < 1)
+	{
+		$('#settings').submit();
+	}
+	
+	z.stop();
+	z.performance.init();
+	
+	z.turns = setInterval(function () {
+		z.performance.logTPS(z.advanceTurn);
+	}, z.interval);
+	
+	z.animate = setInterval(function () {
+		z.draw();
+	}, 17);
+	
+	z.isRunning = true;
+};
+
+z.stop = function () {
+	clearInterval(z.turns);
+	clearInterval(z.animate);
+	
+	z.isRunning = false;
 };
 
 $(document).ready(function ($) {

@@ -64,45 +64,49 @@ z.range = function (a, b) {
 };
 
 z.performance = {
-	start: 0,
-	turnCounter: 0,
+	markedTime: 0,
+	markedTurn: 0,
+	markedFrame: 0,
 	frameCounter: 0,
+	
 	init: function () {
-		this.start = new Date();
-		this.turnCounter = 0;
-		this.frameCounter = 0;
+		this.mark();
 	},
 	
-	calculateRate: function (counter) {
+	// Without this we'd always be calculating the rate averaged out over the entire run. This keeps the average current.
+	mark: function () {
+		this.markedTime = new Date();
+		this.markedTurn = z.currentTurn;
+		this.markedFrame = z.frameCounter;
+	},
+	
+	// Returns the rates for the last 50 turns
+	calculateRate: function (counter, mark) {
 		var now = new Date();
 		
-		return Math.floor(1000 * counter / (now.getTime() - this.start.getTime()));
+		// don't round this until we are displaying it, because it's used to calibrate the sim's physics
+		return (1000 * (counter - mark) / (now.getTime() - this.markedTime.getTime()));
 	},
 	
 	getTPS: function () {
-		z.actualTPS = this.calculateRate(this.turnCounter);
-		
-		return z.actualTPS;
+		return Math.floor(z.actualTurnsPerSecond);
 	},
 	
 	getFPS: function () {
-		return this.calculateRate(this.frameCounter);
+		return Math.floor(this.calculateRate(z.frameCounter, this.markedFrame));
 	},
 	
+	
+	// the current turn and current frame variables are in the global z object. To be sure we are actually measuring the advance turn and redraw events, they will be updated from within those functions.
 	logTPS: function (fn) {
-		this.turnCounter++;
-		
-		if (this.turnCounter % (1000 / z.interval) === 0)
+		// once every 50 turns, starting with turn 10, reset and recalibrate
+		if ((z.currentTurn % 50) - 10 === 0)	
 		{
+			z.actualTurnsPerSecond = this.calculateRate(z.currentTurn, this.markedTurn);
+			// this function will adjust all the simulation's physics to maintain accurate timelapse
 			z.recalibrate();
+			this.mark();
 		}
-		
-		fn();
-	},
-	
-	logFPS: function (fn) {
-		this.frameCounter++;
-		
 		fn();
 	}
 };

@@ -6,7 +6,8 @@ z.humanoid = function (spec) {
 	that.targetCount = 1;
 	
 	that.heading = spec.heading || Math.round(Math.random() * Math.PI * 2000) / 1000;
-	that.maxRunSpeed = spec.maxRunSpeed || (Math.random() / 5 + 0.9) * z.humanBaseRunSpeed();
+	that.speedVariance = Math.random() / 5 + 0.9;
+	that.maxRunSpeed = spec.maxRunSpeed || that.speedVariance * z.humanBaseRunSpeed();
 	that.runSpeed = that.maxRunSpeed;
 	
 	that.position = {

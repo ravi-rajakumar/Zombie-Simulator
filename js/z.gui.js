@@ -21,7 +21,8 @@ z.draw = function () {
 					
 					context.fill();
 				};
-		
+				
+		z.frameCounter++;
 		context.clearRect(0, 0, z.canvas.width, z.canvas.height);
 		
 		for (i = 0; i < z.humans.length; i++)

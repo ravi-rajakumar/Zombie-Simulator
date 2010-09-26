@@ -14,31 +14,34 @@ var z = {
 	fieldOfView: 2.094, // 120 degrees field of vision
 	flockAngle: 0,
 	
+	currentTurn: 0,
+	frameCounter: 0,
 	turns: null,
 	interval: 20,
 	foodAvailability: 0, // not used yet
 	hidingPlaceFrequency: 0, // not used yet
 	zombificationDuration: 3 * 3600, // 3 hours
 	
+	/* time stats: these are used throughout to measure and recalibrate the simulation's performance. The underlying rule is that we try to run as fast as possible (for the highest granularity), and then measure how fast we're actually going, then re-calculate physics based on the desired time-lapse and actual performance */
 	timeLapseFactor: 300, // how many simulated seconds pass in one real-world second
-	simulatedTimeElapsed: 0,
-	lastTPS: null, // used to recalibrate speed
-	actualTPS: null, // used to measure performance
-	secondsPerTurn: function () {
-		if (z.actualTPS === null)
+	simulatedTimeElapsed: 0, // used for custom timeouts and perf measurements
+	lastTurnDuration: null, // used to recalibrate; real seconds per turn
+	actualTurnsPerSecond: null, // real time -- used to measure performance
+	secondsPerTurn: function () {	// these are simulated seconds per turn
+		if (z.actualTurnsPerSecond === null)
 		{
 			return z.interval * z.timeLapseFactor / 1000;
 		}
 		else
 		{
-			return z.timeLapseFactor / z.actualTPS;
+			return z.timeLapseFactor / z.actualTurnsPerSecond;
 		}
 	},
 	
 	// human characteristics
 	humanStartingPopulation: 1000,
 	humanBaseRunSpeed: function () {
-		return 4800 / 3600 * z.secondsPerTurn();
+		return (4800 / 3600) * z.secondsPerTurn();
 	},
 	humanHerding: 0.5,
 	humanQueueing: 0.2,
@@ -52,7 +55,7 @@ var z = {
 	// zombie characteristics
 	zombieStartingPopulation: 1,
 	zombieBaseRunSpeed: function () {
-		return 1600 / 3600 * z.secondsPerTurn();
+		return (1600 / 3600) * z.secondsPerTurn();
 	},
 	zombieHerding: 0.5,
 	zombieQueueing: 1,
@@ -143,7 +146,8 @@ z.advanceTurn = function () {
 	var action,
 		hcount = z.humans.length,
 		zcount = z.zombies.length;
-		
+	
+	z.currentTurn++;
 	z.simulatedTimeElapsed += Math.round(z.secondsPerTurn()*1000)/1000;
 	
 	// natural births & deaths
@@ -292,6 +296,9 @@ z.advanceTurn = function () {
 	
 		if (action === 'run')
 		{			
+			// reset run speed
+			humanoid.runspeed = humanoid.maxRunSpeed;
+			
 			// convert heading to dx and dy
 			humanoid.chooseNextMove();
 			
@@ -314,31 +321,4 @@ z.advanceTurn = function () {
 	
 	// update the timer displayed by the simulation
 	z.updateTimer();
-};
-
-z.play = function () {
-	if (z.humans.length < 1 && z.zombies.length < 1)
-	{
-		$('#settings').submit();
-	}
-	
-	z.stop();
-	z.performance.init();
-	
-	z.turns = setInterval(function () {
-		z.performance.logTPS(z.advanceTurn);
-	}, z.interval);
-	
-	z.animate = setInterval(function () {
-		z.performance.logFPS(z.draw);
-	}, 30);
-	
-	z.isRunning = true;
-};
-
-z.stop = function () {
-	clearInterval(z.turns);
-	clearInterval(z.animate);
-	
-	z.isRunning = false;
 };
