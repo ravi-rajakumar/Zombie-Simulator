@@ -155,17 +155,16 @@ z.advanceTurn = function () {
 	{
 		z.humans.push(z.human({position: {}}));
 		z.message('natural birth');
+		z.stats.hBirths++;
 	}
 	if (Math.random() < (((hcount / 1000) * z.naturaldeathrate * z.secondsPerTurn()) / (86400 * 365))) 
 	{
 		z.humans.pop();
 		z.message('natural death');
+		z.stats.hNaturalDeaths++;
 	}
 	
-	z.neighbors = z.humans.concat(z.zombies);
-	z.neighbors = z.mergeSort(z.neighbors, 'x');
-	
-	// check for dead humans
+	// check for dead humans, and remove them before creating the set
 	for (var j = 0; j < hcount; j++) 
 	{
 		action = z.humans[j].nextAction();
@@ -175,6 +174,7 @@ z.advanceTurn = function () {
 			z.humans.splice(j,1);
 			hcount -= 1;
 			j -= 1;
+			z.stats.hKilled++;
 		}
 		else 
 		{
@@ -182,7 +182,7 @@ z.advanceTurn = function () {
 		}
 	}
 	
-	// check for destroyed zombies
+	// check for destroyed zombies, and remove them before creating the set
 	for (var k = 0; k < zcount; k++) 
 	{
 		action = z.zombies[k].nextAction();
@@ -192,12 +192,17 @@ z.advanceTurn = function () {
 			z.zombies.splice(k,1);
 			zcount -= 1;
 			k -= 1;
+			z.stats.zDestroyed++;
 		}
 		else 
 		{
 			z.zombies[k].actionQueue.push(action); // put the action back in the queue
 		}
 	}
+	
+	// make the set of humanoids who will act in the next turn
+	z.neighbors = z.humans.concat(z.zombies);
+	z.neighbors = z.mergeSort(z.neighbors, 'x');
 	
 	for (var index = 0; index < z.neighbors.length; index++) {
 		var humanoid = z.neighbors[index],
@@ -315,9 +320,6 @@ z.advanceTurn = function () {
 	{
 		z.humanRecognitionRange += (9 * z.secondsPerTurn()) / 3 * 1440 * 60; // this will take 3 days to get from 1 to 10m
 	}
-	
-	// update the statistics displayed by the simulation
-	z.updateStatistics();
 	
 	// update the timer displayed by the simulation
 	z.updateTimer();

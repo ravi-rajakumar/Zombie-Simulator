@@ -174,6 +174,7 @@ z.human = function (spec) {
 			that.deadtimer = z.setTimeout(function()
 			{		
 				z.zombies.push(z.zombie(that));
+				z.stats.hZombified++;
 				z.message('dead-turn');	// remove later
 				that.zombify = function () {}; 
 			}, z.zombificationDuration);

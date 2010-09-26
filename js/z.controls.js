@@ -24,6 +24,11 @@ z.updateStatistics = function () {
 	$('#zombies span').text(z.zombies.length);	
 	$('#tps').text(z.performance.getTPS());
 	$('#fps').text(z.performance.getFPS());
+	$('#hkilled span').text(z.stats.hKilled);
+	$('#zdestroyed span').text(z.stats.zDestroyed);
+	$('#hzombified span').text(z.stats.hZombified);
+	$('#hbirths span').text(z.stats.hBirths);
+	$('#hnaturaldeaths span').text(z.stats.hNaturalDeaths);
 };
 
 z.play = function () {
@@ -73,6 +78,9 @@ $(document).ready(function ($) {
 			
 			timeLapseFactor: $('#time-lapse-factor').val()
 		};
+			
+		$('#hstart span').text($('#human-population').val());
+		$('#zstart span').text($('#zombie-population').val());
 		
 		z.init(spec);
 	});
@@ -98,6 +106,21 @@ $(document).ready(function ($) {
 		}
 		
 		controls.toggle('fast');
+	});
+	
+	$('#stats-switch').live('click', function (event) {
+		var text = $(this).text();
+		
+		if (text.indexOf('-') > -1)
+		{
+			$(this).text('[+] stats');
+		}
+		else
+		{
+			$(this).text('[-] stats');
+		}
+		
+		$('#stats').toggle('fast');
 	});
 	
 	$(this).keypress(function(event) {

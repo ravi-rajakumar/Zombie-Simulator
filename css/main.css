@@ -68,18 +68,18 @@ header cite {
 	margin-bottom: 8px;
 }
 
-#control-switch, #footer {
+#control-switch, #stats-switch, #footer {
 	font-family: Monaco, "Courier New", Courier, Monospace;
 }
 
-#control-switch {
+#control-switch, #stats-switch {
 	cursor: pointer;
 	clear:both;
 	color:#666666;
 	margin:7px 0 0;
 }
 
-#control-switch:hover {
+#control-switch:hover, #stats-switch:hover {
 	color:#444;
 }
 
@@ -94,6 +94,11 @@ header cite {
 	padding-bottom: 5px;
 	margin-top:10px;
 	float:left;
+}
+
+#stats {
+	display: none;
+	margin-bottom: 30px;
 }
 
 label {

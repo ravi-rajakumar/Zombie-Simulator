@@ -102,11 +102,24 @@ z.performance = {
 		// once every 50 turns, starting with turn 10, reset and recalibrate
 		if ((z.currentTurn % 50) - 10 === 0)	
 		{
-			z.actualTurnsPerSecond = this.calculateRate(z.currentTurn, this.markedTurn);
+			z.actualTurnsPerSecond = this.calculateRate(z.currentTurn, this.markedTurn);			
+	
+			// update the statistics displayed by the simulation. Since redraws elements, don't do it every turn
+			z.updateStatistics();
+
 			// this function will adjust all the simulation's physics to maintain accurate timelapse
 			z.recalibrate();
+			
 			this.mark();
 		}
 		fn();
 	}
+};
+
+z.stats = {
+	hKilled: 0,
+	zDestroyed: 0,
+	hZombified: 0,
+	hBirths: 0,
+	hNaturalDeaths: 0
 };
