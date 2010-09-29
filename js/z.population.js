@@ -148,6 +148,7 @@ z.human = function (spec) {
 		that.livetimer = z.setTimeout(function()
 		{
 			z.zombies.push(z.zombie(that));
+			z.stats.hZombified++;
 			z.message('live-turn');	// remove later
 			that.nextAction = function () 
 			{

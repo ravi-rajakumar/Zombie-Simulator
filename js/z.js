@@ -190,9 +190,9 @@ z.advanceTurn = function () {
 		{
 			// remove them from the population
 			z.zombies.splice(k,1);
+			z.stats.zDestroyed++;
 			zcount -= 1;
 			k -= 1;
-			z.stats.zDestroyed++;
 		}
 		else 
 		{
@@ -242,7 +242,7 @@ z.advanceTurn = function () {
 					z.fight(neighbor, humanoid);
 				}
 				
-				if (distance === 0)
+				if (distance < 0.25)
 				{
 					humanoid.heading = z.flockAngle;
 					

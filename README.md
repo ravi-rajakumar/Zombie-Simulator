@@ -25,7 +25,7 @@ The application's purpose is to enable users to see what outcomes are produced b
 
 Generally the intended use is to set the starting conditions and then run the simulation and allow it to take its course. The controls are:
 
-- setup: initialize the map with values from the curret settings
+- setup: initialize the map with values from the current settings
 - play: start the simulation
 - stop: pause the simulation
 - settings: set the starting conditions and make in-flight changes
@@ -36,7 +36,7 @@ in-flight changes can be made for: human herding; human queueing; zombie herding
 
 ## Assumptions
 
-The math in this simulation depends on a number of baseline properties that were arrived at through educated guesswork. The accuracy and value of the program would be increased by replacing those with real numbers through further reasearch or measurement. The following is a list of those assumptions:
+The math in this simulation depends on a number of baseline properties that were arrived at through educated guesswork. The accuracy and value of the program would be increased by replacing those with real numbers through further research or measurement. The following is a list of those assumptions:
 
 - Average human walking speed: 4.8km/hour (verified, Wikipedia)
 - Average zombie walking speed: 1.6km/hour
