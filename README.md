@@ -51,6 +51,8 @@ The math in this simulation depends on a number of baseline properties that were
 - Variance in direction of humanoid travel, absent external influences: ±12.25 degrees/minute
 - Effective human visual field: 120º
 - Time to turn zombie: 3 hours
+- Natural Human Birth Rate: 14/k/year
+- Natural Human Death Rate: 8/k/year
 
 ## Units
 
