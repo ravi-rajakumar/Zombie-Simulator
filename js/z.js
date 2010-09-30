@@ -138,8 +138,6 @@ z.setTimeout = function (fn, t) {
 z.advanceTurn = function () {
 	var hcount = z.humans.length,
 		zcount = z.zombies.length;
-		
-	z.influencesHash = {};
 	
 	z.currentTurn++;
 	z.simulatedTimeElapsed += Math.round(z.secondsPerTurn()*1000)/1000;

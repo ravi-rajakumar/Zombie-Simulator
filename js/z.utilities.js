@@ -60,14 +60,7 @@ z.mergeSort = function (humanoids, axis) {
 };
 
 z.range = function (a, b) {
-	if (a.position && b.position) 
-	{
-		return Math.pow((Math.pow((a.position.x) - (b.position.x), 2) + Math.pow((a.position.y) - (b.position.y), 2)), 0.5);
-	}
-	else
-	{
-		return false;
-	}
+	return Math.pow((Math.pow((a.position.x) - (b.position.x), 2) + Math.pow((a.position.y) - (b.position.y), 2)), 0.5);
 };
 
 z.recalibrate = function () {
