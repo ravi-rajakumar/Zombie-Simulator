@@ -7,6 +7,7 @@ var z = {
 	animate: null,
 	isRunning: false,
 	hasfocus: null,
+	guid: 0,
 	
 	humanRecognitionRange: 1, // humans recognize zombies
 	zombieRecognitionRange: 10, // zombies recognize humans
@@ -41,7 +42,7 @@ var z = {
 	// human characteristics
 	humanStartingPopulation: 1000,
 	humanBaseRunSpeed: function () {
-		return (4800 / 3600) * z.secondsPerTurn();
+		return (4800 / 3600);
 	},
 	humanHerding: 0.5,
 	humanQueueing: 0.2,
@@ -55,7 +56,7 @@ var z = {
 	// zombie characteristics
 	zombieStartingPopulation: 1,
 	zombieBaseRunSpeed: function () {
-		return (1600 / 3600) * z.secondsPerTurn();
+		return (1600 / 3600);
 	},
 	zombieHerding: 0.5,
 	zombieQueueing: 1,
@@ -105,14 +106,6 @@ z.init = function (spec) {
 	z.updateTimer();
 };
 
-z.updateSettings = function () {
-	z.humanHerding = $('#human-herding').val();
-	z.humanQueueing = $('#human-queueing').val();
-	z.zombieHerding = $('#zombie-herding').val();
-	z.zombieBrainEatingEfficiency = $('#zombie-brain-eating-efficiency').val();
-	z.timeLapseFactor = $('#time-lapse-factor').val();
-};
-
 z.message = function (msg) {
 	$('#messages p').html('<span id="msg"><strong>' + msg + '</strong></span>&nbsp;');
 	z.log += msg + '\n';
@@ -143,9 +136,10 @@ z.setTimeout = function (fn, t) {
 };
 
 z.advanceTurn = function () {
-	var action,
-		hcount = z.humans.length,
+	var hcount = z.humans.length,
 		zcount = z.zombies.length;
+		
+	z.influencesHash = {};
 	
 	z.currentTurn++;
 	z.simulatedTimeElapsed += Math.round(z.secondsPerTurn()*1000)/1000;
@@ -167,8 +161,7 @@ z.advanceTurn = function () {
 	// check for dead humans, and remove them before creating the set
 	for (var j = 0; j < hcount; j++) 
 	{
-		action = z.humans[j].nextAction();
-		if (action === 'die') 
+		if (z.humans[j].nextAction() === 'die') 
 		{
 			// remove them from the population
 			z.humans.splice(j,1);
@@ -176,17 +169,12 @@ z.advanceTurn = function () {
 			j -= 1;
 			z.stats.hKilled++;
 		}
-		else 
-		{
-			z.humans[j].actionQueue.push(action); // put the action back in the queue
-		}
 	}
 	
 	// check for destroyed zombies, and remove them before creating the set
 	for (var k = 0; k < zcount; k++) 
 	{
-		action = z.zombies[k].nextAction();
-		if (action === 'die') 
+		if (z.zombies[k].nextAction() === 'die') 
 		{
 			// remove them from the population
 			z.zombies.splice(k,1);
@@ -194,125 +182,108 @@ z.advanceTurn = function () {
 			zcount -= 1;
 			k -= 1;
 		}
-		else 
-		{
-			z.zombies[k].actionQueue.push(action); // put the action back in the queue
-		}
 	}
 	
 	// make the set of humanoids who will act in the next turn
 	z.neighbors = z.humans.concat(z.zombies);
 	z.neighbors = z.mergeSort(z.neighbors, 'x');
 	
+	// here is the start of the main loop through the humanoids, calculating influences and choices and performing actions for the turn
 	for (var index = 0; index < z.neighbors.length; index++) {
 		var humanoid = z.neighbors[index],
 			proximityFail = false,
 			neighborIndex = 0,
-			action = humanoid.nextAction(),
 			distance = 0,
 			neighbor = null;
-	
-		humanoid.heading = humanoid.chooseDirection();
+
 		
-		proximityFail = false;
-		neighborIndex = index + 1;
-		
-		while (proximityFail === false)
+		// if the humanoid is fighting and their target is still in range, we skip all other influence checks -- this means that targets are sticky
+		if (humanoid.currentTarget !== null) 
 		{
-			if (neighborIndex >= z.neighbors.length)
-			{
-				proximityFail = true;
-			}
-			// if x is out of range then we can exit this loop
-			else if (Math.abs(humanoid.position.x - z.neighbors[neighborIndex].position.x) > z.sightRange)
-			{
-				proximityFail = true;
-			}
-			// if y is out of range then we don't need to check them
-			else if (Math.abs(humanoid.position.y - z.neighbors[neighborIndex].position.y) <= z.sightRange)
+			distance = z.range(humanoid, humanoid.currentTarget);
+		}
+		
+		if (humanoid.currentTarget !== null && distance <= 1) 
+		{
+			humanoid.actionQueue = ['fight'];
+		} 
+		else
+		{
+			humanoid.heading = humanoid.chooseDirection();
+			
+			proximityFail = false;
+			neighborIndex = index + 1;
+			
+			while (proximityFail === false)
 			{
 				neighbor = z.neighbors[neighborIndex];
-				
-				distance = z.range(humanoid, neighbor);
-				
-				if (distance <= 1 && humanoid.isZombie() && !neighbor.isZombie())
+				if (neighborIndex >= z.neighbors.length)
 				{
-					humanoid.targetCount += 1;
-					neighbor.targetCount += 1;
-					z.fight(neighbor, humanoid);
+					proximityFail = true;
+				}
+				// if x is out of range then we can exit this loop
+				else if (Math.abs(humanoid.position.x - neighbor.position.x) > z.sightRange)
+				{
+					proximityFail = true;
+				}
+				// if y is out of range then we don't need to check them
+				else if (Math.abs(humanoid.position.y - neighbor.position.y) <= z.sightRange)
+				{
+					z.interact(humanoid, neighbor);
 				}
 				
-				if (distance < 0.25)
-				{
-					humanoid.heading = z.flockAngle;
-					
-					z.flockAngle = (z.flockAngle + Math.PI / 3) % (2 * Math.PI);
-				}
-				else if (distance < z.sightRange)
-				{
-					z.humanoidInfluence(humanoid, neighbor, distance);
-				}
+				neighborIndex++;
 			}
 			
-			neighborIndex++;
-		}
-		
-		proximityFail = false;
-		neighborIndex = index - 1;
-		
-		while (proximityFail === false)
-		{
-			if (neighborIndex < 0)
-			{
-				proximityFail = true;
-			}
-			// if x is out of range then we can exit this loop
-			else if (Math.abs(humanoid.position.x - z.neighbors[neighborIndex].position.x) > z.sightRange)
-			{
-				proximityFail = true;
-			}
-			// if y is out of range then we don't need to check them
-			else if (Math.abs(humanoid.position.y - z.neighbors[neighborIndex].position.y) <= z.sightRange)
+			proximityFail = false;
+			neighborIndex = index - 1;
+			
+			while (proximityFail === false)
 			{
 				neighbor = z.neighbors[neighborIndex];
+				if (neighborIndex < 0)
+				{
+					proximityFail = true;
+				}
+				// if x is out of range then we can exit this loop
+				else if (Math.abs(humanoid.position.x - neighbor.position.x) > z.sightRange)
+				{
+					proximityFail = true;
+				}
+				// if y is out of range then we don't need to check them
+				else if (Math.abs(humanoid.position.y - neighbor.position.y) <= z.sightRange)
+				{
+					z.interact(humanoid, neighbor);
+				}
 				
-				distance = z.range(humanoid, neighbor);
-				
-				if (distance <= 1 && humanoid.isZombie() && !neighbor.isZombie())
-				{
-					humanoid.targetCount += 1;
-					neighbor.targetCount += 1;
-					z.fight(neighbor, humanoid);
-				}
-				if (distance === 0)
-				{
-					humanoid.heading = z.flockAngle;
-					
-					z.flockAngle = (z.flockAngle + Math.PI / 3) % (2 * Math.PI);
-				}
-				else if (distance < z.sightRange)
-				{
-					z.humanoidInfluence(humanoid, neighbor, distance);
-				}
+				neighborIndex--;
 			}
-			
-			neighborIndex--;
 		}
+		
+		switch (humanoid.nextAction())
+		{
+			case 'run':
+				// convert heading to dx and dy
+				humanoid.chooseNextMove();
+				// move the humanoid
+				humanoid.move();
+				break;
+			case 'fight':
+				z.fight(humanoid, humanoid.currentTarget);
+				break;
+			default: 
+				// convert heading to dx and dy
+				humanoid.chooseNextMove();
+				// move the humanoid
+				humanoid.move();
+		}
+				
+		// reset run speed
+		humanoid.runspeed = humanoid.maxRunSpeed;
 	
-		if (action === 'run')
-		{			
-			// reset run speed
-			humanoid.runspeed = humanoid.maxRunSpeed;
-			
-			// convert heading to dx and dy
-			humanoid.chooseNextMove();
-			
-			// move the humanoid
-			humanoid.move();
-			
-			// reset it's runSpeed if it was changed by the influence function
-			humanoid.runSpeed = humanoid.maxRunSpeed;
-		}
+		// clear the current action	
+		humanoid.actionQueue.shift();
+	
 	}
 	
 	// increment zombie recognition range until 10m

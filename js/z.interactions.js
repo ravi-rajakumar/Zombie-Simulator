@@ -1,91 +1,89 @@
-z.fight = function (human,zombie) {
-		var zombieTargetCount = zombie.targetCount,
-			humanTargetCount = human.targetCount,
-			biteChance = 0.1/zombieTargetCount,
-			humanDieChance = 0.1/zombieTargetCount,
-			zombieStunChance = 0.1/humanTargetCount,
-			zombieDieChance = 0.1/humanTargetCount,
-			states = ['alive', 'undead'],
-			tick = 1,
-			i = 0;
+z.fight = function (humanoid,neighbor) {
+	var biteChance = 0.1,
+		humanDieChance = 0.01,
+		zombieStunChance = 0.1,
+		zombieDieChance = 0.01,
+		zombie = null,
+		human = null,
+		seconds = 0;
+
+	if (humanoid.isZombie()) 
+	{
+		zombie = humanoid;
+		human = neighbor;
+	}
+	else
+	{
+		human = humanoid;
+		zombie = neighbor;
+	}
+
+
+	// how long (in whole seconds) since we last performed fight actions
+	seconds = Math.floor(z.simulatedTimeElapsed - humanoid.lastActionTimeStamp);
+	
+	// check to see whather a whole second has gone by since the last action
+	if (seconds >= 1)
+	{	
+		// do one action per second
+		for (var i = 0; i < seconds; i++)
+		{
+			z.flash(human);
+			z.flash(zombie);
+		
 			
-		while (true) {
 			if (Math.random()<biteChance) 
 			{
-				states[0] = 'bitten';
+				human.zombify();
+				z.message('human zombify coming...');
 			}
 			
 			if (Math.random()<humanDieChance) 
 			{
-				states[0] = 'dead';
+				human.die();
+				z.message('human death');
+				zombie.currentTarget = null;
 			}
 			
 			if (Math.random()<zombieStunChance) 
 			{
-				states[1] = 'stunned';
-			}
-			
-			if (Math.random()<zombieDieChance) 
-			{
-				states[1] = 'destroyed';
-			}
-
-			biteChance = (Math.pow(2,tick)/10)/zombieTargetCount;
-			humanDieChance = (tick/10)/zombieTargetCount;
-			zombieStunChance = zombieDieChance = (tick/10)/humanTargetCount;
-			
-			if (states[0] === 'dead') 
-			{
-				for (i = 0; i < Math.round(tick / z.secondsPerTurn()); i++)
-				{
-					human.actionQueue.push('fighting');
-					zombie.actionQueue.push('fighting');
-				}
-				human.actionQueue.push('die');
-				z.message('human death');	//remove later
-				zombie.targetCount -= 1;
-				return;
-			}	
-			else if (states[1] === 'stunned') 
-			{
-				for (i = 0; i < Math.round(tick / z.secondsPerTurn()); i++)
-				{
-					human.actionQueue.push('fighting');
-					zombie.actionQueue.push('fighting');
-				}
 				for (i = 0; i < Math.floor(60 / z.secondsPerTurn()); i++)
 				{
 					zombie.actionQueue.push('stunned');	
 				}
-				z.message('zombie stunned');	//remove later
-				zombie.targetCount -= 1;
-				human.targetCount -= 1;
-				if (states[0] === 'bitten')
-				{
-					human.zombify();
-					z.message('human zombify coming...');	//remove later
-				}
+				human.currentTarget = null;
 				return;
 			}
-			else if (states[1] === 'destroyed') 
+			
+			if (Math.random()<zombieDieChance) 
 			{
-				for (i = 0; i < Math.round(tick / z.secondsPerTurn()); i++)
-				{
-					human.actionQueue.push('fighting');
-					zombie.actionQueue.push('fighting');
-				}
-				zombie.actionQueue.push('die');
-				z.message('zombie death');	//remove later
-				human.targetCount -= 1;
-				if (states[0] === 'bitten')
-				{
-					human.zombify();
-					z.message('human zombify coming...');	//remove later
-				}
-				return;
-			}	
-			z.flash(human);
-			z.flash(zombie);
-			tick++;
+				zombie.die();
+				z.message('zombie death');
+				human.currentTarget = null;
+			}
 		}
+		humanoid.lastActionTimeStamp = z.simulatedTimeElapsed;
+		neighbor.lastActionTimeStamp = z.simulatedTimeElapsed;
+	}
+};
+
+z.interact = function (humanoid, neighbor) 
+{	
+	var distance = z.range(humanoid, neighbor);
+	
+	if ((distance <= 1) && ((humanoid.isZombie() && humanoid.nextAction() !== 'stunned' && !neighbor.isZombie()) || (neighbor.isZombie() && neighbor.nextAction() !== 'stunned' && !humanoid.isZombie())))
+	{
+		humanoid.currentTarget = neighbor;
+		humanoid.actionQueue = ['fight'];
+	}
+	
+	if (distance < 0.25)
+	{
+		humanoid.heading = z.flockAngle;
+		z.flockAngle = (z.flockAngle + Math.PI / 3) % (2 * Math.PI);
+	}
+	else if (distance < z.sightRange)
+	{
+		z.humanoidInfluence(humanoid, neighbor, distance);
+	}
 };

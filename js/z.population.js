@@ -3,7 +3,11 @@ z.humanoid = function (spec) {
 	
 	that.actionQueue = [];
 	
-	that.targetCount = 1;
+	that.guid = z.guid++;
+	
+	that.currentTarget = null;
+	
+	that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	
 	that.heading = spec.heading || Math.round(Math.random() * Math.PI * 2000) / 1000;
 	that.speedVariance = Math.random() / 5 + 0.9;
@@ -99,8 +103,8 @@ z.humanoid = function (spec) {
 	};
 	
 	that.chooseNextMove = function () {
-		that.nextMove.dx = Math.round(Math.sin(that.heading) * that.runSpeed * 1000) / 1000;
-		that.nextMove.dy = Math.round(0 - (Math.cos(that.heading) * that.runSpeed) * 1000) / 1000;
+		that.nextMove.dx = Math.round(Math.sin(that.heading) * that.runSpeed * z.secondsPerTurn() * 1000) / 1000;
+		that.nextMove.dy = Math.round(0 - (Math.cos(that.heading) * that.runSpeed * z.secondsPerTurn()) * 1000) / 1000;
 	};
 	
 	that.nextAction = function () 
@@ -113,7 +117,7 @@ z.humanoid = function (spec) {
 			}
 			else 
 			{
-				return that.actionQueue.shift();
+				return that.actionQueue[0];
 			}
 		} 
 		else 

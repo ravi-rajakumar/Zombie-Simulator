@@ -31,6 +31,14 @@ z.updateStatistics = function () {
 	$('#hnaturaldeaths span').text(z.stats.hNaturalDeaths);
 };
 
+z.updateSettings = function () {
+	z.humanHerding = $('#human-herding').val();
+	z.humanQueueing = $('#human-queueing').val();
+	z.zombieHerding = $('#zombie-herding').val();
+	z.zombieBrainEatingEfficiency = $('#zombie-brain-eating-efficiency').val();
+	z.timeLapseFactor = $('#time-lapse-factor').val();
+};
+
 z.play = function () {
 	if (z.humans.length < 1 && z.zombies.length < 1)
 	{
