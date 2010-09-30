@@ -1,7 +1,7 @@
 z.fight = function (humanoid,neighbor) {
 	var biteChance = 0.1,
 		humanDieChance = 0.01,
-		zombieStunChance = 0.1,
+		zombieStunChance = 0.05,
 		zombieDieChance = 0.01,
 		zombie = null,
 		human = null,
@@ -30,22 +30,27 @@ z.fight = function (humanoid,neighbor) {
 		{
 			z.flash(human);
 			z.flash(zombie);
-		
 			
-			if (Math.random()<biteChance) 
+			/* handling multiple parties in a fight in a new way. participants can only have one ficus at a time and only act on that focus.
+			*/
+			
+			// this only happens if the zombie is actually focused on this human
+			if (Math.random() < biteChance && zombie.currentTarget === human) 
 			{
 				human.zombify();
 				z.message('human zombify coming...');
 			}
 			
-			if (Math.random()<humanDieChance) 
+			// this only happens if the zombie is actually focused on this human
+			if (Math.random()<humanDieChance && zombie.currentTarget === human) 
 			{
 				human.die();
 				z.message('human death');
 				zombie.currentTarget = null;
 			}
 			
-			if (Math.random()<zombieStunChance) 
+			// this only happens if the human is actually focused on this zombie
+			if (Math.random() < zombieStunChance && human.currentTarget === zombie)
 			{
 				for (i = 0; i < Math.floor(60 / z.secondsPerTurn()); i++)
 				{
@@ -55,7 +60,8 @@ z.fight = function (humanoid,neighbor) {
 				return;
 			}
 			
-			if (Math.random()<zombieDieChance) 
+			// this only happens if the human is actually focused on this zombie
+			if (Math.random() < zombieDieChance && human.currentTarget === zombie) 
 			{
 				zombie.die();
 				z.message('zombie death');

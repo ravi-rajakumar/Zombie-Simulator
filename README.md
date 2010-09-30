@@ -46,7 +46,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Range at which zombies recognize humans: 10m
 - Chance in any one round of a fight that the human will be bitten: 10%
 - Chance in any one round of a fight that the human will die: 1%
-- Chance in any one round of a fight that the zombie will be stunned: 10%
+- Chance in any one round of a fight that the zombie will be stunned: 5%
 - Chance in any one round of a fight that the zombie will be destroyed: 1%
 - Interval between actions in a fight: 1s
 - Variance in direction of humanoid travel, absent external influences: ±12.25 degrees/minute

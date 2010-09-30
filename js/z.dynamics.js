@@ -71,7 +71,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		// slow down if near an attractor
 		if (attraction > 0)
 		{
-			currentHumanoid.runSpeed = currentHumanoid.maxRunSpeed * distance / 40;
+			currentHumanoid.runSpeed = currentHumanoid.maxRunSpeed * distance / 20;
 		}
 	}
 };
