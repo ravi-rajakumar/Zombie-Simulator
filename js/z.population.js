@@ -166,15 +166,13 @@ z.human = function (spec) {
 	};
 		
 	that.die = function () 
-	{
-		var chance = (100 - z.zombieBrainEatingEfficiency)/100;
-		
+	{		
 		that.nextAction = function () 
 		{
 			return 'die';
 		};
 			
-		if (Math.random() <= chance && that.livetimer === null)
+		if (that.zombify !== null && that.livetimer === null)
 		{
 			that.deadtimer = z.setTimeout(function()
 			{		

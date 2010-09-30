@@ -2,7 +2,6 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	var attraction = 0,
 		persuasion = 0,
 		runSpeed = currentHumanoid.maxRunSpeed,
-		neighborRunSpeed = neighbor.maxRunSpeed,
 		currentHumanoidHorizontalDelta = Math.sin(currentHumanoid.heading) * runSpeed,
 		currentHumanoidVerticalDelta = 0 - Math.cos(currentHumanoid.heading) * runSpeed,
 		neighborHorizontalDelta = Math.sin(neighbor.heading),

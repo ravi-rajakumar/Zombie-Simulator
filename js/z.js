@@ -60,7 +60,7 @@ var z = {
 	},
 	zombieHerding: 0.5,
 	zombieQueueing: 1,
-	zombieBrainEatingEfficiency: 1,
+	zombieBrainEatingEfficiency: 50,
 	
 	// populations
 	humans: [],
@@ -151,7 +151,8 @@ z.advanceTurn = function () {
 	}
 	if (Math.random() < (((hcount / 1000) * z.naturaldeathrate * z.secondsPerTurn()) / (86400 * 365))) 
 	{
-		z.humans.pop();
+		var ndeath = z.humans.pop();
+		ndeath.zombify = null;
 		z.message('natural death');
 		z.stats.hNaturalDeaths++;
 	}

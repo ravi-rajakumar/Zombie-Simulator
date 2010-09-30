@@ -42,8 +42,12 @@ z.fight = function (humanoid,neighbor) {
 			}
 			
 			// this only happens if the zombie is actually focused on this human
-			if (Math.random()<humanDieChance && zombie.currentTarget === human) 
+			if (Math.random() < humanDieChance && zombie.currentTarget === human) 
 			{
+				if (Math.random() < (z.zombieBrainEatingEfficiency / 100))
+				{
+					human.zombify = null; // the brain is destroyed so this person can't zombify
+				}
 				human.die();
 				z.message('human death');
 				zombie.currentTarget = null;
