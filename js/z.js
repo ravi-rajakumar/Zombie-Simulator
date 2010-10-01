@@ -202,16 +202,14 @@ z.advanceTurn = function () {
 			distance = z.range(humanoid, humanoid.currentTarget);
 		}
 		
-		if (humanoid.currentTarget !== null && distance <= 1 && humanoid.nextAction() !== 'stunned') 
+		if (humanoid.currentTarget !== null && distance <= 1 && humanoid.nextAction() !== 'stunned' && humanoid.currentTarget.nextAction() !== 'stunned') 
 		{
-			if (humanoid.currentTarget.nextAction() !== 'stunned')
-			{
-				humanoid.actionQueue = ['fight'];
-			}
+			humanoid.actionQueue = ['fight'];
 		} 
 		else
 		{
 			humanoid.heading = humanoid.chooseDirection();
+			humanoid.currentTarget = null;
 			
 			proximityFail = false;
 			neighborIndex = index + 1;

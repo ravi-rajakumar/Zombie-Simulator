@@ -160,7 +160,7 @@ z.human = function (spec) {
 			};
 		}, z.zombificationDuration);
 		
-		that.zombify = function () {}; // this should prevent duplicate zombies
+		that.zombify = null; // this should prevent duplicate zombies
 		
 		that.color = 'rgb(30,30,' + (grayValue+50) + ')';
 	};
@@ -179,7 +179,7 @@ z.human = function (spec) {
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified++;
 				z.message('dead-turn');	// remove later
-				that.zombify = function () {}; 
+				that.zombify = null; 
 			}, z.zombificationDuration);
 		}
 	};
