@@ -7,7 +7,8 @@ z.fight = function (humanoid,neighbor) {
 		human = null,
 		zombieTargeted = true,
 		humanTargeted = true,
-		seconds = 0;
+		seconds = 0,
+		exit = false;
 
 	if (humanoid.isZombie()) 
 	{
@@ -29,59 +30,71 @@ z.fight = function (humanoid,neighbor) {
 	// check to see whather a whole second has gone by since the last action
 	if (seconds >= 1)
 	{	
+	
+		// do one action per second
+		for (var i = 0; i < seconds; i++)
+		{
 
-		z.flash(human);
-		z.flash(zombie);
-		
-		/* handling multiple parties in a fight in a new way. participants can only have one focus at a time and only act on that focus.
-		*/
-		// this only happens if the zombie is actually focused on this human
-		if (humanTargeted) 
-		{			
-			if (Math.random() / seconds < biteChance) 
-			{
-				if (human.zombify !== null)
+			z.flash(human);
+			z.flash(zombie);
+			
+			/* handling multiple parties in a fight in a new way. participants can only have one focus at a time and only act on that focus.
+			*/
+			// this only happens if the zombie is actually focused on this human
+			if (humanTargeted) 
+			{			
+				if (Math.random() < biteChance) 
 				{
-					human.zombify();
-					human.currentTarget = zombie;
-					z.message('human zombify coming...');
+					if (human.zombify !== null)
+					{
+						human.zombify();
+						human.currentTarget = zombie;
+						z.message('human zombify coming...');
+					}
+				}
+				
+				if (Math.random() < humanDieChance) 
+				{
+					if (Math.random() < (z.zombieBrainEatingEfficiency / 100))
+					{
+						human.zombify = null; // the brain is destroyed so this person can't zombify
+					}
+					human.die();
+					z.message('human death');
+					zombie.currentTarget = null;
+					exit = true;
 				}
 			}
 			
-			if (Math.random() / seconds < humanDieChance) 
-			{
-				if (Math.random() < (z.zombieBrainEatingEfficiency / 100))
+			// this only happens if the human is actually focused on this zombie
+			if (zombieTargeted) 
+			{	
+				if (Math.random() < zombieStunChance)
 				{
-					human.zombify = null; // the brain is destroyed so this person can't zombify
+					for (var j = 0; j < Math.floor(60 / z.secondsPerTurn()); j++)
+					{
+						zombie.actionQueue.push('stunned');	
+					}
+					human.currentTarget = null;
+					exit = true;
 				}
-				human.die();
-				z.message('human death');
-				zombie.currentTarget = null;
+				
+				if (Math.random() < zombieDieChance) 
+				{
+					zombie.die();
+					z.message('zombie death');
+					human.currentTarget = null;
+					exit = true;
+				}
 			}
-		}
-		
-		// this only happens if the human is actually focused on this zombie
-		if (zombieTargeted) 
-		{	
-			if (Math.random() / seconds < zombieStunChance)
+			human.lastActionTimeStamp = z.simulatedTimeElapsed;
+			zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
+			
+			if (exit) 
 			{
-				for (var j = 0; j < Math.floor(60 / z.secondsPerTurn()); j++)
-				{
-					zombie.actionQueue.push('stunned');	
-				}
-				human.currentTarget = null;
 				return;
 			}
-			
-			if (Math.random() / seconds < zombieDieChance) 
-			{
-				zombie.die();
-				z.message('zombie death');
-				human.currentTarget = null;
-			}
 		}
-		human.lastActionTimeStamp = z.simulatedTimeElapsed;
-		zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
 	}
 };
 
