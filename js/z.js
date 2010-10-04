@@ -41,7 +41,7 @@ var z = {
 	
 	// human characteristics
 	humanStartingPopulation: 1000,
-	humanBaseRunSpeed: function () {
+	humanBaseWalkingSpeed: function () {
 		return (4800 / 3600);
 	},
 	humanHerding: 0.5,
@@ -55,7 +55,7 @@ var z = {
 	
 	// zombie characteristics
 	zombieStartingPopulation: 1,
-	zombieBaseRunSpeed: function () {
+	zombieBaseWalkingSpeed: function () {
 		return (1600 / 3600);
 	},
 	zombieHerding: 0.5,
@@ -262,9 +262,17 @@ z.advanceTurn = function () {
 		
 		switch (humanoid.nextAction())
 		{
+			case 'walk':
+				// convert heading to dx and dy
+				humanoid.chooseNextMove();
+				// move the humanoid
+				humanoid.move();
+				break;
 			case 'run':
 				// convert heading to dx and dy
 				humanoid.chooseNextMove();
+				// move the humanoid
+				humanoid.walkingSpeed = 3 * humanoid.walkingSpeed;
 				// move the humanoid
 				humanoid.move();
 				break;
@@ -278,8 +286,8 @@ z.advanceTurn = function () {
 				humanoid.move();
 		}
 				
-		// reset run speed
-		humanoid.runspeed = humanoid.maxRunSpeed;
+		// reset walking speed
+		humanoid.walkingSpeed = humanoid.maxWalkingSpeed;
 	
 		// clear the current action	
 		humanoid.actionQueue.shift();

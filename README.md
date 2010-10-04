@@ -39,6 +39,7 @@ in-flight changes can be made for: human herding; human queueing; zombie herding
 The math in this simulation depends on a number of baseline properties that were arrived at through educated guesswork. The accuracy and value of the program would be increased by replacing those with real numbers through further research or measurement. The following is a list of those assumptions:
 
 - Average human walking speed: 4.8km/hour (verified, Wikipedia)
+- Average human running speed: 3x walking speed
 - Average zombie walking speed: 1.6km/hour
 - Walking speed variance: ±10%
 - Range to see/notice another humanoid: 20m

@@ -11,8 +11,8 @@ z.humanoid = function (spec) {
 	
 	that.heading = spec.heading || Math.round(Math.random() * Math.PI * 2000) / 1000;
 	that.speedVariance = Math.random() / 5 + 0.9;
-	that.maxRunSpeed = spec.maxRunSpeed || that.speedVariance * z.humanBaseRunSpeed();
-	that.runSpeed = that.maxRunSpeed;
+	that.maxWalkingSpeed = spec.maxWalkingSpeed || that.speedVariance * z.humanBaseWalkingSpeed();
+	that.walkingSpeed = that.maxWalkingSpeed;
 	
 	that.position = {
 		x: (spec.position.x) ? spec.position.x : Math.round(Math.random() * z.canvasWidth * z.scale),
@@ -103,27 +103,20 @@ z.humanoid = function (spec) {
 	};
 	
 	that.chooseNextMove = function () {
-		that.nextMove.dx = Math.round(Math.sin(that.heading) * that.runSpeed * z.secondsPerTurn() * 1000) / 1000;
-		that.nextMove.dy = Math.round(0 - (Math.cos(that.heading) * that.runSpeed * z.secondsPerTurn()) * 1000) / 1000;
+		that.nextMove.dx = Math.round(Math.sin(that.heading) * that.walkingSpeed * z.secondsPerTurn() * 1000) / 1000;
+		that.nextMove.dy = Math.round(0 - (Math.cos(that.heading) * that.walkingSpeed * z.secondsPerTurn()) * 1000) / 1000;
 	};
 	
 	that.nextAction = function () 
 	{
 		if (that.actionQueue.length > 0) 
 		{
-			if (that.actionQueue[0] === 'die')
-			{
-				that.die();
-			}
-			else 
-			{
-				return that.actionQueue[0];
-			}
+			return that.actionQueue[0];
 		} 
 		else 
 		{
 		// more choices to come
-			return 'run';
+			return 'walk';
 		}
 	};
 	
@@ -138,9 +131,9 @@ z.human = function (spec) {
 	var that = z.humanoid(spec),
 			grayValue = Math.round(Math.random() * 67) + 100;
 	
-	that.maxRunSpeed = spec.maxRunSpeed ? spec.maxRunSpeed : (Math.random() / 5 + 0.9) * z.humanBaseRunSpeed();
+	that.maxWalkingSpeed = spec.maxWalkingSpeed ? spec.maxWalkingSpeed : (Math.random() / 5 + 0.9) * z.humanBaseWalkingSpeed();
 	
-	that.runSpeed = that.maxRunSpeed;
+	that.walkingSpeed = that.maxWalkingSpeed;
 	
 	that.livetimer = null;
 	
@@ -194,8 +187,8 @@ z.human = function (spec) {
 z.zombie = function (spec) {
 	var that = z.humanoid(spec);
 	
-	that.maxRunSpeed = spec.maxRunSpeed ? spec.maxRunSpeed / 3 : (Math.random() / 5 + 0.9) * z.zombieBaseRunSpeed();
-	that.runSpeed = that.maxRunSpeed;
+	that.maxWalkingSpeed = spec.maxWalkingSpeed ? spec.maxWalkingSpeed / 3 : (Math.random() / 5 + 0.9) * z.zombieBaseWalkingSpeed();
+	that.walkingSpeed = that.maxWalkingSpeed;
 	
 	that.color = 'rgb(' + (Math.round(Math.random() * 40) + 200) + ', 30, 30)';
 	

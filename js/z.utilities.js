@@ -69,10 +69,10 @@ z.recalibrate = function () {
 		z.lastTurnDuration = z.interval / 1000;
 	}
 	
-	/* run speed should be based on the actual achieved performance. The 'actual turns per second' (actualTurnsPerSecond) tells us how long one turn is in real time. Each time we recalibrate, we check it against the last measurement and then adjust it proportionally.
+	/* walking speed should be based on the actual achieved performance. The 'actual turns per second' (actualTurnsPerSecond) tells us how long one turn is in real time. Each time we recalibrate, we check it against the last measurement and then adjust it proportionally.
 	*/
 	for (var index = 0; index < z.neighbors.length; index++) {
-		z.neighbors[index].maxRunSpeed = z.neighbors[index].maxRunSpeed * (1 / (z.lastTurnDuration * z.actualTurnsPerSecond));
+		z.neighbors[index].maxWalkingSpeed = z.neighbors[index].maxWalkingSpeed * (1 / (z.lastTurnDuration * z.actualTurnsPerSecond));
 	}
 	
 	z.lastTurnDuration = 1 / z.actualTurnsPerSecond;

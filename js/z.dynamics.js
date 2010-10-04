@@ -1,12 +1,12 @@
 z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	var attraction = 0,
 		persuasion = 0,
-		runSpeed = currentHumanoid.maxRunSpeed,
-		currentHumanoidHorizontalDelta = Math.sin(currentHumanoid.heading) * runSpeed,
-		currentHumanoidVerticalDelta = 0 - Math.cos(currentHumanoid.heading) * runSpeed,
+		walkingSpeed = currentHumanoid.maxWalkingSpeed,
+		currentHumanoidHorizontalDelta = Math.sin(currentHumanoid.heading) * walkingSpeed,
+		currentHumanoidVerticalDelta = 0 - Math.cos(currentHumanoid.heading) * walkingSpeed,
 		neighborHorizontalDelta = Math.sin(neighbor.heading),
 		neighborVerticalDelta = 0 - Math.cos(neighbor.heading),
-		headingScale = (distance > 0) ? runSpeed / distance : 1,
+		headingScale = (distance > 0) ? walkingSpeed / distance : 1,
 		currentHumanoidAngle = 0,
 		newHeading = 0,
 		influence = 0,
@@ -29,6 +29,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 			{
 				attraction = -1;
 				persuasion = -1;
+				currentHumanoid.actionQueue = ['run'];
 			}
 		}
 		
@@ -57,10 +58,10 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		allforces = 1 + Math.abs(attraction) + Math.abs(persuasion);
 		
 		// create dx and dy values for neighbor's physical influence, and add them to the existing heading
-		var newHorizontalDelta = (headingScale * (neighbor.position.x - currentHumanoid.position.x) * attraction + (runSpeed * neighborHorizontalDelta * persuasion) + currentHumanoidHorizontalDelta) / allforces,
-			newVerticalDelta = (headingScale * (neighbor.position.y - currentHumanoid.position.y) * attraction + (runSpeed * neighborVerticalDelta * persuasion) + currentHumanoidVerticalDelta) / allforces;
+		var newHorizontalDelta = (headingScale * (neighbor.position.x - currentHumanoid.position.x) * attraction + (walkingSpeed * neighborHorizontalDelta * persuasion) + currentHumanoidHorizontalDelta) / allforces,
+			newVerticalDelta = (headingScale * (neighbor.position.y - currentHumanoid.position.y) * attraction + (walkingSpeed * neighborVerticalDelta * persuasion) + currentHumanoidVerticalDelta) / allforces;
 		
-		currentHumanoidAngle = Math.asin(Math.round(100 * newHorizontalDelta / runSpeed) / 100);
+		currentHumanoidAngle = Math.asin(Math.round(100 * newHorizontalDelta / walkingSpeed) / 100);
 		 
 		newHeading = (newVerticalDelta >= 0) ? Math.PI - currentHumanoidAngle : (Math.PI * 2 + currentHumanoidAngle) % (Math.PI * 2);
 		
@@ -70,7 +71,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		// slow down if near an attractor
 		if (attraction > 0)
 		{
-			currentHumanoid.runSpeed = currentHumanoid.maxRunSpeed * distance / 20;
+			currentHumanoid.walkingSpeed = currentHumanoid.maxWalkingSpeed * distance / 20;
 		}
 	}
 };
