@@ -29,7 +29,12 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 			{
 				attraction = -1;
 				persuasion = -1;
-				currentHumanoid.actionQueue = ['run'];
+				// drop everything and run away for 10 seconds
+				currentHumanoid.actionQueue = [];
+				for (var i = 0; i < (10/z.secondsPerTurn()); i++)
+				{
+					currentHumanoid.actionQueue.push('run');
+				}
 			}
 		}
 		
