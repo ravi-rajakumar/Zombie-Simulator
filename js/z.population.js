@@ -151,12 +151,14 @@ z.human = function (spec) {
 	
 	that.color = 'rgb(' + grayValue + ',' + grayValue + ',' + grayValue + ')';
 	
+	that.zombifyMsg = 'live-turn';
+	
 	that.zombify = function () {
 		that.livetimer = z.setTimeout(function()
 		{
 			z.zombies.push(z.zombie(that));
 			z.stats.hZombified++;
-			z.message('live-turn');	// remove later
+			z.message(that.zombifyMsg);	// remove later
 			that.nextAction = function () 
 			{
 				return 'die';
@@ -174,14 +176,16 @@ z.human = function (spec) {
 		{
 			return 'die';
 		};
-			
+		
+		that.zombifyMsg = 'dead-turn';
+		
 		if (that.zombify !== null && that.livetimer === null)
 		{
 			that.deadtimer = z.setTimeout(function()
 			{		
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified++;
-				z.message('dead-turn');	// remove later
+				z.message(that.zombifyMsg);	// remove later
 				that.zombify = null; 
 			}, z.zombificationDuration);
 		}
