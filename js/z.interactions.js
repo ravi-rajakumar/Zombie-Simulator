@@ -21,13 +21,21 @@ z.fight = function (humanoid,neighbor) {
 		zombie = neighbor;
 	}
 	
+	zombieStunChance = (human.zombieKillingFitness <= 0.18) ? human.zombieKillingFitness * 5 : 0.9; // 5% chance by default but improved in more experienced humans
+	zombieDieChance = human.zombieKillingFitness; // 1% chance by default but improved in more experienced humans
+	
+	// update the human's zombie killing skill for the next fight they have
+	if (human.zombieKillingFitness < 0.16) {
+		human.zombieKillingFitness += 0.07;
+	}
+	
 	humanTargeted = (zombie.currentTarget === human);
 	zombieTargeted = (human.currentTarget === zombie);
 
 	// how long (in whole seconds) since we last performed fight actions
 	seconds = Math.floor(z.simulatedTimeElapsed - humanoid.lastActionTimeStamp);
 	
-	// check to see whather a whole second has gone by since the last action
+	// check to see whether a whole second has gone by since the last action
 	if (seconds >= 1)
 	{	
 	

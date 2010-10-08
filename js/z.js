@@ -297,7 +297,7 @@ z.advanceTurn = function () {
 	// increment zombie recognition range until 10m
 	if (z.humanRecognitionRange < 10)
 	{
-		z.humanRecognitionRange += (9 * z.secondsPerTurn()) / 3 * 1440 * 60; // this will take 3 days to get from 1 to 10m
+		z.humanRecognitionRange += 9 * z.secondsPerTurn() / 259200; // this will take 3 days to get from 1 to 10m
 	}
 	
 	// update the timer displayed by the simulation

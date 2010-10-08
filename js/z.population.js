@@ -135,6 +135,16 @@ z.human = function (spec) {
 	
 	that.walkingSpeed = that.maxWalkingSpeed;
 	
+	that.recognitionRange = 1;
+	
+	// returns the greater value
+	that.recognizes = function (neighbor) {
+		return (that.recognitionRange > z.humanRecognitionRange) ? z.range(that, neighbor) <= that.recognitionRange : z.range(that, neighbor) <= z.humanRecognitionRange;	
+	};
+	
+	// this will increase quickly as the human survives fights
+	that.zombieKillingFitness = 0.01; 
+	
 	that.livetimer = null;
 	
 	that.deadtimer = null;

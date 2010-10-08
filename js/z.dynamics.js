@@ -20,10 +20,11 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		if (!currentHumanoid.isZombie())
 		{
 			// humans are automatically attracted to other humanoids unless they recognize them as zombies
-			if (!neighbor.isZombie() || z.range(currentHumanoid, neighbor) > z.humanRecognitionRange)
+			if (!neighbor.isZombie() || !currentHumanoid.recognizes(neighbor))
 			{
 				attraction = z.humanHerding;
 				persuasion = z.humanQueueing;
+				
 			}
 			else
 			{
