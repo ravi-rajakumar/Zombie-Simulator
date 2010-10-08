@@ -44,11 +44,12 @@ The math in this simulation depends on a number of baseline properties that were
 - Walking speed variance: ±10%
 - Range to see/notice another humanoid: 20m
 - Range at which humans recognize zombies: 1m on day 1, increasing to 10m by day 3
+- Humans get better at recognizing zombies after encountering them. Within three encounters they jump to the max of 10m.
 - Range at which zombies recognize humans: 10m
 - Chance in any one round of a fight that the human will be bitten: 10%
 - Chance in any one round of a fight that the human will die: 1%
-- Chance in any one round of a fight that the zombie will be stunned: 5%
-- Chance in any one round of a fight that the zombie will be destroyed: 1%
+- Humans learn from fights and their proficiency improves to a maximum of 22 times a zombie's killing proficiency (about a 63% chance of killing the zombie in an average 4-round fight)
+- Zombies are twice as likely to be only temporarily killed in a fight as permanently
 - Interval between actions in a fight: 1s
 - Variance in direction of humanoid travel, absent external influences: ±12.25 degrees/minute
 - Effective human visual field: 120º
