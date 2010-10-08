@@ -36,6 +36,10 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 				{
 					currentHumanoid.actionQueue.push('run');
 				}
+				// after an encounter with a zombie, humans learn to recognize them better
+				if (currentHumanoid.recognitionRange < 10) {
+					currentHumanoid.recognitionRange += 3;
+				}
 			}
 		}
 		
