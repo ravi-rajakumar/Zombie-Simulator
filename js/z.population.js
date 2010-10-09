@@ -159,6 +159,7 @@ z.human = function (spec) {
 			z.zombies.push(z.zombie(that));
 			z.stats.hZombified++;
 			z.message(that.zombifyMsg);	// remove later
+			that.zombify = function () {};
 			that.nextAction = function () 
 			{
 				return 'die';
@@ -186,7 +187,7 @@ z.human = function (spec) {
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified++;
 				z.message(that.zombifyMsg);	// remove later
-				that.zombify = null; 
+				that.zombify = function () {}; 
 			}, z.zombificationDuration);
 		}
 	};
