@@ -26,7 +26,6 @@ var z = {
 	/* time stats: these are used throughout to measure and recalibrate the simulation's performance. The underlying rule is that we try to run as fast as possible (for the highest granularity), and then measure how fast we're actually going, then re-calculate physics based on the desired time-lapse and actual performance */
 	timeLapseFactor: 300, // how many simulated seconds pass in one real-world second
 	simulatedTimeElapsed: 0, // used for custom timeouts and perf measurements
-	lastTurnDuration: null, // used to recalibrate; real seconds per turn
 	actualTurnsPerSecond: null, // real time -- used to measure performance
 	secondsPerTurn: function () {	// these are simulated seconds per turn
 		if (z.actualTurnsPerSecond === null)

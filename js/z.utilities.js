@@ -63,21 +63,6 @@ z.range = function (a, b) {
 	return Math.pow((Math.pow((a.position.x) - (b.position.x), 2) + Math.pow((a.position.y) - (b.position.y), 2)), 0.5);
 };
 
-z.recalibrate = function () {
-	if (z.lastTurnDuration === null)
-	{
-		z.lastTurnDuration = z.interval / 1000;
-	}
-	
-	/* walking speed should be based on the actual achieved performance. The 'actual turns per second' (actualTurnsPerSecond) tells us how long one turn is in real time. Each time we recalibrate, we check it against the last measurement and then adjust it proportionally.
-	*/
-	for (var index = 0; index < z.neighbors.length; index++) {
-		z.neighbors[index].maxWalkingSpeed = z.neighbors[index].maxWalkingSpeed * (1 / (z.lastTurnDuration * z.actualTurnsPerSecond));
-	}
-	
-	z.lastTurnDuration = 1 / z.actualTurnsPerSecond;
-};
-
 
 z.performance = {
 	markedTime: 0,
@@ -123,9 +108,6 @@ z.performance = {
 			// update the statistics displayed by the simulation. Since redraws elements, don't do it every turn
 			z.updateRates();
 			z.updateStatistics();
-
-			// this function will adjust all the simulation's physics to maintain accurate timelapse
-			z.recalibrate();
 			
 			this.mark();
 		}
