@@ -19,11 +19,14 @@ z.updateTimer = function () {
 	$('#seconds').text(seconds + ' seconds');
 };
 
-z.updateStatistics = function () {
-	$('#humans span').text(z.humans.length);
-	$('#zombies span').text(z.zombies.length);	
+z.updateRates = function () {	
 	$('#tps').text(z.performance.getTPS());
 	$('#fps').text(z.performance.getFPS());
+};
+
+z.updateStatistics = function () {
+	$('#humans span').text(z.humans.length);
+	$('#zombies span').text(z.zombies.length);
 	$('#hkilled span').text(z.stats.hKilled);
 	$('#zdestroyed span').text(z.stats.zDestroyed);
 	$('#hzombified span').text(z.stats.hZombified);

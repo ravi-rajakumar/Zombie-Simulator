@@ -121,6 +121,7 @@ z.performance = {
 			z.actualTurnsPerSecond = this.calculateRate(z.currentTurn, this.markedTurn);			
 	
 			// update the statistics displayed by the simulation. Since redraws elements, don't do it every turn
+			z.updateRates();
 			z.updateStatistics();
 
 			// this function will adjust all the simulation's physics to maintain accurate timelapse
@@ -138,4 +139,10 @@ z.stats = {
 	hZombified: 0,
 	hBirths: 0,
 	hNaturalDeaths: 0
+};
+
+z.resetStats = function () {
+	for (var i in z.stats) {
+		z.stats[i] = 0;
+	}
 };

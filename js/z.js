@@ -71,6 +71,8 @@ var z = {
 z.init = function (spec) {
 	z.humans = [];
 	z.zombies = [];
+	z.resetStats();
+	z.updateStatistics();
 	z.log = '';
 	var i,j;
 	
