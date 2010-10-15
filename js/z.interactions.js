@@ -115,9 +115,9 @@ z.interact = function (humanoid, neighbor)
 		humanoid.currentTarget = neighbor;
 		humanoid.actionQueue = ['fight'];
 	}
-	
-	if (distance < 0.25)
+	else if (distance < 0.5)
 	{
+		humanoid.actionQueue.push('run');
 		humanoid.heading = z.flockAngle;
 		z.flockAngle = (z.flockAngle + Math.PI / 3) % (2 * Math.PI);
 	}

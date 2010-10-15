@@ -14,8 +14,8 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	
 	influence = ((neighbor.position.y - currentHumanoid.position.y) >= 0) ? Math.PI - Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance) : (Math.PI * 2 + Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance)) % (Math.PI * 2);
 	
-	// can currentHumanoid actually see neighbor?
-	if (Math.abs(currentHumanoid.heading - influence) <= z.fieldOfView / 2)
+	// can currentHumanoid actually see or hear the neighbor?
+	if (Math.abs(currentHumanoid.heading - influence) <= z.fieldOfView / 2 || distance < z.hearingRange)
 	{
 		if (!currentHumanoid.isZombie())
 		{

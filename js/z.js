@@ -6,14 +6,15 @@ var z = {
 	canvas: null,
 	animate: null,
 	isRunning: false,
-	hasfocus: null,
+	hasfocus: null, // used for in-flight changes to the settings form
 	guid: 0,
 	
 	humanRecognitionRange: 1, // humans recognize zombies
 	zombieRecognitionRange: 10, // zombies recognize humans
 	sightRange: 20, // range of humanoid vision
 	fieldOfView: 2.094, // 120 degrees field of vision
-	flockAngle: 0,
+	hearingRange: 4, // range at which humanoids are influenced by hearing other humanoids
+	flockAngle: 0.5,
 	
 	currentTurn: 0,
 	frameCounter: 0,
@@ -72,6 +73,9 @@ z.init = function (spec) {
 	z.zombies = [];
 	z.resetStats();
 	z.updateStatistics();
+	z.currentTurn = 0;
+	z.frameCounter = 0;
+	z.simulatedTimeElapsed = 0;
 	z.log = '';
 	var i,j;
 	
