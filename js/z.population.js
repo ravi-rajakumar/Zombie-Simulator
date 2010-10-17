@@ -29,33 +29,6 @@ z.humanoid = function (spec) {
 		that.position.y = y;
 	};
 	
-	that.move = function () {
-		var movx = that.position.x + that.nextMove.dx,
-				movy = that.position.y + that.nextMove.dy;
-		
-		if (movx < 0)
-		{
-			movx = 0;
-		}
-		
-		if (movx > z.canvasWidth * z.scale)
-		{
-			movx = z.canvasWidth * z.scale;
-		}
-		
-		if (movy < 0)
-		{
-			movy = 0;
-		}
-		
-		if (movy > z.canvasHeight * z.scale)
-		{
-			movy = z.canvasHeight * z.scale;
-		}
-		
-		that.setPosition(movx, movy);
-	};
-	
 	that.chooseDirection = function () {
 		/*
 		 * direction is in radians clockwise, North = 0
@@ -102,9 +75,46 @@ z.humanoid = function (spec) {
 		return that.heading;
 	};
 	
-	that.chooseNextMove = function () {
-		that.nextMove.dx = Math.round(Math.sin(that.heading) * that.walkingSpeed * z.secondsPerTurn() * 1000) / 1000;
-		that.nextMove.dy = Math.round(0 - (Math.cos(that.heading) * that.walkingSpeed * z.secondsPerTurn()) * 1000) / 1000;
+
+	// Array of influences. Each item has an x influence, a y influence and a weight
+	that.influences = {x:0,y:0,w:1};
+	
+	that.chooseNextMove = function () {	
+		var hDelta = (Math.sin(that.heading) * that.walkingSpeed + that.influences.x) / that.influences.w,
+			vDelta = (0 - (Math.cos(that.heading) * that.walkingSpeed) + that.influences.y) / that.influences.w;
+		
+		// reset influence object after every move
+		that.influences = {x:0,y:0,w:1};
+		
+		that.nextMove.dx = Math.round(hDelta * z.secondsPerTurn() * 1000) / 1000;
+		that.nextMove.dy = Math.round(vDelta * z.secondsPerTurn() * 1000) / 1000;
+	};
+	
+	that.move = function () {
+		var movx = that.position.x + that.nextMove.dx,
+				movy = that.position.y + that.nextMove.dy;
+		
+		if (movx < 0)
+		{
+			movx = 0;
+		}
+		
+		if (movx > z.canvasWidth * z.scale)
+		{
+			movx = z.canvasWidth * z.scale;
+		}
+		
+		if (movy < 0)
+		{
+			movy = 0;
+		}
+		
+		if (movy > z.canvasHeight * z.scale)
+		{
+			movy = z.canvasHeight * z.scale;
+		}
+		
+		that.setPosition(movx, movy);
 	};
 	
 	that.nextAction = function () 
