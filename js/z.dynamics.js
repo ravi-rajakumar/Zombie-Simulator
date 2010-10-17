@@ -73,10 +73,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		currentHumanoid.influences.y += walkingSpeed * neighborVerticalDelta * persuasion;
 		currentHumanoid.influences.w += Math.abs(persuasion);
 		
-		// slow down if near an attractor
-		if (attraction > 0)
-		{
-			currentHumanoid.walkingSpeed = currentHumanoid.maxWalkingSpeed * distance / 20;
-		}
+		// slow down if near an attractor 
+		currentHumanoid.influences.a += attraction / distance;
 	}
 };

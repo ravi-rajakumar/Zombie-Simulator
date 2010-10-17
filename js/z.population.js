@@ -76,15 +76,20 @@ z.humanoid = function (spec) {
 	};
 	
 
-	// Array of influences. Each item has an x influence, a y influence and a weight
-	that.influences = {x:0,y:0,w:1};
+	// Array of influences. Each item has an x influence, a y influence, a weight, and a value for the strength of attraction/repulsion in the area
+	that.influences = {x:0,y:0,w:1,a:0};
 	
 	that.chooseNextMove = function () {	
+		// if the net attraction in the area is positive slow down according to its strength. This should be re-factored soon to change the humanoid's action choice to idle or rest
+		if (that.influences.a > 0) {
+			that.walkingSpeed = that.walkingSpeed / (that.influences.a * 40);
+		}
+		
 		var hDelta = (Math.sin(that.heading) * that.walkingSpeed + that.influences.x) / that.influences.w,
 			vDelta = (0 - (Math.cos(that.heading) * that.walkingSpeed) + that.influences.y) / that.influences.w;
 		
 		// reset influence object after every move
-		that.influences = {x:0,y:0,w:1};
+		that.influences = {x:0,y:0,w:1,a:0};
 		
 		that.nextMove.dx = Math.round(hDelta * z.secondsPerTurn() * 1000) / 1000;
 		that.nextMove.dy = Math.round(vDelta * z.secondsPerTurn() * 1000) / 1000;
