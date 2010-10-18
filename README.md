@@ -11,6 +11,8 @@ This is a web application for simulating interacting populations of humans and z
 - Herding
 - Queueing
 - Fight and flight
+- Idling
+- Boredom
 - Competition
 - Selflessness
 - Rest and recovery
