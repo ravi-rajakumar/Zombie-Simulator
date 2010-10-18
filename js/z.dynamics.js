@@ -1,7 +1,7 @@
 z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	var attraction = 0,
 		persuasion = 0,
-		walkingSpeed = currentHumanoid.walkingSpeed,
+		walkingSpeed = currentHumanoid.maxWalkingSpeed,
 		neighborHorizontalDelta = Math.sin(neighbor.heading),
 		neighborVerticalDelta = 0 - Math.cos(neighbor.heading),
 		headingScale = (distance > 0) ? walkingSpeed / distance : 1,

@@ -50,6 +50,7 @@ var z = {
 	humanAgressiveness: 1,
 	humanStaminaCoefficient: 1,
 	humanHungerCoefficient: 1,
+	humanBoredomFactor: .0001,
 	naturalbirthrate: 14,	// per 1k, per year
 	naturaldeathrate: 8,	// per 1k, per year
 	
@@ -199,7 +200,9 @@ z.advanceTurn = function () {
 			neighborIndex = 0,
 			distance = 0,
 			neighbor = null;
-
+		
+		// reset influence object at the start of every move
+		humanoid.influences = {x:0,y:0,w:1,a:0};
 		
 		// if the humanoid is fighting and their target is still in range, we skip all other influence checks -- this means that targets are sticky
 		if (humanoid.currentTarget !== null) 
@@ -267,6 +270,14 @@ z.advanceTurn = function () {
 		
 		switch (humanoid.nextAction())
 		{
+			case 'idle':
+				// hang out around other humans
+				humanoid.walkingSpeed = humanoid.walkingSpeed / (humanoid.influences.a * 100);
+				// convert heading to dx and dy
+				humanoid.chooseNextMove();
+				// move the humanoid
+				humanoid.move();
+				break;
 			case 'walk':
 				// convert heading to dx and dy
 				humanoid.chooseNextMove();
@@ -274,10 +285,10 @@ z.advanceTurn = function () {
 				humanoid.move();
 				break;
 			case 'run':
+				// accelerate
+				humanoid.walkingSpeed = 3 * humanoid.walkingSpeed;
 				// convert heading to dx and dy
 				humanoid.chooseNextMove();
-				// move the humanoid
-				humanoid.walkingSpeed = 3 * humanoid.walkingSpeed;
 				// move the humanoid
 				humanoid.move();
 				break;
