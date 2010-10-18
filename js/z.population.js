@@ -136,8 +136,6 @@ z.human = function (spec) {
 		return (that.recognitionRange > z.humanRecognitionRange) ? z.range(that, neighbor) <= that.recognitionRange : z.range(that, neighbor) <= z.humanRecognitionRange;	
 	};
 	
-	that.bored = true;
-	
 	// this will increase quickly as the human survives fights
 	that.zombieKillingFitness = 0.01; 
 	
@@ -198,11 +196,9 @@ z.human = function (spec) {
 		} 
 		// in the presence of attractors, humans will idle until they get sufficiently restless
 		else if (Math.random() < (z.humanBoredomFactor * z.secondsPerTurn() / 3) || that.influences.a === 0) {
-			that.bored = true;
 			return 'walk';
 		}
 		else {
-			that.bored = false;
 			return 'idle';
 		}
 	};
