@@ -211,6 +211,11 @@ z.human = function (spec) {
 		} 
 		// in the presence of attractors, humans will idle until they get sufficiently restless
 		else if (Math.random() < (z.humanBoredomFactor * z.secondsPerTurn() / 3) || that.influences.a === 0) {
+			// walk away for at least 5-10 minutes		
+			for (var i = 0; i < ((Math.random() * 300 + 300)/z.secondsPerTurn()); i++)
+			{
+				currentHumanoid.actionQueue.push('walk');
+			}
 			return 'walk';
 		}
 		else {
