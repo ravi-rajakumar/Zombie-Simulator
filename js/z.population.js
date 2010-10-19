@@ -9,14 +9,14 @@ z.humanoid = function (spec) {
 	
 	that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	
-	that.heading = spec.heading || Math.round(Math.random() * Math.PI * 2000) / 1000;
+	that.heading = spec.heading || Math.random() * Math.PI * 2;
 	that.speedVariance = Math.random() / 5 + 0.9;
 	that.maxWalkingSpeed = spec.maxWalkingSpeed || that.speedVariance * z.humanBaseWalkingSpeed();
 	that.walkingSpeed = that.maxWalkingSpeed;
 	
 	that.position = {
-		x: (spec.position.x) ? spec.position.x : Math.round(Math.random() * z.canvasWidth * z.scale),
-		y: (spec.position.y) ? spec.position.y : Math.round(Math.random() * z.canvasHeight * z.scale)
+		x: (spec.position.x) ? spec.position.x : Math.random() * z.canvasWidth * z.scale,
+		y: (spec.position.y) ? spec.position.y : Math.random() * z.canvasHeight * z.scale
 	};
 	
 	that.nextMove = {
@@ -37,7 +37,7 @@ z.humanoid = function (spec) {
 		 * going more or less in the direction they are already going unless they
 		 * encounter an influence
 		 */
-		that.heading = Math.round((that.heading + (Math.random() * Math.PI / 4) - Math.PI / 8) % (Math.PI * 2) * 1000) / 1000;
+		that.heading = (that.heading + Math.ceil(Math.random() * Math.PI / 8 * 1000) / 1000 - Math.round(Math.PI * 1000 / 16) / 1000) %  (Math.round(Math.PI * 2000) / 1000);
 		
 		// the following functions set people on headings away from the walls when they hit them
 		if (that.position.x <= 0)
@@ -83,17 +83,18 @@ z.humanoid = function (spec) {
 		var hDelta = (Math.sin(that.heading) * that.walkingSpeed + (that.influences.x * that.walkingSpeed / that.maxWalkingSpeed)) / that.influences.w,
 			vDelta = (0 - (Math.cos(that.heading) * that.walkingSpeed) + (that.influences.y * that.walkingSpeed / that.maxWalkingSpeed)) / that.influences.w;
 		
-		that.nextMove.dx = Math.round(hDelta * z.secondsPerTurn() * 1000) / 1000;
-		that.nextMove.dy = Math.round(vDelta * z.secondsPerTurn() * 1000) / 1000;
+		that.nextMove.dx = hDelta * z.secondsPerTurn();
+		that.nextMove.dy = vDelta * z.secondsPerTurn();
 	};
 	
 	that.move = function () {
 		var movx = that.position.x + that.nextMove.dx,
-				movy = that.position.y + that.nextMove.dy;
+			movy = that.position.y + that.nextMove.dy;
 		
-		if (movx < 0)
+		if (movx <= 0)
 		{
 			movx = 0;
+			that.heading = (Math.PI - that.heading) % Math.PI;
 		}
 		
 		if (movx > z.canvasWidth * z.scale)
@@ -101,9 +102,17 @@ z.humanoid = function (spec) {
 			movx = z.canvasWidth * z.scale;
 		}
 		
-		if (movy < 0)
+		if (movy <= 0)
 		{
 			movy = 0;
+			if (that.heading > (3 / 2 * Math.PI))
+			{
+				that.heading = ((3 / 2 * Math.PI) - that.heading) % (3 / 2 * Math.PI); // reflect off of top
+			}
+			else if (that.heading < (Math.PI / 2))
+			{
+				that.heading = Math.PI - that.heading; // reflect off of top
+			}
 		}
 		
 		if (movy > z.canvasHeight * z.scale)
@@ -148,17 +157,19 @@ z.human = function (spec) {
 	that.zombifyMsg = 'live-turn';
 	
 	that.zombify = function () {
-		that.livetimer = z.setTimeout(function()
-		{
-			z.zombies.push(z.zombie(that));
-			z.stats.hZombified++;
-			z.message(that.zombifyMsg);	// remove later
-			that.zombify = function () {};
-			that.nextAction = function () 
+		if (that.deadtimer === null && that.livetimer === null) {
+			that.livetimer = z.setTimeout(function()
 			{
-				return 'die';
-			};
-		}, z.zombificationDuration);
+				z.zombies.push(z.zombie(that));
+				z.stats.hZombified++;
+				z.message(that.zombifyMsg);	// remove later
+				that.zombify = function () {};
+				that.nextAction = function () 
+				{
+					return 'die';
+				};
+			}, z.zombificationDuration);
+		}
 		
 		that.zombify = null; // this should prevent duplicate zombies
 		
@@ -172,9 +183,10 @@ z.human = function (spec) {
 			return 'die';
 		};
 		
+		// this gets set right away because getting killed overrides any pending 'live-turn' event
 		that.zombifyMsg = 'dead-turn';
 		
-		if (that.zombify !== null && that.livetimer === null)
+		if (that.deadtimer === null && that.livetimer === null)
 		{
 			that.deadtimer = z.setTimeout(function()
 			{		
@@ -184,6 +196,9 @@ z.human = function (spec) {
 				that.zombify = function () {}; 
 			}, z.zombificationDuration);
 		}
+		
+		// remove this function so that it can't be called again
+		that.die = function () {};
 	};
 	
 	that.toString = function () {

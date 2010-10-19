@@ -71,6 +71,10 @@ z.performance = {
 	frameCounter: 0,
 	
 	init: function () {
+		markedTime = 0;
+		markedTurn = 0;
+		markedFrame = 0;
+		frameCounter = 0;
 		this.mark();
 	},
 	

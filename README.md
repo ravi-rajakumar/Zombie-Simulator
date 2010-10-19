@@ -54,7 +54,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Humans learn from fights and their proficiency improves to a maximum of 22 times a zombie's killing proficiency (about a 63% chance of killing the zombie in an average 4-round fight)
 - Zombies are five times as likely to be only temporarily killed in a fight as permanently killed
 - Interval between actions in a fight: 1s
-- Variance in direction of humanoid travel, absent external influences: ±12.25 degrees/minute
+- Variance in direction of humanoid travel, absent external influences: ±11.25 degrees/turn
 - Effective human visual field: 120º
 - Time to turn zombie: 3 hours
 - Natural Human Birth Rate: 14/k/year

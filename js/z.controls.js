@@ -43,11 +43,6 @@ z.updateSettings = function () {
 };
 
 z.play = function () {
-	if (z.humans.length < 1 && z.zombies.length < 1)
-	{
-		$('#settings').submit();
-	}
-	
 	z.stop();
 	z.performance.init();
 	

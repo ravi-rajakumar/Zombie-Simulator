@@ -58,22 +58,22 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		}
 		
 		// humans are automatically repulsed by other bodies being too close to them
-		if (distance < 0.5 && !currentHumanoid.isZombie() && !neighbor.isZombie())
-		{
-			attraction = -0.5;
+		if (distance < 0.5 && !currentHumanoid.isZombie() && !neighbor.isZombie()) {
+			currentHumanoid.influences.x -= 0.5 - (neighbor.position.x - currentHumanoid.position.x);
+			currentHumanoid.influences.y -= 0.5 - (neighbor.position.y - currentHumanoid.position.y);
 		}
-		
-		// apply herding effect
-		currentHumanoid.influences.x += headingScale * (neighbor.position.x - currentHumanoid.position.x) * attraction;
-		currentHumanoid.influences.y += headingScale * (neighbor.position.y - currentHumanoid.position.y) * attraction;
-		currentHumanoid.influences.w += Math.abs(attraction);
-		
-		// apply queueing effect
-		currentHumanoid.influences.x += walkingSpeed * neighborHorizontalDelta * persuasion;
-		currentHumanoid.influences.y += walkingSpeed * neighborVerticalDelta * persuasion;
-		currentHumanoid.influences.w += Math.abs(persuasion);
-		
-		// slow down if near an attractor 
+		else {
+			// apply herding effect
+			currentHumanoid.influences.x += headingScale * (neighbor.position.x - currentHumanoid.position.x) * attraction;
+			currentHumanoid.influences.y += headingScale * (neighbor.position.y - currentHumanoid.position.y) * attraction;
+			currentHumanoid.influences.w += Math.abs(attraction);
+			
+			// apply queueing effect
+			currentHumanoid.influences.x += walkingSpeed * neighborHorizontalDelta * persuasion;
+			currentHumanoid.influences.y += walkingSpeed * neighborVerticalDelta * persuasion;
+			currentHumanoid.influences.w += Math.abs(persuasion);
+		}
+
 		currentHumanoid.influences.a += attraction / distance;
 	}
 };
