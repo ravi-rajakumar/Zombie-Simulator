@@ -61,6 +61,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		if (distance < 0.5 && !currentHumanoid.isZombie() && !neighbor.isZombie()) {
 			currentHumanoid.influences.x -= 0.5 - (neighbor.position.x - currentHumanoid.position.x);
 			currentHumanoid.influences.y -= 0.5 - (neighbor.position.y - currentHumanoid.position.y);
+			currentHumanoid.influences.a = 0;
 		}
 		else {
 			// apply herding effect

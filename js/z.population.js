@@ -206,16 +206,16 @@ z.human = function (spec) {
 	};
 	
 	that.nextAction = function () {
+		// too much crowding in one spot makesthat location less appealing
+		if (that.influences.w > 20 * z.humanHerding) {
+			that.influences.a = 0;
+		}
+	
 		if (that.actionQueue.length > 0) {
 			return that.actionQueue[0];
 		} 
 		// in the presence of attractors, humans will idle until they get sufficiently restless
-		else if (Math.random() < (z.humanBoredomFactor * z.secondsPerTurn() / 3) || that.influences.a === 0) {
-			// walk away for at least 5-10 minutes		
-			for (var i = 0; i < ((Math.random() * 300 + 300)/z.secondsPerTurn()); i++)
-			{
-				currentHumanoid.actionQueue.push('walk');
-			}
+		else if (Math.random() < (z.humanBoredomFactor * z.secondsPerTurn() / 3) || that.influences.a <= 0) {
 			return 'walk';
 		}
 		else {
