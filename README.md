@@ -8,14 +8,19 @@
 
 This is a web application for simulating interacting populations of humans and zombies. It should mathematically model such behaviors as:
 
-- Herding
-- Queueing
-- Fight and flight
-- Idling
-- Boredom
+- Herding *
+- Queueing *
+- Learning *
+- Fight and flight *
+- Idling *
+- Boredom *
 - Competition
 - Selflessness
+- Friendship
 - Rest and recovery
+- Communications and knowledge transfer
+
+* = behaviors that are currently experimentally implemented
 
 The application's purpose is to enable users to see what outcomes are produced based on various starting conditions and baseline assumptions about the populations' behaviors and physical constraints. Users can then test hypotheses about the relative advantages of specific characteristics by experimenting with different starting conditions. There are various game-like objectives that could arise from this framework, including:
 
@@ -59,6 +64,8 @@ The math in this simulation depends on a number of baseline properties that were
 - Time to turn zombie: 3 hours
 - Natural Human Birth Rate: 14/k/year
 - Natural Human Death Rate: 8/k/year
+- Humans are attracted to other humans, but resist overcrowding
+- Humans will 'idle' around one another for about 0-3 hours before getting bored and wandering off
 
 ## Units
 

@@ -158,6 +158,7 @@ z.advanceTurn = function () {
 	if (Math.random() < (((hcount / 1000) * z.naturaldeathrate * z.secondsPerTurn()) / (86400 * 365))) 
 	{
 		var ndeath = z.humans.pop();
+		z.updateStatistics();
 		ndeath.zombify = null;
 		z.message('natural death');
 		z.stats.hNaturalDeaths++;
@@ -173,6 +174,7 @@ z.advanceTurn = function () {
 			hcount -= 1;
 			j -= 1;
 			z.stats.hKilled++;
+			z.updateStatistics();
 		}
 	}
 	
@@ -184,6 +186,7 @@ z.advanceTurn = function () {
 			// remove them from the population
 			z.zombies.splice(k,1);
 			z.stats.zDestroyed++;
+			z.updateStatistics();
 			zcount -= 1;
 			k -= 1;
 		}
