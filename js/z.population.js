@@ -186,7 +186,7 @@ z.human = function (spec) {
 		// this gets set right away because getting killed overrides any pending 'live-turn' event
 		that.zombifyMsg = 'dead-turn';
 		
-		if (that.deadtimer === null && that.livetimer === null)
+		if (that.zombify !== null && that.deadtimer === null && that.livetimer === null)
 		{
 			that.deadtimer = z.setTimeout(function()
 			{		
