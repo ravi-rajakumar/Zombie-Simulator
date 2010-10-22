@@ -79,6 +79,7 @@ z.init = function (spec) {
 	z.frameCounter = 0;
 	z.simulatedTimeElapsed = 0;
 	z.log = '';
+	$('#messages p').html('');
 	var i,j;
 	
 	z.canvas = document.getElementById('zombie-world');
