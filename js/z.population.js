@@ -162,13 +162,14 @@ z.human = function (spec) {
 			{
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified++;
-				z.message(that.zombifyMsg);	// remove later
-				that.zombify = function () {};
+				z.message(that.zombifyMsg);
 				that.nextAction = function () 
 				{
 					return 'die';
 				};
+				z.zombiesPending -=1;
 			}, z.zombificationDuration);
+			z.zombiesPending +=1;
 		}
 		
 		that.zombify = null; // this should prevent duplicate zombies
@@ -192,9 +193,11 @@ z.human = function (spec) {
 			{		
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified++;
-				z.message(that.zombifyMsg);	// remove later
-				that.zombify = function () {}; 
+				z.message(that.zombifyMsg);
+				that.zombify = null; 
+				z.zombiesPending -=1;
 			}, z.zombificationDuration);
+			z.zombiesPending +=1;
 		}
 		
 		// remove this function so that it can't be called again

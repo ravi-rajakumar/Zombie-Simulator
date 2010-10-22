@@ -132,3 +132,11 @@ z.resetStats = function () {
 		z.stats[i] = 0;
 	}
 };
+
+z.message = function (msg) {
+	$('#messages p').html('<span id="msg"><strong>' + msg + '</strong></span>&nbsp;');
+	z.log += msg + '\n';
+	var messageTimeout = setTimeout(function () {
+		$('#messages p #msg').fadeOut(1000);
+		}, 1000);
+};

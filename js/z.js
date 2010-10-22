@@ -62,6 +62,7 @@ var z = {
 	zombieHerding: 0.5,
 	zombieQueueing: 1,
 	zombieBrainEatingEfficiency: 50,
+	zombiesPending: 0,
 	
 	// populations
 	humans: [],
@@ -112,15 +113,6 @@ z.init = function (spec) {
 	z.updateTimer();
 };
 
-z.message = function (msg) {
-	$('#messages p').html('<span id="msg"><strong>' + msg + '</strong></span>&nbsp;');
-	z.log += msg + '\n';
-	var messageTimeout = setTimeout(function () {
-		$('#messages p #msg').fadeOut(1000);
-		}, 1000);
-};
-
-
 /* this is a custom version of settimeout, designed to account for the pauses in the simulation. 
 	It checks against the game's time elapsed (in seconds), which doesn't increment when paused */ 
 z.setTimeout = function (fn, t) {
@@ -144,6 +136,13 @@ z.setTimeout = function (fn, t) {
 z.advanceTurn = function () {
 	var hcount = z.humans.length,
 		zcount = z.zombies.length;
+		
+	if (zcount === 0 && z.zombiesPending <= 0) {
+		z.complete('Zombies');
+	}
+	else if (hcount === 0) {
+		z.complete('Humans');
+	}	
 	
 	z.currentTurn++;
 	z.simulatedTimeElapsed += Math.round(z.secondsPerTurn()*1000)/1000;
