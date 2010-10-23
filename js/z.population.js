@@ -163,6 +163,7 @@ z.human = function (spec) {
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified++;
 				z.message(that.zombifyMsg);
+				that.zombify = null; 
 				that.nextAction = function () 
 				{
 					return 'die';
