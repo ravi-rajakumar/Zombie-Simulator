@@ -20,7 +20,7 @@ This is a web application for simulating interacting populations of humans and z
 - Rest and recovery
 - Communications and knowledge transfer
 
-* = behaviors that are currently experimentally implemented
+'*' = behaviors that are currently experimentally implemented
 
 The application's purpose is to enable users to see what outcomes are produced based on various starting conditions and baseline assumptions about the populations' behaviors and physical constraints. Users can then test hypotheses about the relative advantages of specific characteristics by experimenting with different starting conditions. There are various game-like objectives that could arise from this framework, including:
 
