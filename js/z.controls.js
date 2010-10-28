@@ -69,7 +69,7 @@ z.complete = function (extinct) {
 	var msg = 'Simulation ended. ' + extinct + ' extinct after ' + $('#days').text() + ' ' + $('#hours').text() + ' ' + $('#minutes').text() + ' ' + $('#seconds').text();
 	$('#messages p').html('<strong>' + msg + '</strong>&nbsp;');
 	z.log += msg + '\n';
-}
+};
 
 $(document).ready(function ($) {
 	var controls = $('#controls-human, #controls-zombie, #controls-general');
