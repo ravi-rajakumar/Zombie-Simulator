@@ -2,7 +2,7 @@ z.draw = function () {
 	if (z.canvas.getContext)
 	{
 		var context = z.canvas.getContext('2d'),
-				i = 0,
+				i = 0, j = 0,
 				paint = function (o) {
 					var radius = o.isZombie() ? 1.5 : 1;
 					
@@ -25,12 +25,12 @@ z.draw = function () {
 		z.frameCounter++;
 		context.clearRect(0, 0, z.canvas.width, z.canvas.height);
 		
-		for (i = 0; i < z.humans.length; i++)
+		for (i = 0, j = z.humans.length; i < j; i++)
 		{
 			paint(z.humans[i]);
 		}
 		
-		for (i = 0; i < z.zombies.length; i++)
+		for (i = 0, j = z.zombies.length; i < j; i++)
 		{
 			paint(z.zombies[i]);
 		}

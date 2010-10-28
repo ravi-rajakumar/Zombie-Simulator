@@ -50,7 +50,7 @@ var z = {
 	humanAgressiveness: 1,
 	humanStaminaCoefficient: 1,
 	humanHungerCoefficient: 1,
-	humanBoredomFactor: .001,
+	humanBoredomFactor: 3e-4,
 	naturalbirthrate: 14,	// per 1k, per year
 	naturaldeathrate: 8,	// per 1k, per year
 	
@@ -136,7 +136,8 @@ z.setTimeout = function (fn, t) {
 
 z.advanceTurn = function () {
 	var hcount = z.humans.length,
-		zcount = z.zombies.length;
+		zcount = z.zombies.length,
+		polarity = 1;
 		
 	if (zcount === 0 && z.zombiesPending <= 0) {
 		z.complete('Zombies');
@@ -197,15 +198,21 @@ z.advanceTurn = function () {
 	z.neighbors = z.mergeSort(z.neighbors, 'x');
 	
 	// here is the start of the main loop through the humanoids, calculating influences and choices and performing actions for the turn
-	for (var index = 0; index < z.neighbors.length; index++) {
-		var humanoid = z.neighbors[index],
+	for (var index = 0, max = z.neighbors.length; index < max; index++) {
+		var humanoid = null,
 			proximityFail = false,
 			neighborIndex = 0,
 			distance = 0,
 			neighbor = null;
 		
+		if (polarity === 1) {
+			humanoid = z.neighbors[index];
+		} else {
+			humanoid = z.neighbors[index];
+		}
+		
 		// reset influence object at the start of every move
-		humanoid.influences = {x:0,y:0,w:1,a:0};
+		humanoid.influences = {x:0,y:0,w:1,a:0,r:20};
 		
 		// if the humanoid is fighting and their target is still in range, we skip all other influence checks -- this means that targets are sticky
 		if (humanoid.currentTarget !== null) 
@@ -228,7 +235,7 @@ z.advanceTurn = function () {
 			while (proximityFail === false)
 			{
 				neighbor = z.neighbors[neighborIndex];
-				if (neighborIndex >= z.neighbors.length)
+				if (neighborIndex >= max)
 				{
 					proximityFail = true;
 				}
@@ -271,47 +278,11 @@ z.advanceTurn = function () {
 			}
 		}
 		
-		switch (humanoid.nextAction())
-		{
-			case 'idle':
-				// hang out around other humans
-				humanoid.walkingSpeed = humanoid.walkingSpeed / (humanoid.influences.a * 100);
-				// convert heading to dx and dy
-				humanoid.chooseNextMove();
-				// move the humanoid
-				humanoid.move();
-				break;
-			case 'walk':
-				// convert heading to dx and dy
-				humanoid.chooseNextMove();
-				// move the humanoid
-				humanoid.move();
-				break;
-			case 'run':
-				// accelerate
-				humanoid.walkingSpeed = 3 * humanoid.walkingSpeed;
-				// convert heading to dx and dy
-				humanoid.chooseNextMove();
-				// move the humanoid
-				humanoid.move();
-				break;
-			case 'fight':
-				z.fight(humanoid, humanoid.currentTarget);
-				break;
-			default: 
-				// convert heading to dx and dy
-				humanoid.chooseNextMove();
-				// move the humanoid
-				humanoid.move();
-		}
-				
-		// reset walking speed
-		humanoid.walkingSpeed = humanoid.maxWalkingSpeed;
-	
-		// clear the current action	
-		humanoid.actionQueue.shift();
-	
+		humanoid.doNext();
+		
 	}
+	
+	polarity = 0 - polarity;
 	
 	// increment zombie recognition range until 10m
 	if (z.humanRecognitionRange < 10)

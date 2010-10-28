@@ -33,11 +33,13 @@ z.humanoid = function (spec) {
 		/*
 		 * direction is in radians clockwise, North = 0
 		 *
-		 * random deviation from existing heading, so humans will tend to keep
-		 * going more or less in the direction they are already going unless they
-		 * encounter an influence
 		 */
-		that.heading = (that.heading + Math.ceil(Math.random() * Math.PI / 8 * 1000) / 1000 - Math.round(Math.PI * 1000 / 16) / 1000) %  (Math.round(Math.PI * 2000) / 1000);
+		// random deviation from existing heading, so humans will tend to keep going more or less in the direction they are already going unless they encounter an influence. If they are under an influence then they deviate less from their current path.
+		if (that.influences.w === 1) {
+			that.heading = that.heading + (Math.random() * Math.PI / 8) - (Math.PI / 16) % (Math.PI * 2);
+		} else {
+			that.heading = that.heading + (Math.random() * Math.PI / 64) - (Math.PI / 128) % (Math.PI * 2);
+		}
 		
 		// the following functions set people on headings away from the walls when they hit them
 		if (that.position.x <= 0)
@@ -76,8 +78,8 @@ z.humanoid = function (spec) {
 	};
 	
 
-	// Array of influences. Each item has an x influence, a y influence, a weight, and a value for the strength of attraction/repulsion in the area
-	that.influences = {x:0,y:0,w:1,a:0};
+	// Array of influences. Each item has an x influence, a y influence, a weight, a value for the strength of attraction/repulsion in the area, and a value for the nearest attractor's range
+	that.influences = {x:0,y:0,w:1,a:0,r:20};
 	
 	that.chooseNextMove = function () {			
 		var hDelta = (Math.sin(that.heading) * that.walkingSpeed + (that.influences.x * that.walkingSpeed / that.maxWalkingSpeed)) / that.influences.w,
@@ -121,6 +123,60 @@ z.humanoid = function (spec) {
 		}
 		
 		that.setPosition(movx, movy);
+	};
+	
+	that.walk = function () {
+		// slow down around attractors
+		if (that.influences.a > 0 && 10 > that.influences.r > 0.25 && !that.isZombie()) {
+			that.walkingSpeed = that.walkingSpeed / (1 + (10 - that.influences.r) * 10);
+		}
+		// convert heading to dx and dy
+		that.chooseNextMove();
+		// move the humanoid
+		that.move();
+	};
+	
+	that.idle = function () {
+		// hang out around other humans
+		that.walkingSpeed = that.walkingSpeed / (2000);
+		// convert heading to dx and dy
+		that.chooseNextMove();
+		// move the humanoid
+		that.move();
+	};
+	
+	that.run = function () {
+		// accelerate
+		that.walkingSpeed = 3 * that.walkingSpeed;
+		// convert heading to dx and dy
+		that.chooseNextMove();
+		// move the humanoid
+		that.move();
+	};
+	
+	that.doNext = function () {
+		switch (that.nextAction()) {
+			case 'idle':
+				that.idle();
+				break;
+			case 'walk':
+				that.walk();
+				break;
+			case 'run':
+				that.run();
+				break;
+			case 'fight':
+				z.fight(that, that.currentTarget);
+				break;
+			default: 
+				that.walk();
+		}
+				
+		// reset walking speed
+		that.walkingSpeed = that.maxWalkingSpeed;
+	
+		// clear the current action	
+		that.actionQueue.shift();
 	};
 	
 	that.isZombie = function () {
@@ -218,13 +274,16 @@ z.human = function (spec) {
 	
 		if (that.actionQueue.length > 0) {
 			return that.actionQueue[0];
+		} else if (that.influences.a > 0 && that.influences.r < 2) {
+			return 'idle';
 		} 
 		// in the presence of attractors, humans will idle until they get sufficiently restless
-		else if (Math.random() < (z.humanBoredomFactor * z.secondsPerTurn() / 3) || that.influences.a <= 0) {
+		else if (Math.random() < z.humanBoredomFactor) {
+			that.heading = (that.heading + Math.PI) % (Math.PI * 2);
 			return 'walk';
 		}
 		else {
-			return 'idle';
+			return 'walk';
 		}
 	};
 	
@@ -259,7 +318,6 @@ z.zombie = function (spec) {
 		} 
 		else 
 		{
-		// more choices to come
 			return 'walk';
 		}
 	};
