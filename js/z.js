@@ -136,8 +136,7 @@ z.setTimeout = function (fn, t) {
 
 z.advanceTurn = function () {
 	var hcount = z.humans.length,
-		zcount = z.zombies.length,
-		polarity = 1;
+		zcount = z.zombies.length;
 		
 	if (zcount === 0 && z.zombiesPending <= 0) {
 		z.complete('Zombies');
@@ -199,17 +198,11 @@ z.advanceTurn = function () {
 	
 	// here is the start of the main loop through the humanoids, calculating influences and choices and performing actions for the turn
 	for (var index = 0, max = z.neighbors.length; index < max; index++) {
-		var humanoid = null,
+		var humanoid = z.neighbors[index],
 			proximityFail = false,
 			neighborIndex = 0,
 			distance = 0,
 			neighbor = null;
-		
-		if (polarity === 1) {
-			humanoid = z.neighbors[index];
-		} else {
-			humanoid = z.neighbors[index];
-		}
 		
 		// reset influence object at the start of every move
 		humanoid.influences = {x:0,y:0,w:1,a:0,r:20};
@@ -279,10 +272,7 @@ z.advanceTurn = function () {
 		}
 		
 		humanoid.doNext();
-		
 	}
-	
-	polarity = 0 - polarity;
 	
 	// increment zombie recognition range until 10m
 	if (z.humanRecognitionRange < 10)
