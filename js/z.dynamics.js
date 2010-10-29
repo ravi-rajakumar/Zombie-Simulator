@@ -4,6 +4,8 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		walkingSpeed = currentHumanoid.maxWalkingSpeed,
 		neighborHorizontalDelta = Math.sin(neighbor.heading),
 		neighborVerticalDelta = 0 - Math.cos(neighbor.heading),
+		diffX = neighbor.position.x - currentHumanoid.position.x,
+		diffY = neighbor.position.y - currentHumanoid.position.y,
 		headingScale = (distance > 0) ? walkingSpeed / distance : 1,
 		currentHumanoidAngle = 0,
 		newHeading = 0,
@@ -11,12 +13,11 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		allforces = 0,
 		influenceEffect = {x:0,y:0,w:0};
 	
-	// humans are automatically repulsed by other bodies being too close to them
+	// humans automatically bounce off of other bodies that are too close to them
 	if (distance < 0.25 && !currentHumanoid.isZombie() && !neighbor.isZombie()) {
-		currentHumanoid.influences.x -= 0.25 - (neighborHorizontalDelta);
-		currentHumanoid.influences.y -= 0.25 - (neighborVerticalDelta);
+		currentHumanoid.setPosition(currentHumanoid.position.x - (0.25 - diffX), currentHumanoid.position.y - (0.25 - diffY));
 	} else {
-		influence = ((neighbor.position.y - currentHumanoid.position.y) >= 0) ? Math.PI - Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance) : (Math.PI * 2 + Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance)) % (Math.PI * 2);
+		influence = ((diffY) >= 0) ? Math.PI - Math.asin((diffX) / distance) : (Math.PI * 2 + Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance)) % (Math.PI * 2);
 		
 		// can currentHumanoid actually see or hear the neighbor?
 		if (Math.abs(currentHumanoid.heading - influence) <= z.fieldOfView / 2)
