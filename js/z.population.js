@@ -169,7 +169,7 @@ z.humanoid = function (spec) {
 				z.fight(that, that.currentTarget);
 				break;
 			default: 
-				that.walk();
+				that.idle();
 		}
 				
 		// reset walking speed

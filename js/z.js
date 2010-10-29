@@ -50,7 +50,7 @@ var z = {
 	humanAgressiveness: 1,
 	humanStaminaCoefficient: 1,
 	humanHungerCoefficient: 1,
-	humanBoredomFactor: 3e-4,
+	humanBoredomFactor: 3e-6,
 	naturalbirthrate: 14,	// per 1k, per year
 	naturaldeathrate: 8,	// per 1k, per year
 	
