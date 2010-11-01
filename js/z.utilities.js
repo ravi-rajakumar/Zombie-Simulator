@@ -5,39 +5,24 @@ z.mergeSort = function (humanoids, axis) {
 			merge = function (left, right, axis) {
 			var result = [];
 			
-			while (left.length > 0 || right.length > 0)
-			{
-				if (left.length > 0 && right.length > 0)
-				{
-					if (axis === 'x')
-					{
-						if (left[0].position.x <= right[0].position.x)
-						{
+			while (left.length > 0 || right.length > 0) {
+				if (left.length > 0 && right.length > 0) {
+					if (axis === 'x') {
+						if (left[0].position.x <= right[0].position.x) {
 							result.push(left.shift());
+						} else {
+							result.push(right.shift());
 						}
-						else
-						{
+					} else if (axis === 'y') {
+						if (left[0].position.y <= right[0].position.y) {
+							result.push(left.shift());
+						} else {
 							result.push(right.shift());
 						}
 					}
-					else if (axis === 'y')
-					{
-						if (left[0].position.y <= right[0].position.y)
-						{
-							result.push(left.shift());
-						}
-						else
-						{
-							result.push(right.shift());
-						}
-					}
-				}
-				else if (left.length > 0)
-				{
+				} else if (left.length > 0) {
 					result.push(left.shift());
-				}
-				else if (right.length > 0)
-				{
+				} else if (right.length > 0) {
 					result.push(right.shift());
 				}
 			}
@@ -105,8 +90,7 @@ z.performance = {
 	// the current turn and current frame variables are in the global z object. To be sure we are actually measuring the advance turn and redraw events, they will be updated from within those functions.
 	logTPS: function (fn) {
 		// once every 50 turns, starting with turn 10, reset and recalibrate
-		if ((z.currentTurn % 50) - 10 === 0)	
-		{
+		if ((z.currentTurn % 50) - 10 === 0) {
 			z.actualTurnsPerSecond = this.calculateRate(z.currentTurn, this.markedTurn);			
 	
 			// update the statistics displayed by the simulation. Since redraws elements, don't do it every turn
@@ -129,7 +113,9 @@ z.stats = {
 
 z.resetStats = function () {
 	for (var i in z.stats) {
-		z.stats[i] = 0;
+		if (z.stats.hasOwnProperty(i)) {
+			z.stats[i] = 0;
+		}
 	}
 };
 

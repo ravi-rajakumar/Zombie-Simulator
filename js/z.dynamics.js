@@ -15,30 +15,24 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	
 	// humans automatically bounce off of other bodies that are too close to them
 	if (distance < 0.25 && !currentHumanoid.isZombie() && !neighbor.isZombie()) {
-		currentHumanoid.setPosition(currentHumanoid.position.x - (0.25 - diffX), currentHumanoid.position.y - (0.25 - diffY));
+		currentHumanoid.setPosition(currentHumanoid.position.x - (diffX * 0.25 / distance), currentHumanoid.position.y - (diffY * 0.25 / distance));
 	} else {
 		influence = ((diffY) >= 0) ? Math.PI - Math.asin((diffX) / distance) : (Math.PI * 2 + Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance)) % (Math.PI * 2);
 		
 		// can currentHumanoid actually see or hear the neighbor?
-		if (Math.abs(currentHumanoid.heading - influence) <= z.fieldOfView / 2)
-		{
-			if (!currentHumanoid.isZombie())
-			{
+		if (Math.abs(currentHumanoid.heading - influence) <= z.fieldOfView / 2) {
+			if (!currentHumanoid.isZombie()) {
 				// humans are automatically attracted to other humanoids unless they recognize them as zombies
-				if (!neighbor.isZombie() || !currentHumanoid.recognizes(neighbor))
-				{
+				if (!neighbor.isZombie() || !currentHumanoid.recognizes(neighbor)) {
 					attraction = z.humanHerding;
 					persuasion = z.humanQueueing;
 					
-				}
-				else
-				{
+				} else {
 					attraction = -1;
 					persuasion = 0;
 					// drop everything and run away for 10 seconds
 					currentHumanoid.actionQueue = [];
-					for (var i = 0; i < (10/z.secondsPerTurn()); i++)
-					{
+					for (var i = 0; i < (10/z.secondsPerTurn()); i++) {
 						currentHumanoid.actionQueue.push('run');
 					}
 					// after an encounter with a zombie, humans learn to recognize them better
@@ -49,18 +43,15 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 			}
 			
 			// zombies are strongly attracted to humans
-			if (currentHumanoid.isZombie() && !neighbor.isZombie())
-			{
+			if (currentHumanoid.isZombie() && !neighbor.isZombie()) {
 				attraction = 1;
 				persuasion = 1;
 			}
 			
-			if (currentHumanoid.isZombie() && neighbor.isZombie())
-			{
+			if (currentHumanoid.isZombie() && neighbor.isZombie()) {
 				// zombies are somewhat attracted to each other
 				attraction = z.zombieHerding;
 				persuasion = z.zombieQueueing;
-				
 			}
 			
 			// apply herding effect
@@ -75,10 +66,16 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	
 			currentHumanoid.influences.a += attraction / distance;
 				
-			// store the distance to the nearest attractor
+			// store the distance to the nearest attractor for calculating whether to idle
 			if (distance < currentHumanoid.influences.r && attraction > 0) {
 				currentHumanoid.influences.r = distance;
 			}
+			 
+			// too much crowding in one spot makes that location less appealing
+			if (currentHumanoid.influences.w > 8 * z.humanHerding) {
+				// this reflects the value off of an upper bound and applies it to 'attractiveness' of the location
+				currentHumanoid.influences.a -= currentHumanoid.influences.w - (8 * z.humanHerding) * 2;
+			}		
 		}
 	}
 };
@@ -95,13 +92,10 @@ z.fight = function (humanoid,neighbor) {
 		seconds = 0,
 		exit = false;
 
-	if (humanoid.isZombie()) 
-	{
+	if (humanoid.isZombie()) {
 		zombie = humanoid;
 		human = neighbor;
-	}
-	else
-	{
+	} else {
 		human = humanoid;
 		zombie = neighbor;
 	}
@@ -121,12 +115,10 @@ z.fight = function (humanoid,neighbor) {
 	seconds = Math.floor(z.simulatedTimeElapsed - humanoid.lastActionTimeStamp);
 	
 	// check to see whether a whole second has gone by since the last action
-	if (seconds >= 1)
-	{	
+	if (seconds >= 1) {	
 	
 		// do one action per second
-		for (var i = 0; i < seconds; i++)
-		{
+		for (var i = 0; i < seconds; i++) {
 
 			z.flash(human);
 			z.flash(zombie);
@@ -134,22 +126,17 @@ z.fight = function (humanoid,neighbor) {
 			/* handling multiple parties in a fight in a new way. participants can only have one focus at a time and only act on that focus.
 			*/
 			// this only happens if the zombie is actually focused on this human
-			if (humanTargeted) 
-			{			
-				if (Math.random() < biteChance) 
-				{
-					if (human.zombify !== null)
-					{
+			if (humanTargeted) {			
+				if (Math.random() < biteChance) {
+					if (human.zombify !== null) {
 						human.zombify();
 						human.currentTarget = zombie;
 						z.message('human zombify coming...');
 					}
 				}
 				
-				if (Math.random() < humanDieChance) 
-				{
-					if (Math.random() < (z.zombieBrainEatingEfficiency / 100))
-					{
+				if (Math.random() < humanDieChance) {
+					if (Math.random() < (z.zombieBrainEatingEfficiency / 100)) {
 						human.zombify = null; // the brain is destroyed so this person can't zombify
 					}
 					human.die();
@@ -160,20 +147,16 @@ z.fight = function (humanoid,neighbor) {
 			}
 			
 			// this only happens if the human is actually focused on this zombie
-			if (zombieTargeted) 
-			{	
-				if (Math.random() < zombieStunChance)
-				{
-					for (var j = 0; j < Math.floor(60 / z.secondsPerTurn()); j++)
-					{
+			if (zombieTargeted) {	
+				if (Math.random() < zombieStunChance) {
+					for (var j = 0; j < Math.floor(60 / z.secondsPerTurn()); j++) {
 						zombie.actionQueue.push('stunned');	
 					}
 					human.currentTarget = null;
 					exit = true;
 				}
 				
-				if (Math.random() < zombieDieChance) 
-				{
+				if (Math.random() < zombieDieChance) {
 					zombie.die();
 					z.message('zombie death');
 					human.currentTarget = null;
@@ -183,8 +166,7 @@ z.fight = function (humanoid,neighbor) {
 			human.lastActionTimeStamp = z.simulatedTimeElapsed;
 			zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
 			
-			if (exit) 
-			{
+			if (exit) {
 				return;
 			}
 		}
@@ -195,13 +177,10 @@ z.interact = function (humanoid, neighbor)
 {	
 	var distance = z.range(humanoid, neighbor);
 	
-	if ((distance <= 1) && ((humanoid.isZombie() && humanoid.nextAction() !== 'stunned' && !neighbor.isZombie()) || (neighbor.isZombie() && neighbor.nextAction() !== 'stunned' && !humanoid.isZombie())))
-	{
+	if ((distance <= 1) && ((humanoid.isZombie() && humanoid.nextAction() !== 'stunned' && !neighbor.isZombie()) || (neighbor.isZombie() && neighbor.nextAction() !== 'stunned' && !humanoid.isZombie()))) {
 		humanoid.currentTarget = neighbor;
 		humanoid.actionQueue = ['fight'];
-	}
-	else if (distance < z.sightRange)
-	{
+	} else if (distance < z.sightRange) {
 		z.humanoidInfluence(humanoid, neighbor, distance);
 	}
 };

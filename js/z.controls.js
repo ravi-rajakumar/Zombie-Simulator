@@ -109,12 +109,9 @@ $(document).ready(function ($) {
 	$('#control-switch').live('click', function (event) {
 		var text = $(this).text();
 		
-		if (text.indexOf('-') > -1)
-		{
+		if (text.indexOf('-') > -1) {
 			$(this).text('[+] settings');
-		}
-		else
-		{
+		} else {
 			$(this).text('[-] settings');
 		}
 		
@@ -124,12 +121,9 @@ $(document).ready(function ($) {
 	$('#stats-switch').live('click', function (event) {
 		var text = $(this).text();
 		
-		if (text.indexOf('-') > -1)
-		{
+		if (text.indexOf('-') > -1) {
 			$(this).text('[+] stats');
-		}
-		else
-		{
+		} else {
 			$(this).text('[-] stats');
 		}
 		
