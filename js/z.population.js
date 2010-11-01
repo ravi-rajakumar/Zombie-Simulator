@@ -267,9 +267,9 @@ z.human = function (spec) {
 	
 	that.nextAction = function () {
 		// too much crowding in one spot makesthat location less appealing
-		if (that.influences.w > 20 * z.humanHerding) {
+		if (that.influences.w > 8 * z.humanHerding) {
 			// this reflects the value off of an upper bound and applies it to 'attractiveness' of the location
-			that.influences.a -= that.influences.w - (20 * z.humanHerding);
+			that.influences.a -= that.influences.w - (8 * z.humanHerding) * 2;
 		}
 	
 		if (that.actionQueue.length > 0) {
