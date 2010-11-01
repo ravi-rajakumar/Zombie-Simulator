@@ -64,18 +64,18 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 			currentHumanoid.influences.y += walkingSpeed * neighborVerticalDelta * persuasion;
 			currentHumanoid.influences.w += Math.abs(persuasion);
 	
-			currentHumanoid.influences.a += attraction / distance;
+			// too much crowding in one spot makes that location less appealing
+			if (currentHumanoid.influences.w > 16 * z.humanHerding) {
+				// this reflects the value off of an upper bound and applies it to 'attractiveness' of the location
+				currentHumanoid.influences.a -= currentHumanoid.influences.w - (16 * z.humanHerding);
+			} else {
+				currentHumanoid.influences.a += attraction / distance;
+			}
 				
 			// store the distance to the nearest attractor for calculating whether to idle
 			if (distance < currentHumanoid.influences.r && attraction > 0) {
 				currentHumanoid.influences.r = distance;
-			}
-			 
-			// too much crowding in one spot makes that location less appealing
-			if (currentHumanoid.influences.w > 8 * z.humanHerding) {
-				// this reflects the value off of an upper bound and applies it to 'attractiveness' of the location
-				currentHumanoid.influences.a -= currentHumanoid.influences.w - (8 * z.humanHerding) * 2;
-			}		
+			}	
 		}
 	}
 };
