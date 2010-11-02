@@ -177,6 +177,7 @@ z.interact = function (humanoid, neighbor)
 {	
 	var distance = z.range(humanoid, neighbor);
 	
+	// this checks whether the two humanoids should be in combat. The answer is true if only one of them is a zombie and the zombie is not out of comission. In the future this should change to require that the person be under attack, and then add another behavior for heroism, that causes them to be more aggressive and cooperative.
 	if ((distance <= 1) && ((humanoid.isZombie() && humanoid.nextAction() !== 'stunned' && !neighbor.isZombie()) || (neighbor.isZombie() && neighbor.nextAction() !== 'stunned' && !humanoid.isZombie()))) {
 		humanoid.currentTarget = neighbor;
 		humanoid.actionQueue = ['fight'];
