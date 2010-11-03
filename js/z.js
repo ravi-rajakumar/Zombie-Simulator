@@ -202,7 +202,7 @@ z.advanceTurn = function () {
 		
 		if (humanoid.currentTarget !== null && distance <= 1 && humanoid.nextAction() !== 'stunned' && humanoid.currentTarget.nextAction() !== 'stunned') {
 			humanoid.actionQueue = ['fight'];
-		} else {
+		} else if (!humanoid.sleeping) {
 			humanoid.heading = humanoid.chooseDirection();
 			humanoid.currentTarget = null;
 			

@@ -17,7 +17,8 @@ This is a web application for simulating interacting populations of humans and z
 - Competition
 - Selflessness
 - Friendship
-- Rest and recovery
+- Stamina, rest and recovery *
+- Sleep *
 - Communications and knowledge transfer
 
 '*' = behaviors that are currently experimentally implemented
@@ -66,6 +67,9 @@ The math in this simulation depends on a number of baseline properties that were
 - Natural Human Death Rate: 8/k/year
 - Humans are attracted to other humans, but resist overcrowding
 - Humans will 'idle' around one another for about 0-3 hours before getting bored and wandering off
+- Humans will choose to rest when their stamina gets low and they aren't doing something else. They rest in stretches of approxinately 2 hours until their stamina is over 50%
+- Humans will choose to sleep for around 8 hours if their stamina and sleep time get low enough
+- Stamina decays at varying rates depending on the human's actions. 100% of stamina is lost for every: 1 hour of fighting; 2 hours of running; 8 hours of walking; 16 hours of idling.
 
 ## Units
 
@@ -79,3 +83,9 @@ The math in this simulation depends on a number of baseline properties that were
 - herding: tendency to gravitate to one's own kind
 - queueing: used here to describe tendency to follow in same direction as those around you
 - zombie brain-eating success rate: zombies' average likelihood to completely consume victims' brains, preventing them from coming back as a zombie
+
+## Observations
+
+- Some queueing behavior emerges on its own via herding + field of vision
+- Human sucess rate (zombie extinction rate) greatly increased with the addition of idling
+- Humans exhibit different crowding behaviors given different scales and densities. In larger-scale simulations they tend to idle for longer.
