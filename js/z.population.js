@@ -107,6 +107,10 @@ z.humanoid = function (spec) {
 	};
 	
 	that.walk = function () {
+		// slow down if stamina drops into negative numbers, bottoming out at -100
+		if (that.stamina < 0) {
+			that.walkingSpeed = that.walkingSpeed * (100 - Math.abs(that.stamina)) / 100;
+		}
 		// slow down around attractors
 		if (that.influences.a > 0 && 10 > that.influences.r > 0.25 && !that.isZombie()) {
 			that.walkingSpeed = that.walkingSpeed / (1 + (10 - that.influences.r) * 10);
@@ -115,6 +119,10 @@ z.humanoid = function (spec) {
 		that.chooseNextMove();
 		// move the humanoid
 		that.move();
+		// walking decreases stamina
+		if (!that.isZombie()) {
+			that.stamina -= z.secondsPerTurn() * 100 / 8 / 3600;
+		}
 	};
 	
 	that.idle = function () {
@@ -124,6 +132,10 @@ z.humanoid = function (spec) {
 		that.chooseNextMove();
 		// move the humanoid
 		that.move();
+		// idling decreases stamina slowly
+		if (!that.isZombie()) {
+			that.stamina -= z.secondsPerTurn() * 100 / 16 / 3600;
+		}
 	};
 	
 	that.run = function () {
@@ -133,6 +145,51 @@ z.humanoid = function (spec) {
 		that.chooseNextMove();
 		// move the humanoid
 		that.move();
+		// running decreases stamina quickly
+		if (!that.isZombie()) {
+			that.stamina -= z.secondsPerTurn() * 100 / 2 / 3600;
+		}
+	};
+	
+	that.rest = function () {
+		var stam = that.stamina;
+		// 8 hours of rest should be sufficient to increase stamina from 0 to 100
+		stam += z.secondsPerTurn() * 100 / 8 / 3600;
+		if (stam >= 100) {
+			that.stamina = 100;
+			// 'get up' if fully rested and awake
+			if (that.actionQueue[0] === 'rest' && !that.sleeping) {
+				that.actionQueue = [];
+			}
+		} else {
+			that.stamina = stam;
+		}
+		
+		// keep resting until the current timer runs out or something else happens
+		if (z.simulatedTimeElapsed < that.restStop && that.actionQueue[0] !== 'rest') {
+			that.actionQueue = ['rest'];
+		}
+		
+		// keep sleeping if I already am
+		// the probability that a human will fall asleep while resting increases to 100% if they have 0 sleep in the bank
+		if (that.sleeping || Math.random() > that.slept / (6 * 3600)) {
+			that.sleep();
+		} else {
+			// 'wake up' if an influence comes close and the human is awake and not too exhausted
+			if (that.influences.r < 2 && that.stamina > 0) {
+				that.actionQueue = [];
+			}
+		}
+	};
+	
+	that.sleep = function () {		
+		// chance to wake up automatically if I have over 6 hours of sleep in the bank, reaching 100% at ten hours
+		if (Math.random() < (that.slept / 3600 - 6) / 4) {
+			that.sleeping = false;
+		} else {
+			that.actionQueue = ['rest'];
+			that.slept += z.secondsPerTurn();
+		}
 	};
 	
 	that.doNext = function () {
@@ -144,10 +201,18 @@ z.humanoid = function (spec) {
 				that.walk();
 				break;
 			case 'run':
-				that.run();
+				if (that.stamina > 0) {
+					that.run();
+				} else {
+					that.walk();
+				}
 				break;
 			case 'fight':
 				z.fight(that, that.currentTarget);
+				break;
+			case 'rest':
+				that.currentTarget = null;
+				that.rest();
 				break;
 			default: 
 				that.idle();
@@ -174,6 +239,12 @@ z.human = function (spec) {
 	
 	that.recognitionRange = 1;
 	
+	// ranges from 0 - 1 with random start values around 0.5. humans who successfully kill zombies will become increasingly aggressive toward them
+	that.aggressiveness = Math.random() * 0.4 + 0.3; 
+	
+	// stamina is used to determine the human's desire to 'rest'. It can have a negative value, and a max positove value of 100. Negative values mean that the human is incapable of running and will choose to rest if they are not being actively chased. The human's walking speed will also be increasingly impeded by negative stamina.  
+	that.stamina = Math.random() * 67 + 33;
+	
 	// returns the greater value
 	that.recognizes = function (neighbor) {
 		return (that.recognitionRange > z.humanRecognitionRange) ? z.range(that, neighbor) <= that.recognitionRange : z.range(that, neighbor) <= z.humanRecognitionRange;	
@@ -185,6 +256,14 @@ z.human = function (spec) {
 	that.livetimer = null;
 	
 	that.deadtimer = null;
+	
+	// initialize banked sleep at around 5 hours (+/- 10%)
+	that.slept = (Math.random() * 0.2 + 0.9) * 5 * 3600;
+	
+	// everyone starts off awake
+	that.sleeping = false;
+	
+	that.restStop = 0;
 	
 	that.color = 'rgb(' + grayValue + ',' + grayValue + ',' + grayValue + ')';
 	
@@ -240,13 +319,31 @@ z.human = function (spec) {
 	that.nextAction = function () {
 		if (that.actionQueue.length > 0) {
 			return that.actionQueue.shift();
+			
+		// if they are sleeping they will keep sleeping
+		} else if (that.sleeping) {
+			return 'rest';
+			
+		// if they haven't slept in a long time or they are very tired, they will rest regardless of other human influences
+		} else if (that.stamina < 0 || that.slept < 2 * 3600) {
+			that.restStop = z.simulatedTimeElapsed + (Math.random() * 0.2 + 0.9) * 2 * 3600;
+			return 'rest';
+			
+		// if they are tired and not interacting with anyone, humans will choose a couple of hours of rest over walking or idling
+		} else if (that.stamina < 50 && that.influences.w === 1) {
+			that.restStop = z.simulatedTimeElapsed + (Math.random() * 0.2 + 0.9) * 2 * 3600;
+			return 'rest';
+			
 		// humans get bored if they idle for too long
 		} else if (Math.random() < z.humanBoredomFactor * z.secondsPerTurn()) {
 			that.heading = (that.heading + Math.PI) % (Math.PI * 2);
 			return 'walk';
-		// in the presence of attractors at mingling range, humans will idle if they aren't bored yet
+			
+		// if they aren't bored yet and  they are in the presence of attractors at mingling range, humans will idle 
 		} else if (that.influences.a > 0 && that.influences.r < 2) {
 			return 'idle';
+			
+		// if they are fairly well-rested and not yet mingling with other friendly influences they will wander around
 		} else {
 			return 'walk';
 		}
@@ -262,6 +359,9 @@ z.zombie = function (spec) {
 	that.walkingSpeed = that.maxWalkingSpeed;
 	
 	that.color = 'rgb(' + (Math.round(Math.random() * 40) + 200) + ', 30, 30)';
+	
+	// zombie stamina is always 100%
+	that.stamina = 100;
 	
 	that.toString = function () {
 		return '{"zombie": { "x":' + this.position.x + ', "y": ' + this.position.y + '}}';
