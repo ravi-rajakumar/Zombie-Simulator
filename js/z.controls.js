@@ -65,11 +65,10 @@ z.stop = function () {
 };
 
 z.complete = function (extinct) {
-/*	z.stop();
+	z.stop();
 	var msg = 'Simulation ended. ' + extinct + ' extinct after ' + $('#days').text() + ' ' + $('#hours').text() + ' ' + $('#minutes').text() + ' ' + $('#seconds').text();
 	$('#messages p').html('<strong>' + msg + '</strong>&nbsp;');
 	z.log += msg + '\n';
-	 */
 };
 
 $(document).ready(function ($) {
