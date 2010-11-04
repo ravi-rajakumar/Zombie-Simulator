@@ -92,39 +92,34 @@ z.fight = function (humanoid,neighbor) {
 		seconds = 0,
 		exit = false;
 
-	// if they weren't fighting before, they are now
-	humanoid.actionQueue = ['fight'];
-	neighbor.actionQueue = ['fight'];
-
-	if (humanoid.isZombie()) {
-		zombie = humanoid;
-		human = neighbor;
-	} else {
-		human = humanoid;
-		zombie = neighbor;
-	}
-	
-	zombieStunChance = (human.zombieKillingFitness <= 0.18) ? human.zombieKillingFitness * 5 : 0.9; // 5% chance by default but improved in more experienced humans
-	zombieDieChance = human.zombieKillingFitness; // 1% chance by default but improved in more experienced humans
-	
-	// update the human's zombie killing skill for the next fight they have
-	if (human.zombieKillingFitness < 0.16) {
-		human.zombieKillingFitness += 0.07;
-	}
-	
-	// over-tired humans will fight less efficiently, bottoming out at -100 stamina
-	if (human.stamina < 0) {
-		zombieDieChance = zombieDieChance * (100 - Math.abs(human.stamina)) / 100;
-	}
-	
-	humanTargeted = (zombie.currentTarget === human);
-	zombieTargeted = (human.currentTarget === zombie);
-
 	// how long (in whole seconds) since we last performed fight actions
 	seconds = Math.floor(z.simulatedTimeElapsed - humanoid.lastActionTimeStamp);
 	
-	// check to see whether a whole second has gone by since the last action
-	if (seconds >= 1) {	
+	// check to see whether a whole second has gone by since the last action and to be sure that oth humanoids are still on the field
+	if (seconds >= 1 && humanoid !== null && neighbor !== null) {
+		if (humanoid.isZombie()) {
+			zombie = humanoid;
+			human = neighbor;
+		} else {
+			human = humanoid;
+			zombie = neighbor;
+		}	
+		
+		zombieStunChance = (human.zombieKillingFitness <= 0.18) ? human.zombieKillingFitness * 5 : 0.9; // 5% chance by default but improved in more experienced humans
+		zombieDieChance = human.zombieKillingFitness; // 1% chance by default but improved in more experienced humans
+		
+		// update the human's zombie killing skill for the next fight they have
+		if (human.zombieKillingFitness < 0.16) {
+			human.zombieKillingFitness += 0.07;
+		}
+		
+		// over-tired humans will fight less efficiently, bottoming out at -100 stamina
+		if (human.stamina < 0) {
+			zombieDieChance = zombieDieChance * (100 - Math.abs(human.stamina)) / 100;
+		}
+		
+		humanTargeted = (zombie.currentTarget === human);
+		zombieTargeted = (human.currentTarget === zombie);
 	
 		// do one action per second
 		for (var i = 0; i < seconds; i++) {
@@ -180,7 +175,10 @@ z.fight = function (humanoid,neighbor) {
 			human.lastActionTimeStamp = z.simulatedTimeElapsed;
 			zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
 			
-			if (exit) {			
+			if (exit) {		
+				// if they weren't fighting before, they are now
+				humanoid.actionQueue = ['fight'];
+				neighbor.actionQueue = ['fight'];
 				// wake up!
 				humanoid.sleeping = false;	
 				return;
@@ -194,7 +192,7 @@ z.interact = function (humanoid, neighbor)
 	var distance = z.range(humanoid, neighbor);
 	
 	// this checks whether the two humanoids should be in combat. The answer is true for zombies who are not stunned and true for humans who are not resting and are encountering a zombie that is not stunned. In the future this should change to require that the person be under attack, and then add another behavior for heroism, that causes them to be more aggressive and cooperative.
-	if ((distance <= 1) && ((humanoid.isZombie() && humanoid.nextAction() !== 'stunned' && !neighbor.isZombie()) || (neighbor.isZombie() && neighbor.nextAction() !== 'stunned' && !humanoid.isZombie() && humanoid.actionQueue[0] !== 'rest'))) {
+	if ((distance <= 1) && ((humanoid.isZombie() && humanoid.nextAction() !== 'stunned' && !neighbor.isZombie()) || (neighbor.isZombie() && neighbor.nextAction() !== 'stunned' && !humanoid.isZombie() && humanoid.actionQueue[0] !== 'rest' && !humanoid.sleeping))) {
 		humanoid.currentTarget = neighbor;
 		humanoid.actionQueue = ['fight'];
 	} else if (distance < z.sightRange) {
