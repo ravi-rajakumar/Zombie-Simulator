@@ -121,7 +121,9 @@ z.humanoid = function (spec) {
 		that.move();
 		// walking decreases stamina
 		if (!that.isZombie()) {
-			that.stamina -= z.secondsPerTurn() * 100 / 8 / 3600;
+			that.stamina -=  (z.simulatedTimeElapsed - that.lastActionTimeStamp) * 100 / 8 / 3600;
+			// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
+			that.slept -=  (z.simulatedTimeElapsed - that.lastActionTimeStamp) / 2;
 		}
 	};
 	
@@ -134,7 +136,9 @@ z.humanoid = function (spec) {
 		that.move();
 		// idling decreases stamina slowly
 		if (!that.isZombie()) {
-			that.stamina -= z.secondsPerTurn() * 100 / 16 / 3600;
+			that.stamina -=  (z.simulatedTimeElapsed - that.lastActionTimeStamp) * 100 / 16 / 3600;
+			// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
+			that.slept -=  (z.simulatedTimeElapsed - that.lastActionTimeStamp) / 2;
 		}
 	};
 	
@@ -147,14 +151,16 @@ z.humanoid = function (spec) {
 		that.move();
 		// running decreases stamina quickly
 		if (!that.isZombie()) {
-			that.stamina -= z.secondsPerTurn() * 100 / 2 / 3600;
+			that.stamina -= (z.simulatedTimeElapsed - that.lastActionTimeStamp) * 100 / 2 / 3600;
+			// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
+			that.slept -= (z.simulatedTimeElapsed - that.lastActionTimeStamp) / 2;
 		}
 	};
 	
 	that.rest = function () {
 		var stam = that.stamina;
 		// 8 hours of rest should be sufficient to increase stamina from 0 to 100
-		stam += z.secondsPerTurn() * 100 / 8 / 3600;
+		stam += (z.simulatedTimeElapsed - that.lastActionTimeStamp) * 100 / 8 / 3600;
 		if (stam >= 100) {
 			that.stamina = 100;
 			// 'get up' if fully rested and awake
@@ -175,6 +181,8 @@ z.humanoid = function (spec) {
 		if (that.sleeping || Math.random() > that.slept / (6 * 3600)) {
 			that.sleep();
 		} else {
+			// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
+			that.slept -= z.simulatedTimeElapsed - that.lastActionTimeStamp / 2;
 			// 'wake up' if an influence comes close and the human is awake and not too exhausted
 			if (that.influences.r < 2 && that.stamina > 0) {
 				that.actionQueue = [];
@@ -182,13 +190,14 @@ z.humanoid = function (spec) {
 		}
 	};
 	
-	that.sleep = function () {		
+	that.sleep = function () {
+		that.sleeping = true;
 		// chance to wake up automatically if I have over 6 hours of sleep in the bank, reaching 100% at ten hours
 		if (Math.random() < (that.slept / 3600 - 6) / 4) {
 			that.sleeping = false;
 		} else {
 			that.actionQueue = ['rest'];
-			that.slept += z.secondsPerTurn();
+			that.slept += z.simulatedTimeElapsed - that.lastActionTimeStamp;
 		}
 	};
 	
@@ -220,6 +229,9 @@ z.humanoid = function (spec) {
 				
 		// reset walking speed
 		that.walkingSpeed = that.maxWalkingSpeed;
+		
+		// update the humanoid's internal timestamp
+		that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	};
 	
 	that.isZombie = function () {
@@ -272,13 +284,12 @@ z.human = function (spec) {
 	that.zombify = function () {
 		if (that.deadtimer === null && that.livetimer === null) {
 			that.livetimer = z.setTimeout(function() {
-				z.zombies.push(z.zombie(that));
-				z.stats.hZombified++;
-				z.message(that.zombifyMsg);
-				that.zombify = null; 
 				that.nextAction = function () {
 					return 'die';
 				};
+				z.zombies.push(z.zombie(that));
+				z.stats.hZombified++;
+				z.message(that.zombifyMsg);
 				z.zombiesPending -=1;
 			}, z.zombificationDuration);
 			z.zombiesPending +=1;
@@ -302,11 +313,12 @@ z.human = function (spec) {
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified++;
 				z.message(that.zombifyMsg);
-				that.zombify = null; 
 				z.zombiesPending -=1;
 			}, z.zombificationDuration);
 			z.zombiesPending +=1;
 		}
+		
+		that.zombify = null; 
 		
 		// remove this function so that it can't be called again
 		that.die = function () {};
@@ -325,7 +337,7 @@ z.human = function (spec) {
 			return 'rest';
 			
 		// if they haven't slept in a long time or they are very tired, they will rest regardless of other human influences
-		} else if (that.stamina < 0 || that.slept < 2 * 3600) {
+		} else if (that.stamina <= 0 || that.slept <= 0) {
 			that.restStop = z.simulatedTimeElapsed + (Math.random() * 0.2 + 0.9) * 2 * 3600;
 			return 'rest';
 			

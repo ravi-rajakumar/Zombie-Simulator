@@ -32,7 +32,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 					persuasion = 0;
 					// drop everything and run away for 10 seconds
 					currentHumanoid.actionQueue = [];
-					for (var i = 0; i < (10/z.secondsPerTurn()); i++) {
+					for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
 						currentHumanoid.actionQueue.push('run');
 					}
 					// after an encounter with a zombie, humans learn to recognize them better
@@ -173,7 +173,9 @@ z.fight = function (humanoid,neighbor) {
 				}
 				
 				// fights drain human stamina very quickly
-				human.stamina -= z.secondsPerTurn() * 100 / 3600;
+				human.stamina -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) * 100 / 3600;
+				// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
+				human.slept -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) / 2;
 			}
 			human.lastActionTimeStamp = z.simulatedTimeElapsed;
 			zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
