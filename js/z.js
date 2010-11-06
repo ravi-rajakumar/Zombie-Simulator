@@ -13,7 +13,7 @@ var z = {
 	zombieRecognitionRange: 10, // zombies recognize humans
 	sightRange: 20, // range of humanoid vision
 	fieldOfView: 2.094, // 120 degrees field of vision
-	hearingRange: 4, // range at which humanoids are influenced by hearing other humanoids
+	hearingRange: 3, // range at which humanoids are influenced by hearing other humanoids
 	flockAngle: 0.5,
 	
 	currentTurn: 0,
@@ -47,7 +47,10 @@ var z = {
 	humanAgressiveness: 1,
 	humanStaminaCoefficient: 1,
 	humanHungerCoefficient: 1,
-	humanBoredomFactor: 3e-6,
+	// this generates a 75% chance of being bored within 3 hours
+	humanBoredomFactor: function () {
+		return 0 - (Math.log(0.25) * z.secondsPerTurn() / 10800);
+	},
 	naturalbirthrate: 14,	// per 1k, per year
 	naturaldeathrate: 8,	// per 1k, per year
 	
