@@ -47,7 +47,10 @@ var z = {
 	humanAgressiveness: 1,
 	humanStaminaCoefficient: 1,
 	humanHungerCoefficient: 1,
-	humanBoredomFactor: 3e-6,
+	// this generates a 75% chance of being bored within 3 hours
+	humanBoredomFactor: function () {
+		return 0 - (Math.log(0.25) * z.secondsPerTurn() / 10800);
+	},
 	naturalbirthrate: 14,	// per 1k, per year
 	naturaldeathrate: 8,	// per 1k, per year
 	

@@ -24,6 +24,11 @@ z.humanoid = function (spec) {
 		dy: 0
 	};
 	
+	that.lastMove = {
+		dx: 0,
+		dy: 0
+	};
+	
 	that.setPosition = function (x, y) {
 		that.position.x = x;
 		that.position.y = y;
@@ -43,22 +48,26 @@ z.humanoid = function (spec) {
 		
 		// the following functions set people on headings away from the walls when they hit them
 		if (that.position.x <= 0) {
-			that.heading = (Math.PI - that.heading) % Math.PI; // reflect off of left
+			if (that.heading > Math.PI) {
+				that.heading = 2 * Math.PI - that.heading; // reflect off of left
+			}
 		} else if (that.position.x >= (z.canvasWidth * z.scale)) {
-			that.heading = (2 * Math.PI - that.heading) % Math.PI + Math.PI; // reflect off of right
+			if (that.heading < Math.PI) {
+				that.heading = 2 * Math.PI - that.heading; // reflect off of right
+			}
 		}
 		
 		if (that.position.y <= 0) {
 			if (that.heading > (3 / 2 * Math.PI)) {
-				that.heading = ((3 / 2 * Math.PI) - that.heading) % (3 / 2 * Math.PI); // reflect off of top
+				that.heading = ((3 * Math.PI) - that.heading); // reflect off of top
 			} else if (that.heading < (Math.PI / 2)) {
 				that.heading = Math.PI - that.heading; // reflect off of top
 			}
 		} else if (that.position.y >= (z.canvasHeight * z.scale)) {
-			if (that.heading < Math.PI) {
-				that.heading = that.heading % (Math.PI / 2); // reflect off of bottom
-			} else if (that.heading < (3 / 2 * Math.PI)) {
-				that.heading = 2 * Math.PI - (that.heading % Math.PI); // reflect off of bottom
+			if (Math.PI / 2 < that.heading < Math.PI) {
+				that.heading = Math.PI - that.heading; // reflect off of bottom
+			} else if (Math.PI < that.heading < (3 / 2 * Math.PI)) {
+				that.heading = Math.PI * 3 - that.heading; // reflect off of bottom
 			}
 		}
 		
@@ -70,8 +79,17 @@ z.humanoid = function (spec) {
 	that.influences = {x:0,y:0,w:1,a:0,r:20};
 	
 	that.chooseNextMove = function () {			
-		var hDelta = (Math.sin(that.heading) * that.walkingSpeed + (that.influences.x * that.walkingSpeed / that.maxWalkingSpeed)) / that.influences.w,
-			vDelta = (0 - (Math.cos(that.heading) * that.walkingSpeed) + (that.influences.y * that.walkingSpeed / that.maxWalkingSpeed)) / that.influences.w;
+		var hDelta = Math.sin(that.heading) * that.walkingSpeed + that.influences.x,
+			vDelta = 0 - (Math.cos(that.heading) * that.walkingSpeed) + that.influences.y;
+		
+		if (hDelta === 0) {
+			that.heading = (vDelta > 0) ? Math.PI : 0;
+		} else {
+			that.heading = (hDelta > 0) ? Math.PI / 2 + Math.atan(vDelta / hDelta) : 3 * Math.PI / 2 + Math.atan(vDelta / hDelta);
+		}
+		
+		hDelta = Math.sin(that.heading) * that.walkingSpeed;
+		vDelta = 0 - Math.cos(that.heading) * that.walkingSpeed;
 		
 		that.nextMove.dx = hDelta * z.secondsPerTurn();
 		that.nextMove.dy = vDelta * z.secondsPerTurn();
@@ -83,7 +101,6 @@ z.humanoid = function (spec) {
 		
 		if (movx <= 0) {
 			movx = 0;
-			that.heading = (Math.PI - that.heading) % Math.PI;
 		}
 		
 		if (movx > z.canvasWidth * z.scale) {
@@ -92,11 +109,6 @@ z.humanoid = function (spec) {
 		
 		if (movy <= 0) {
 			movy = 0;
-			if (that.heading > (3 / 2 * Math.PI)) {
-				that.heading = ((3 / 2 * Math.PI) - that.heading) % (3 / 2 * Math.PI); // reflect off of top
-			} else if (that.heading < (Math.PI / 2)) {
-				that.heading = Math.PI - that.heading; // reflect off of top
-			}
 		}
 		
 		if (movy > z.canvasHeight * z.scale) {
@@ -104,6 +116,8 @@ z.humanoid = function (spec) {
 		}
 		
 		that.setPosition(movx, movy);
+		
+		that.lastMove = that.nextMove;
 	};
 	
 	that.walk = function () {
@@ -252,7 +266,7 @@ z.human = function (spec) {
 	that.recognitionRange = 1;
 	
 	// ranges from 0 - 1 with random start values around 0.5. humans who successfully kill zombies will become increasingly aggressive toward them
-	that.aggressiveness = Math.random() * 0.4 + 0.3; 
+	that.aggressiveness = Math.random() * 0.1; 
 	
 	// stamina is used to determine the human's desire to 'rest'. It can have a negative value, and a max positove value of 100. Negative values mean that the human is incapable of running and will choose to rest if they are not being actively chased. The human's walking speed will also be increasingly impeded by negative stamina.  
 	that.stamina = Math.random() * 67 + 33;
@@ -347,7 +361,7 @@ z.human = function (spec) {
 			return 'rest';
 			
 		// humans get bored if they idle for too long
-		} else if (Math.random() < z.humanBoredomFactor * z.secondsPerTurn()) {
+		} else if (Math.random() < z.humanBoredomFactor() * z.secondsPerTurn()) {
 			that.heading = (that.heading + Math.PI) % (Math.PI * 2);
 			return 'walk';
 			
