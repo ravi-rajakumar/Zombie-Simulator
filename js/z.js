@@ -13,7 +13,7 @@ var z = {
 	zombieRecognitionRange: 10, // zombies recognize humans
 	sightRange: 20, // range of humanoid vision
 	fieldOfView: 2.094, // 120 degrees field of vision
-	hearingRange: 3, // range at which humanoids are influenced by hearing other humanoids
+	hearingRange: 4, // range at which humanoids are influenced by hearing other humanoids
 	flockAngle: 0.5,
 	
 	currentTurn: 0,

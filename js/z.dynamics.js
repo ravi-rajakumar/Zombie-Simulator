@@ -20,7 +20,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		influence = ((diffY) >= 0) ? Math.PI - Math.asin((diffX) / distance) : (Math.PI * 2 + Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance)) % (Math.PI * 2);
 		
 		// can currentHumanoid actually see or hear the neighbor?
-		if (Math.abs(currentHumanoid.heading - influence) <= z.fieldOfView / 2 || distance < z.hearingRange) {
+		if (Math.abs(currentHumanoid.heading - influence) <= z.fieldOfView / 2) {
 			if (!currentHumanoid.isZombie()) {
 				// humans are automatically attracted to other humanoids unless they recognize them as zombies
 				if (!neighbor.isZombie() || !currentHumanoid.recognizes(neighbor)) {
@@ -40,16 +40,18 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 						currentHumanoid.recognitionRange += 3;
 					}
 				}
-			} else {
-				// zombies are strongly attracted to humans
-				if (!neighbor.isZombie()) {
-					attraction = 10;
-					persuasion = 10;
-				} else {
-					// zombies are somewhat attracted to each other
-					attraction = z.zombieHerding;
-					persuasion = z.zombieQueueing;
-				}
+			}
+			
+			// zombies are strongly attracted to humans
+			if (currentHumanoid.isZombie() && !neighbor.isZombie()) {
+				attraction = 1;
+				persuasion = 1;
+			}
+			
+			if (currentHumanoid.isZombie() && neighbor.isZombie()) {
+				// zombies are somewhat attracted to each other
+				attraction = z.zombieHerding;
+				persuasion = z.zombieQueueing;
 			}
 			
 			// apply herding effect
@@ -63,7 +65,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 			currentHumanoid.influences.w += Math.abs(persuasion);
 	
 			// too much crowding in one spot makes that location less appealing
-			if (!currentHumanoid.isZombie() && currentHumanoid.influences.w > 16 * z.humanHerding) {
+			if (currentHumanoid.influences.w > 16 * z.humanHerding) {
 				// this reflects the value off of an upper bound and applies it to 'attractiveness' of the location
 				currentHumanoid.influences.a -= currentHumanoid.influences.w - (16 * z.humanHerding);
 			} else {
