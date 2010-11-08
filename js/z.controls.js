@@ -84,6 +84,7 @@ $(document).ready(function ($) {
 			humanPopulation: $('#human-population').val(),
 			humanHerding: $('#human-herding').val(),
 			humanQueueing: $('#human-queueing').val(),
+			humanAggressiveness: $('#human-aggressiveness').val(),
 			
 			zombiePopulation: $('#zombie-population').val(),
 			zombieHerding: $('#zombie-herding').val(),

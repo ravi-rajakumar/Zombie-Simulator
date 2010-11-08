@@ -14,7 +14,7 @@ This is a web application for simulating interacting populations of humans and z
 - Fight and flight *
 - Idling *
 - Boredom *
-- Competition
+- Fear vs. Aggressiveness *
 - Selflessness
 - Friendship
 - Stamina, rest and recovery *
@@ -70,6 +70,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Humans will choose to rest when their stamina gets low and they aren't doing something else. They rest in stretches of approxinately 2 hours until their stamina is over 50%
 - Humans will choose to sleep for around 8 hours if their stamina and sleep time get low enough
 - Stamina decays at varying rates depending on the human's actions. 100% of stamina is lost for every: 1 hour of fighting; 2 hours of running; 8 hours of walking; 16 hours of idling.
+- Agressiveness determines humans' tendency to attack vs. try to run away when encountering zombies. It automatically increases following survival of fights with zombies.
 
 ## Units
 

@@ -68,6 +68,16 @@ header cite {
 	margin-bottom: 8px;
 }
 
+#config {
+	position:absolute;
+	border:0;
+	margin:9px 0;
+	padding:1px 12px 12px;
+	background-color:#eee;
+	opacity:.8;
+	filter: alpha(opacity=80);
+}
+
 #control-switch, #stats-switch, #footer {
 	font-family: Monaco, "Courier New", Courier, Monospace;
 }
@@ -83,17 +93,20 @@ header cite {
 	color:#444;
 }
 
-#controls-human, #controls-zombie {
+#controls-human, #controls-zombie, #controls-general {
 	float: left;
-	margin-right: 20px;
-	width:150px;
+	margin-right: 12px;
+	width:144px;
 }
 
 #controls-general {
-	clear: both;
-	padding-bottom: 5px;
-	margin-top:10px;
-	float:left;
+	margin-right: 0px;
+}
+
+#config h5 {
+	font-size:1em;
+	padding-left:3px;
+	margin:.9em 0;
 }
 
 #stats {
@@ -116,7 +129,7 @@ input {
 }
 
 #config input {
-	width:150px;
+	width:134px;
 }
 
 form {
@@ -139,16 +152,6 @@ form {
 #setup:active, #play:active, #stop:active {
 	background-color:#e3e3e3;
 	color:#999;
-}
-
-#config {
-	position:absolute;
-	border:0;
-	margin:9px 0;
-	padding:0 10px;
-	background-color:#eee;
-	opacity:.8;
-	filter: alpha(opacity=80);
 }
 
 #console {
