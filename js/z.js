@@ -44,7 +44,7 @@ var z = {
 	humanHerding: 0.5,
 	humanQueueing: 0.2,
 	humanDefenseEfficiency: 1,	// not used yet
-	humanAgressiveness: 1,
+	humanBaseAgressiveness: 0,
 	humanStaminaCoefficient: 1,
 	humanHungerCoefficient: 1,
 	// this generates a 75% chance of being bored within 3 hours
@@ -91,6 +91,7 @@ z.init = function (spec) {
 	z.humanStartingPopulation = spec.humanPopulation;
 	z.humanHerding = spec.humanHerding;
 	z.humanQueueing = spec.humanQueueing;
+	z.humanBaseAgressiveness = spec.humanAggressiveness;
 	
 	z.zombieStartingPopulation = spec.zombiePopulation;
 	z.zombieHerding = spec.zombieHerding;

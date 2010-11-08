@@ -204,9 +204,19 @@ z.interact = function (humanoid, neighbor)
 	var distance = z.range(humanoid, neighbor);
 	
 	// this checks whether the two humanoids should be in combat. The answer is true for zombies who are not stunned and true for humans who are not resting, are encountering a zombie that is not stunned and who meet other criteria for aggressiveness and cooperative.
-	if ((distance <= 1) && ((humanoid.isZombie() && humanoid.nextAction() !== 'stunned' && !neighbor.isZombie()) || (neighbor.isZombie() && neighbor.nextAction() !== 'stunned' && !humanoid.isZombie() && humanoid.actionQueue[0] !== 'rest' && !humanoid.sleeping && Math.random() < humanoid.aggressiveness))) {
-		humanoid.currentTarget = neighbor;
-		humanoid.actionQueue = ['fight'];
+	if (distance <= 1) {
+		if (humanoid.isZombie() && humanoid.nextAction() !== 'stunned' && !neighbor.isZombie()) {		
+			humanoid.currentTarget = neighbor;
+			humanoid.actionQueue = ['fight'];
+		} else if (neighbor.isZombie() && !humanoid.isZombie() && neighbor.nextAction() !== 'stunned' && humanoid.actionQueue[0] !== 'rest' && !humanoid.sleeping) {
+			if (Math.random() < humanoid.aggressiveness) {
+				humanoid.currentTarget = neighbor;
+				humanoid.actionQueue = ['fight'];
+			} else {
+				humanoid.actionQueue = ['run'];
+				z.humanoidInfluence(humanoid, neighbor, distance);
+			}
+		}
 	} else if (distance < z.sightRange) {
 		z.humanoidInfluence(humanoid, neighbor, distance);
 	}

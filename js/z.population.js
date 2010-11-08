@@ -265,8 +265,8 @@ z.human = function (spec) {
 	
 	that.recognitionRange = 1;
 	
-	// ranges from 0 - 1 with random start values around 0.5. humans who successfully kill zombies will become increasingly aggressive toward them
-	that.aggressiveness = Math.random() * 0.1; 
+	// ranges from 0 - 1 with start values euqal to the base aggressiveness in the config settings +/- 10% in random variation. humans who successfully kill zombies will become increasingly aggressive toward them
+	that.aggressiveness = ((Math.random() * 0.2) + 0.9) * z.humanBaseAgressiveness; 
 	
 	// stamina is used to determine the human's desire to 'rest'. It can have a negative value, and a max positove value of 100. Negative values mean that the human is incapable of running and will choose to rest if they are not being actively chased. The human's walking speed will also be increasingly impeded by negative stamina.  
 	that.stamina = Math.random() * 67 + 33;

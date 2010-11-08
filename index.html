@@ -47,14 +47,18 @@
 				<p id="control-switch">[+] settings</p>
 				<fieldset id="config">
 				<div id="controls-human">
+					<h5>Humans</h5>
 					<label for="human-population">Initial human population:</label>
 					<input id="human-population" name="human-population" type="text" value="1000" />
 					<label for="human-herding">Human herding (-1 to 1):</label>
 					<input id="human-herding" name="human-herding" type="text" value="0.2" />
 					<label for="human-queueing">Human queueing (-1 to 1):</label>
 					<input id="human-queueing" name="human-queueing" type="text" value="0.01" />
+					<label for="human-aggressiveness">Initial human aggressiveness (0 to 1):</label>
+					<input id="human-aggressiveness" name="human-aggressiveness" type="text" value="0.1" />
 				</div>
 				<div id="controls-zombie">
+					<h5>Zombies</h5>
 					<label for="zombie-population">Initial zombie population:</label>
 					<input id="zombie-population" name="zombie-population" type="text" value="1" />
 					<label for="zombie-herding">Zombie herding (-1 to 1):</label>
@@ -63,6 +67,7 @@
 					<input id="zombie-brain-eating-efficiency" name="zombie-brain-eating-efficiency" type="text" value="50" />
 				</div>
 				<div id="controls-general">
+					<h5>World</h5>
 					<label for="scale">Scale (meters/pixel):</label>
 					<input id="scale" name="scale" type="text" value="2" />
 					<label for="time-lapse-factor">Timelapse (factor):</label>
