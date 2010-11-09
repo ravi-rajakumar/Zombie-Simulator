@@ -78,7 +78,7 @@ header cite {
 	filter: alpha(opacity=80);
 }
 
-#control-switch, #stats-switch, #footer {
+#control-switch, #stats-switch, #main, #footer {
 	font-family: Monaco, "Courier New", Courier, Monospace;
 }
 
@@ -107,6 +107,29 @@ header cite {
 	font-size:1em;
 	padding-left:3px;
 	margin:.9em 0;
+}
+
+#config #reset {
+	padding: .2em .4em .4em;
+	margin: 2.4em 0 0 2.9em;
+	background-color:#eee;
+	border-top: 1px solid #ddd;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	border-left: 1px solid #ddd;
+	-moz-border-radius: 3px; 
+	-webkit-border-radius: 3px;
+	width:10em;
+}
+
+#config #reset:hover {
+	background-color:#f3f3f3;
+	cursor:pointer;
+}
+
+#config #reset:active {
+	background-color:#fdfdfd;
+	color:#aaa;
 }
 
 #stats {
@@ -163,7 +186,7 @@ form {
 canvas {
 	clear: both;
 	display: block;
-	margin: 0px auto;
+	margin: 10px auto;
 	border: 1px solid #ddd;
 }
 
@@ -173,6 +196,7 @@ canvas {
 
 #statistics {
 	float: left;
+	clear: both;
 	width: 380px;
 }
 
