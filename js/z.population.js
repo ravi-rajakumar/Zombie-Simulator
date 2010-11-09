@@ -79,8 +79,16 @@ z.humanoid = function (spec) {
 	that.influences = {x:0,y:0,w:1,a:0,r:20};
 	
 	that.chooseNextMove = function () {			
-		var hDelta = Math.sin(that.heading) * that.walkingSpeed + that.influences.x,
+		var hDelta = 0, vDelta = 0;
+			
+		if (!that.isZombie() || (that.influences.w === 1)) {
+			hDelta = Math.sin(that.heading) * that.walkingSpeed + that.influences.x;
 			vDelta = 0 - (Math.cos(that.heading) * that.walkingSpeed) + that.influences.y;
+		} else {
+			// zombies have no memory and hence no attachment to their previous heading
+			hDelta = that.influences.x;
+			vDelta = that.influences.y;
+		}
 		
 		if (hDelta === 0) {
 			that.heading = (vDelta > 0) ? Math.PI : 0;

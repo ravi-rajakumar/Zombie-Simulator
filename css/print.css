@@ -1,0 +1,7 @@
+#controls, #footer, #messages {
+	display:none;
+}
+
+#stats {
+	display:block;
+}

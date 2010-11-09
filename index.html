@@ -3,6 +3,7 @@
 	<head>
 		<title>The Living Dead</title>
 		<link media="all" rel="stylesheet" type="text/css" href="css/main.css" />
+		<link media="print" rel="stylesheet" type="text/css" href="css/print.css" />
 		<script type="text/javascript" src="js/lib/jquery-1.4.2.min.js"></script>		
 		<!--[if IE]><script type="text/javascript" src="js/lib/excanvas.compiled.js"></script><![endif]--> 
 		<script type="text/javascript" src="js/z.js"></script>
@@ -72,14 +73,14 @@
 					<input id="scale" name="scale" type="text" value="2" />
 					<label for="time-lapse-factor">Timelapse (factor):</label>
 					<input id="time-lapse-factor" name="time-lapse-factor" type="text" value="100" />
+					<input id="reset" name="reset" type="reset" value="reset to defaults" />
 				</div>
 				</fieldset>
 			</form>
 		</section>
 
-		<canvas id="zombie-world" width="480" height="480"></canvas>
-
-		<section id="footer">
+		<section id="main">
+			<canvas id="zombie-world" width="480" height="480"></canvas>
 			<div id="statistics">
 				<p id="timer">Time elapsed: <span id="days">0 days,</span> <span id="hours">0 hours,</span> <span id="minutes">0 minutes,</span> <span id="seconds">0 seconds</span></p>
 				<p id="performance">Performance: <span id="tps">0</span> turns/second, <span id="fps">0</span> frames/second</p>
@@ -101,6 +102,9 @@
 			<p id="hbirths">Humans born: <span></span></p>
 			<p id="hnaturaldeaths">Human deaths by natural causes: <span></span></p>
 			</div>
+		</section>
+		
+		<section id="footer">
 			<p><a href="http://github.com/ravi-rajakumar/Zombie-Simulator" target="_blank">About this project</a></p>
 		</section>
 		</body>
