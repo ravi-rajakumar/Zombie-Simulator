@@ -111,15 +111,13 @@ header cite {
 
 #config #reset {
 	padding: .2em .4em .4em;
-	margin: 2.4em 0 0 2.9em;
+	margin: 87px 0 0 32px;
 	background-color:#eee;
-	border-top: 1px solid #ddd;
-	border-right: 1px solid #ccc;
-	border-bottom: 1px solid #ccc;
-	border-left: 1px solid #ddd;
+	border: medium none;
 	-moz-border-radius: 3px; 
 	-webkit-border-radius: 3px;
 	width:10em;
+	color:#779;
 }
 
 #config #reset:hover {
