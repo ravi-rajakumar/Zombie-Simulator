@@ -34,7 +34,7 @@ z.humanoid = function (spec) {
 		that.position.y = y;
 	};
 	
-	that.chooseDirection = function () {
+	that.adjustHeading = function () {
 		/*
 		 * direction is in radians clockwise, North = 0
 		 *
@@ -80,14 +80,16 @@ z.humanoid = function (spec) {
 	
 	that.chooseNextMove = function () {			
 		var hDelta = 0, vDelta = 0;
-			
+
+		that.heading = that.adjustHeading();
+		
 		if (!that.isZombie() || (that.influences.w === 1)) {
 			hDelta = Math.sin(that.heading) * that.walkingSpeed + that.influences.x;
 			vDelta = 0 - (Math.cos(that.heading) * that.walkingSpeed) + that.influences.y;
 		} else {
 			// zombies have no memory and hence no attachment to their previous heading
-			hDelta = that.influences.x;
-			vDelta = that.influences.y;
+			hDelta = (Math.sin(that.heading) * that.walkingSpeed * 0.1) + that.influences.x;
+			vDelta = (0 - (Math.cos(that.heading) * that.walkingSpeed) * 0.1) + that.influences.y;
 		}
 		
 		if (hDelta === 0) {

@@ -29,7 +29,7 @@ var z = {
 	simulatedTimeElapsed: 0, // used for custom timeouts and perf measurements
 	actualTurnsPerSecond: null, // real time -- used to measure performance
 	secondsPerTurn: function () {	// these are simulated seconds per turn
-		if (z.actualTurnsPerSecond === null) {
+		if (z.actualTurnsPerSecond === null ||  z.actualTurnsPerSecond === 0) {
 			return z.interval * z.timeLapseFactor / 1000;
 		} else {
 			return z.timeLapseFactor / z.actualTurnsPerSecond;
@@ -95,6 +95,7 @@ z.init = function (spec) {
 	
 	z.zombieStartingPopulation = spec.zombiePopulation;
 	z.zombieHerding = spec.zombieHerding;
+	z.zombieQueueing = spec.zombieQueueing;
 	z.zombieBrainEatingEfficiency = spec.zombieBrainEatingEfficiency;
 	
 	z.timeLapseFactor = spec.timeLapseFactor;
@@ -207,7 +208,6 @@ z.advanceTurn = function () {
 		if (humanoid.currentTarget !== null && distance <= 1 && humanoid.nextAction() !== 'stunned' && humanoid.currentTarget.nextAction() !== 'stunned') {
 			humanoid.actionQueue = ['fight'];
 		} else if (!humanoid.sleeping) {
-			humanoid.heading = humanoid.chooseDirection();
 			humanoid.currentTarget = null;
 			
 			proximityFail = false;
