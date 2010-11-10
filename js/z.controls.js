@@ -38,6 +38,7 @@ z.updateSettings = function () {
 	z.humanHerding = $('#human-herding').val();
 	z.humanQueueing = $('#human-queueing').val();
 	z.zombieHerding = $('#zombie-herding').val();
+	z.zombieQueueing = $('#zombie-queueing').val();
 	z.zombieBrainEatingEfficiency = $('#zombie-brain-eating-efficiency').val();
 	z.timeLapseFactor = $('#time-lapse-factor').val();
 };
@@ -88,6 +89,7 @@ $(document).ready(function ($) {
 			
 			zombiePopulation: $('#zombie-population').val(),
 			zombieHerding: $('#zombie-herding').val(),
+			zombieQueueing: $('#zombie-queueing').val(),
 			zombieBrainEatingEfficiency: $('#zombie-brain-eating-efficiency').val(),
 			
 			timeLapseFactor: $('#time-lapse-factor').val()
