@@ -71,7 +71,7 @@ header cite {
 #config {
 	position:absolute;
 	border:0;
-	margin:9px 0;
+	margin:9px 1px;
 	padding:1px 12px 12px;
 	background-color:#eee;
 	opacity:.8;

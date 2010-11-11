@@ -227,6 +227,9 @@ z.humanoid = function (spec) {
 	
 	that.doNext = function () {
 		switch (that.nextAction()) {
+			case 'stunned':
+				// do nothing
+				break;
 			case 'idle':
 				that.idle();
 				break;
@@ -274,6 +277,14 @@ z.human = function (spec) {
 	that.walkingSpeed = that.maxWalkingSpeed;
 	
 	that.recognitionRange = 1;
+	
+	that.herding = function () {
+		return z.humanHerding;
+	}
+	
+	that.queueing = function () {
+		return z.humanQueueing;
+	}
 	
 	// ranges from 0 - 1 with start values euqal to the base aggressiveness in the config settings +/- 10% in random variation. humans who successfully kill zombies will become increasingly aggressive toward them
 	that.aggressiveness = ((Math.random() * 0.2) + 0.9) * z.humanBaseAgressiveness; 
@@ -395,6 +406,20 @@ z.zombie = function (spec) {
 	that.walkingSpeed = that.maxWalkingSpeed;
 	
 	that.color = 'rgb(' + (Math.round(Math.random() * 40) + 200) + ', 30, 30)';
+	
+	that.herding = function () {
+		return z.zombieHerding;
+	}
+	
+	that.recognitionRange = 20;
+	
+	that.recognizes = function (neighbor) {
+		return (that.recognitionRange > z.range(that, neighbor)) ? true : false;	
+	};
+	
+	that.queueing = function () {
+		return z.zombieQueueing;
+	}
 	
 	// zombie stamina is always 100%
 	that.stamina = 100;
