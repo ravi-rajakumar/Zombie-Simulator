@@ -414,7 +414,7 @@ z.zombie = function (spec) {
 	that.recognitionRange = 20;
 	
 	that.recognizes = function (neighbor) {
-		return (that.recognitionRange > z.range(that, neighbor)) ? true : false;	
+		return that.recognitionRange > z.range(that, neighbor);	
 	};
 	
 	that.queueing = function () {
