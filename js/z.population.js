@@ -24,11 +24,6 @@ z.humanoid = function (spec) {
 		dy: 0
 	};
 	
-	that.lastMove = {
-		dx: 0,
-		dy: 0
-	};
-	
 	that.setPosition = function (x, y) {
 		that.position.x = x;
 		that.position.y = y;
@@ -80,8 +75,6 @@ z.humanoid = function (spec) {
 	
 	that.chooseNextMove = function () {			
 		var hDelta = 0, vDelta = 0;
-
-		that.heading = that.adjustHeading();
 		
 		if (!that.isZombie() || (that.influences.w === 1)) {
 			hDelta = Math.sin(that.heading) * that.walkingSpeed + that.influences.x;
@@ -97,6 +90,8 @@ z.humanoid = function (spec) {
 		} else {
 			that.heading = (hDelta > 0) ? Math.PI / 2 + Math.atan(vDelta / hDelta) : 3 * Math.PI / 2 + Math.atan(vDelta / hDelta);
 		}
+
+		that.heading = that.adjustHeading();
 		
 		hDelta = Math.sin(that.heading) * that.walkingSpeed;
 		vDelta = 0 - Math.cos(that.heading) * that.walkingSpeed;
@@ -126,8 +121,6 @@ z.humanoid = function (spec) {
 		}
 		
 		that.setPosition(movx, movy);
-		
-		that.lastMove = that.nextMove;
 	};
 	
 	that.walk = function () {
@@ -227,6 +220,9 @@ z.humanoid = function (spec) {
 	
 	that.doNext = function () {
 		switch (that.nextAction()) {
+			case 'stunned':
+				// do nothing
+				break;
 			case 'idle':
 				that.idle();
 				break;
@@ -274,6 +270,14 @@ z.human = function (spec) {
 	that.walkingSpeed = that.maxWalkingSpeed;
 	
 	that.recognitionRange = 1;
+	
+	that.herding = function () {
+		return z.humanHerding;
+	};
+	
+	that.queueing = function () {
+		return z.humanQueueing;
+	};
 	
 	// ranges from 0 - 1 with start values euqal to the base aggressiveness in the config settings +/- 10% in random variation. humans who successfully kill zombies will become increasingly aggressive toward them
 	that.aggressiveness = ((Math.random() * 0.2) + 0.9) * z.humanBaseAgressiveness; 
@@ -395,6 +399,22 @@ z.zombie = function (spec) {
 	that.walkingSpeed = that.maxWalkingSpeed;
 	
 	that.color = 'rgb(' + (Math.round(Math.random() * 40) + 200) + ', 30, 30)';
+	
+	that.herding = function () {
+		return z.zombieHerding;
+	};
+	
+	that.queueing = function () {
+		return z.zombieQueueing;
+	};
+	
+	that.recognitionRange = 20;
+	
+	that.recognizes = function (neighbor) {
+		return that.recognitionRange > z.range(that, neighbor);	
+	};
+	
+	that.chasing = false;
 	
 	// zombie stamina is always 100%
 	that.stamina = 100;

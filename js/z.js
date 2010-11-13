@@ -190,8 +190,8 @@ z.advanceTurn = function () {
 	z.neighbors = z.mergeSort(z.neighbors, 'x');
 	
 	// here is the start of the main loop through the humanoids, calculating influences and choices and performing actions for the turn
-	for (var index = 0, max = z.neighbors.length; index < max; index++) {
-		var humanoid = z.neighbors[index],
+	for (var l = 0, m = z.neighbors.length; l < m; l++) {
+		var humanoid = z.neighbors[l],
 			proximityFail = false,
 			neighborIndex = 0,
 			distance = 0,
@@ -211,11 +211,11 @@ z.advanceTurn = function () {
 			humanoid.currentTarget = null;
 			
 			proximityFail = false;
-			neighborIndex = index + 1;
+			neighborIndex = l + 1;
 			
 			while (proximityFail === false) {
 				neighbor = z.neighbors[neighborIndex];
-				if (neighborIndex >= max) {
+				if (neighborIndex >= m) {
 					proximityFail = true;
 				// if x is out of range then we can exit this loop
 				} else if (Math.abs(humanoid.position.x - neighbor.position.x) > z.sightRange) {
@@ -229,7 +229,7 @@ z.advanceTurn = function () {
 			}
 			
 			proximityFail = false;
-			neighborIndex = index - 1;
+			neighborIndex = l - 1;
 			
 			while (proximityFail === false) {
 				neighbor = z.neighbors[neighborIndex];
@@ -246,8 +246,10 @@ z.advanceTurn = function () {
 				neighborIndex--;
 			}
 		}
-		
-		humanoid.doNext();
+	}
+	
+	for (var n = 0, o = z.neighbors.length; n < o; n++) {
+		z.neighbors[n].doNext();
 	}
 	
 	// increment zombie recognition range until 10m

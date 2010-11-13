@@ -2,86 +2,74 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	var attraction = 0,
 		persuasion = 0,
 		walkingSpeed = currentHumanoid.maxWalkingSpeed,
-		neighborHorizontalDelta = Math.sin(neighbor.heading),
-		neighborVerticalDelta = 0 - Math.cos(neighbor.heading),
 		diffX = neighbor.position.x - currentHumanoid.position.x,
 		diffY = neighbor.position.y - currentHumanoid.position.y,
 		headingScale = (distance > 0) ? walkingSpeed / distance : 1,
-		currentHumanoidAngle = 0,
-		newHeading = 0,
 		influence = 0,
-		allforces = 0,
-		influenceEffect = {x:0,y:0,w:0};
+		angle = 0;
 	
-	// humans automatically bounce off of other bodies that are too close to them
-	if (distance < 0.25 && !currentHumanoid.isZombie() && !neighbor.isZombie()) {
-		currentHumanoid.setPosition(currentHumanoid.position.x - (diffX * 0.25 / distance), currentHumanoid.position.y - (diffY * 0.25 / distance));
-	} else {
-		influence = ((diffY) >= 0) ? Math.PI - Math.asin((diffX) / distance) : (Math.PI * 2 + Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance)) % (Math.PI * 2);
-		
-		// can currentHumanoid actually see or hear the neighbor?
-		if (Math.abs(currentHumanoid.heading - influence) <= z.fieldOfView / 2) {
-			if (!currentHumanoid.isZombie()) {
-				// humans are automatically attracted to other humanoids unless they recognize them as zombies
-				if (!neighbor.isZombie() || !currentHumanoid.recognizes(neighbor)) {
-					attraction = z.humanHerding;
-					persuasion = z.humanQueueing;
-					
-				} else {
-					attraction = -1;
-					persuasion = 0;
-					// drop everything and run away for 10 seconds
-					currentHumanoid.actionQueue = [];
-					for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
-						currentHumanoid.actionQueue.push('run');
-					}
-					// after an encounter with a zombie, humans learn to recognize them better
-					if (currentHumanoid.recognitionRange < 10) {
-						currentHumanoid.recognitionRange += 3;
-					}
-				}
-			}
-			
-			// zombies are strongly attracted to humans
-			if (currentHumanoid.isZombie() && !neighbor.isZombie()) {
-				attraction = 10;
-				persuasion = 1;
-			}
-			
-			if (currentHumanoid.isZombie() && neighbor.isZombie()) {
-				// zombies are somewhat attracted to each other
-				attraction = z.zombieHerding;
-				persuasion = z.zombieQueueing;
-			}
-			
-			// apply herding effect
-			currentHumanoid.influences.x += headingScale * (neighbor.position.x - currentHumanoid.position.x) * attraction;
-			currentHumanoid.influences.y += headingScale * (neighbor.position.y - currentHumanoid.position.y) * attraction;
-			
-			// apply queueing effect, with a random chance, based on boredom coefficient of breaking out of the pack
-			if (Math.random() < z.humanBoredomFactor() * 2 * z.secondsPerTurn() && persuasion > 0 && !currentHumanoid.isZombie()) {
-				currentHumanoid.heading = (currentHumanoid.heading + Math.PI) % (Math.PI * 2);
-			} else {
-				currentHumanoid.influences.x += neighbor.lastMove.dx / z.secondsPerTurn() * persuasion;
-				currentHumanoid.influences.y += neighbor.lastMove.dy / z.secondsPerTurn() * persuasion;
-			}
-			
-			// add to count of influences
-			currentHumanoid.influences.w += 1;
+	// calculate the bearing to the influence
+	influence = ((diffY) >= 0) ? Math.PI - Math.asin((diffX) / distance) : (Math.PI * 2 + Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance)) % (Math.PI * 2);
 	
-			// too much crowding in one spot makes that location less appealing
-			if (currentHumanoid.influences.w > 16 * z.humanHerding) {
-				// this reflects the value off of an upper bound and applies it to 'attractiveness' of the location
-				currentHumanoid.influences.a -= currentHumanoid.influences.w - (16 * z.humanHerding);
-			} else {
-				currentHumanoid.influences.a += attraction / distance;
+	angle = Math.abs(currentHumanoid.heading - influence);
+	
+	if (angle > Math.PI) {
+		angle = Math.PI * 2 - angle;
+	}
+	
+	// can currentHumanoid actually see or hear the neighbor?
+	if (angle <= z.fieldOfView / 2 || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue[0] !== 'rest')) {		
+		// are the current humanoid and neighbor the same type or assumed to be? humans are automatically attracted to other humanoids unless they recognize them as zombies
+		if (currentHumanoid.isZombie() === neighbor.isZombie() || !currentHumanoid.recognizes(neighbor)) {
+			attraction = currentHumanoid.herding();
+			persuasion = currentHumanoid.queueing();
+		} else if (!currentHumanoid.isZombie() && neighbor.isZombie()) {
+			attraction = -1;
+			persuasion = 0;
+			// drop everything and run away for 10 seconds
+			currentHumanoid.actionQueue = [];
+			for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
+				currentHumanoid.actionQueue.push('run');
 			}
-				
-			// store the distance to the nearest attractor for calculating whether to idle
-			if (distance < currentHumanoid.influences.r && attraction > 0) {
-				currentHumanoid.influences.r = distance;
-			}	
+			// after an encounter with a zombie, humans learn to recognize  them better
+			if (currentHumanoid.recognitionRange < 10) {
+				currentHumanoid.recognitionRange += 3;
+			}
+		// zombies are strongly attracted to humans
+		} else {
+			// drop everything
+			currentHumanoid.influences = {x:0,y:0,w:1,a:0,r:20};
+			attraction = 1;
+			persuasion = 0;
 		}
+		
+		// apply herding effect
+		currentHumanoid.influences.x += headingScale * (neighbor.position.x - currentHumanoid.position.x) * attraction;
+		currentHumanoid.influences.y += headingScale * (neighbor.position.y - currentHumanoid.position.y) * attraction;
+		
+		// apply queueing effect, with a random chance, based on boredom coefficient of breaking out of the pack
+		if (Math.random() < z.humanBoredomFactor() * 2 * z.secondsPerTurn() && persuasion > 0 && !currentHumanoid.isZombie()) {
+			currentHumanoid.heading = (currentHumanoid.heading + Math.PI) % (Math.PI * 2);
+		} else {
+			currentHumanoid.influences.x += neighbor.nextMove.dx / z.secondsPerTurn() * persuasion;
+			currentHumanoid.influences.y += neighbor.nextMove.dy / z.secondsPerTurn() * persuasion;
+		}
+		
+		// add to count of influences
+		currentHumanoid.influences.w += 1;
+
+		// too much crowding in one spot makes that location less appealing
+		if (currentHumanoid.influences.w > 16 * z.humanHerding) {
+			// this reflects the value off of an upper bound and applies it to 'attractiveness' of the location
+			currentHumanoid.influences.a -= currentHumanoid.influences.w - (16 * z.humanHerding);
+		} else {
+			currentHumanoid.influences.a += attraction / distance;
+		}
+			
+		// store the distance to the nearest attractor for calculating whether to idle
+		if (distance < currentHumanoid.influences.r && attraction > 0) {
+			currentHumanoid.influences.r = distance;
+		}	
 	}
 };
 
@@ -201,8 +189,12 @@ z.fight = function (humanoid,neighbor) {
 
 z.interact = function (humanoid, neighbor) 
 {	
-	var distance = z.range(humanoid, neighbor);
+	var distance = z.range(humanoid, neighbor), diffX = neighbor.position.x - humanoid.position.x, diffY = neighbor.position.y - humanoid.position.y;
 	
+	// humanoids automatically bounce off of other bodies that are too close to them
+	if (distance < 0.25) {
+		humanoid.setPosition(humanoid.position.x - (diffX - (diffX * 0.25 / distance)), humanoid.position.y - (diffY - (diffY * 0.25 / distance)));
+	} 
 	// this checks whether the two humanoids should be in combat. The answer is true for zombies who are not stunned and true for humans who are not resting, are encountering a zombie that is not stunned and who meet other criteria for aggressiveness and cooperative.
 	if (distance <= 1) {
 		if (humanoid.isZombie() && humanoid.nextAction() !== 'stunned' && !neighbor.isZombie()) {		
