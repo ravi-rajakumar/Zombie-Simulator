@@ -2,26 +2,23 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	var attraction = 0,
 		persuasion = 0,
 		walkingSpeed = currentHumanoid.maxWalkingSpeed,
-		neighborHorizontalDelta = Math.sin(neighbor.heading),
-		neighborVerticalDelta = 0 - Math.cos(neighbor.heading),
 		diffX = neighbor.position.x - currentHumanoid.position.x,
 		diffY = neighbor.position.y - currentHumanoid.position.y,
 		headingScale = (distance > 0) ? walkingSpeed / distance : 1,
-		currentHumanoidAngle = 0,
-		newHeading = 0,
 		influence = 0,
-		allforces = 0,
-		influenceEffect = {x:0,y:0,w:0};
+		angle = 0;
 	
-	// humanoids automatically bounce off of other bodies that are too close to them
-	if (distance < 0.25) {
-		currentHumanoid.setPosition(currentHumanoid.position.x - (diffX - (diffX * 0.25 / distance)), currentHumanoid.position.y - (diffY - (diffY * 0.25 / distance)));
-	} 
-	
+	// calculate the bearing to the influence
 	influence = ((diffY) >= 0) ? Math.PI - Math.asin((diffX) / distance) : (Math.PI * 2 + Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance)) % (Math.PI * 2);
 	
+	angle = Math.abs(currentHumanoid.heading - influence);
+	
+	if (angle > Math.PI) {
+		angle = Math.PI * 2 - angle;
+	}
+	
 	// can currentHumanoid actually see or hear the neighbor?
-	if (Math.abs(currentHumanoid.heading - influence) <= z.fieldOfView / 2 || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue !== 'rest')) {		
+	if (angle <= z.fieldOfView / 2 || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue[0] !== 'rest')) {		
 		// are the current humanoid and neighbor the same type or assumed to be? humans are automatically attracted to other humanoids unless they recognize them as zombies
 		if (currentHumanoid.isZombie() === neighbor.isZombie() || !currentHumanoid.recognizes(neighbor)) {
 			attraction = currentHumanoid.herding();
@@ -54,8 +51,8 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		if (Math.random() < z.humanBoredomFactor() * 2 * z.secondsPerTurn() && persuasion > 0 && !currentHumanoid.isZombie()) {
 			currentHumanoid.heading = (currentHumanoid.heading + Math.PI) % (Math.PI * 2);
 		} else {
-			currentHumanoid.influences.x += neighbor.lastMove.dx / z.secondsPerTurn() * persuasion;
-			currentHumanoid.influences.y += neighbor.lastMove.dy / z.secondsPerTurn() * persuasion;
+			currentHumanoid.influences.x += neighbor.nextMove.dx / z.secondsPerTurn() * persuasion;
+			currentHumanoid.influences.y += neighbor.nextMove.dy / z.secondsPerTurn() * persuasion;
 		}
 		
 		// add to count of influences
@@ -192,8 +189,12 @@ z.fight = function (humanoid,neighbor) {
 
 z.interact = function (humanoid, neighbor) 
 {	
-	var distance = z.range(humanoid, neighbor);
+	var distance = z.range(humanoid, neighbor), diffX = neighbor.position.x - humanoid.position.x, diffY = neighbor.position.y - humanoid.position.y;
 	
+	// humanoids automatically bounce off of other bodies that are too close to them
+	if (distance < 0.25) {
+		humanoid.setPosition(humanoid.position.x - (diffX - (diffX * 0.25 / distance)), humanoid.position.y - (diffY - (diffY * 0.25 / distance)));
+	} 
 	// this checks whether the two humanoids should be in combat. The answer is true for zombies who are not stunned and true for humans who are not resting, are encountering a zombie that is not stunned and who meet other criteria for aggressiveness and cooperative.
 	if (distance <= 1) {
 		if (humanoid.isZombie() && humanoid.nextAction() !== 'stunned' && !neighbor.isZombie()) {		
