@@ -23,6 +23,12 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		if (currentHumanoid.isZombie() === neighbor.isZombie() || !currentHumanoid.recognizes(neighbor)) {
 			attraction = currentHumanoid.herding();
 			persuasion = currentHumanoid.queueing();
+			// learn how to fight from neghboring humans who are close enough to communicate
+			if (distance < 2 && !currentHumanoid.isZombie() && currentHumanoid.zombieKillingFitness < neighbor.zombieKillingFitness) {
+				// 10 minutes of conversation will get the learner to halfway between their own ability and their teacher's
+				var ck = currentHumanoid.zombieKillingFitness, nk = neighbor.zombieKillingFitness;
+				currentHumanoid.zombieKillingFitness += ((ck + nk) / 2 - ck) * z.secondsPerTurn() / 600;
+			}
 		} else if (!currentHumanoid.isZombie() && neighbor.isZombie()) {
 			attraction = -1;
 			persuasion = 0;

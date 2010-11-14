@@ -19,7 +19,7 @@ This is a web application for simulating interacting populations of humans and z
 - Friendship
 - Stamina, rest and recovery *
 - Sleep *
-- Communications and knowledge transfer
+- Communications and knowledge transfer *
 
 '*' = behaviors that are currently experimentally implemented
 
@@ -73,6 +73,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Humans will choose to sleep for around 8 hours if their stamina and sleep time get low enough
 - Stamina decays at varying rates depending on the human's actions. 100% of stamina is lost for every: 1 hour of fighting; 2 hours of running; 8 hours of walking; 16 hours of idling.
 - Agressiveness determines humans' tendency to attack vs. try to run away when encountering zombies. It automatically increases following survival of fights with zombies.
+- Humans who idle around one another learn how to fight zombies better through conversation. 10 minutes of conversation will get the learner to halfway between their own ability and their teacher's
 
 ## Units
 
