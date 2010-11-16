@@ -12,7 +12,7 @@ This is a web application for simulating interacting populations of humans and z
 - Eradicating the zombies
 - Minimizing human casualties
 
-Currently it experimentally implements mathematically modeling of the following behaviors:
+It experimentally implements mathematical modeling of the following behaviors:
 
 - Herding
 - Queueing
