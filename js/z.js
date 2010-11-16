@@ -14,7 +14,6 @@ var z = {
 	sightRange: 20, // range of humanoid vision
 	fieldOfView: 2.094, // 120 degrees field of vision
 	hearingRange: 3, // range at which humanoids are influenced by hearing other humanoids
-	flockAngle: 0.5,
 	
 	currentTurn: 0,
 	frameCounter: 0,
@@ -43,7 +42,6 @@ var z = {
 	},
 	humanHerding: 0.5,
 	humanQueueing: 0.2,
-	humanDefenseEfficiency: 1,	// not used yet
 	humanBaseAgressiveness: 0,
 	humanStaminaCoefficient: 1,
 	humanHungerCoefficient: 1,
@@ -199,6 +197,10 @@ z.advanceTurn = function () {
 		
 		// reset influence object at the start of every move
 		humanoid.influences = {x:0,y:0,w:1,a:0,r:20};
+		
+		if (!humanoid.isZombie()) {
+			humanoid.resetHeroism();
+		}
 		
 		// if the humanoid is fighting and their target is still in range, we skip all other influence checks -- this means that targets are sticky
 		if (humanoid.currentTarget !== null) {

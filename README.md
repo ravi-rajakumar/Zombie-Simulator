@@ -6,28 +6,31 @@
 
 ## Synopsis
 
-This is a web application for simulating interacting populations of humans and zombies. It should mathematically model such behaviors as:
-
-- Herding *
-- Queueing *
-- Learning *
-- Fight and flight *
-- Idling *
-- Boredom *
-- Fear vs. Aggressiveness *
-- Selflessness
-- Friendship
-- Stamina, rest and recovery *
-- Sleep *
-- Communications and knowledge transfer *
-
-'*' = behaviors that are currently experimentally implemented
-
-The application's purpose is to enable users to see what outcomes are produced based on various starting conditions and baseline assumptions about the populations' behaviors and physical constraints. Users can then test hypotheses about the relative advantages of specific characteristics by experimenting with different starting conditions. There are various game-like objectives that could arise from this framework, including:
+This is a web application for simulating interacting populations of humans and zombies. The application's purpose is to enable users to see what outcomes are produced based on various starting conditions and baseline assumptions about the populations' behaviors and physical constraints. Users can then test hypotheses about the relative advantages of specific characteristics by experimenting with different starting conditions. There are various game-like objectives that could arise from this framework, including:
 
 - Achieving equillibrium
 - Eradicating the zombies
 - Minimizing human casualties
+
+Currently it experimentally implements mathematically modeling of the following behaviors:
+
+- Herding
+- Queueing
+- Learning
+- Fight and flight
+- Idling
+- Boredom
+- Fear vs. Aggressiveness
+- Selflessness
+- Stamina, rest and recovery
+- Sleep
+- Communications and knowledge transfer
+
+The following real world dynamics and behaviors are planned enhancements:
+
+- Long-term friendship and loyalty
+- Physical obstacles, shelter and hiding
+- Global state changes based on events (ie. telecomms knocked out)
 
 ## Controls
 
@@ -73,7 +76,8 @@ The math in this simulation depends on a number of baseline properties that were
 - Humans will choose to sleep for around 8 hours if their stamina and sleep time get low enough
 - Stamina decays at varying rates depending on the human's actions. 100% of stamina is lost for every: 1 hour of fighting; 2 hours of running; 8 hours of walking; 16 hours of idling.
 - Agressiveness determines humans' tendency to attack vs. try to run away when encountering zombies. It automatically increases following survival of fights with zombies.
-- Humans who idle around one another learn how to fight zombies better through conversation. 10 minutes of conversation will get the learner to halfway between their own ability and their teacher's
+- Selflessness (heroism) is a personality trait that doesn't increase over time, and that allows humns to overcome the urge to run away from a zombie attacking another human. It will overcome at most one negative influence, and then is reset every turn.
+- Humans who idle around one another learn how to fight zombies better through conversation. 10 minutes of conversation will get the learner to halfway between their own ability and their teacher's.
 
 ## Units
 

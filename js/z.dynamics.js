@@ -30,12 +30,18 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 				currentHumanoid.zombieKillingFitness += ((ck + nk) / 2 - ck) * z.secondsPerTurn() / 600;
 			}
 		} else if (!currentHumanoid.isZombie() && neighbor.isZombie()) {
-			attraction = -1;
-			persuasion = 0;
-			// drop everything and run away for 10 seconds
-			currentHumanoid.actionQueue = [];
-			for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
-				currentHumanoid.actionQueue.push('run');
+			if (neighbor.currentTarget !== null) {	
+				// overcome negative influence with any heroism that the human possesses, expending it in the process
+				attraction = currentHumanoid.showHeroism() - 1;
+				persuasion = 0;
+			} else {
+				attraction = -1;
+				persuasion = 0;
+				// drop everything and run away for 10 seconds
+				currentHumanoid.actionQueue = [];
+				for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
+					currentHumanoid.actionQueue.push('run');
+				}
 			}
 			// after an encounter with a zombie, humans learn to recognize  them better
 			if (currentHumanoid.recognitionRange < 10) {
@@ -207,7 +213,7 @@ z.interact = function (humanoid, neighbor)
 			humanoid.currentTarget = neighbor;
 			humanoid.actionQueue = ['fight'];
 		} else if (neighbor.isZombie() && !humanoid.isZombie() && neighbor.nextAction() !== 'stunned' && humanoid.actionQueue[0] !== 'rest' && !humanoid.sleeping) {
-			if (Math.random() < humanoid.aggressiveness) {
+			if (Math.random() < humanoid.aggressiveness + humanoid.showHeroism()) {
 				humanoid.currentTarget = neighbor;
 				humanoid.actionQueue = ['fight'];
 			} else {

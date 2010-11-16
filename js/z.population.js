@@ -282,6 +282,21 @@ z.human = function (spec) {
 	// ranges from 0 - 1 with start values euqal to the base aggressiveness in the config settings +/- 10% in random variation. humans who successfully kill zombies will become increasingly aggressive toward them
 	that.aggressiveness = ((Math.random() * 0.2) + 0.9) * z.humanBaseAgressiveness; 
 	
+	// heroism will cancel out at most one zombie repulsion, allowing the human to gravitate toward and save another human if the zombie is attacking one. It's expended the first time it is used and then reset at the start of each turn. It's also used to overcome the human's instinct to run away from attacking zombies
+	that.maxHeroism = Math.random();
+	
+	that.heroism = that.maxHeroism;
+	
+	that.showHeroism = function () {
+		var ret = that.heroism;
+		that.heroism = 0;
+		return ret;
+	};
+	
+	that.resetHeroism = function () {
+		that.heroism = that.maxHeroism;
+	};
+	
 	// stamina is used to determine the human's desire to 'rest'. It can have a negative value, and a max positove value of 100. Negative values mean that the human is incapable of running and will choose to rest if they are not being actively chased. The human's walking speed will also be increasingly impeded by negative stamina.  
 	that.stamina = Math.random() * 67 + 33;
 	

@@ -207,3 +207,7 @@ canvas {
 #statistics p, #populations p {
 	margin:0 0 1em 0;
 }
+
+#requirements, #requirements a {
+	color:#666666;
+}
