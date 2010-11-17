@@ -32,10 +32,10 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		} else if (!currentHumanoid.isZombie() && neighbor.isZombie()) {
 			if (neighbor.currentTarget !== null) {	
 				// overcome negative influence with any heroism that the human possesses, expending it in the process
-				attraction = currentHumanoid.showHeroism() - 1;
+				attraction = currentHumanoid.showHeroism() + (currentHumanoid.aggressiveness * 2) - 1;
 				persuasion = 0;
 			} else {
-				attraction = -1;
+				attraction = (currentHumanoid.aggressiveness * 2) - 1;
 				persuasion = 0;
 				// drop everything and run away for 10 seconds
 				currentHumanoid.actionQueue = [];

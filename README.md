@@ -43,7 +43,7 @@ Generally the intended use is to set the starting conditions and then run the si
 - spacebar: start/stop
 - return: open/close the settings panel and commit any changes if closing it
 
-in-flight changes can be made for: human herding; human queueing; zombie herding; zombie brain-eating success; timelapse
+In-flight changes can be made for: human herding; human queueing; zombie herding; zombi queueing; zombie brain-eating success; timelapse
 
 ## Assumptions
 
@@ -75,14 +75,17 @@ The math in this simulation depends on a number of baseline properties that were
 - Humans rest in stretches of approxinately 2 hours until their stamina is over 50%
 - Humans will choose to sleep for around 8 hours if their stamina and sleep time get low enough
 - Stamina decays at varying rates depending on the human's actions. 100% of stamina is lost for every: 1 hour of fighting; 2 hours of running; 8 hours of walking; 16 hours of idling.
-- Agressiveness determines humans' tendency to attack vs. try to run away when encountering zombies. It automatically increases following survival of fights with zombies.
-- Selflessness (heroism) is a personality trait that doesn't increase over time, and that allows humns to overcome the urge to run away from a zombie attacking another human. It will overcome at most one negative influence, and then is reset every turn.
+- Agressiveness determines humans' tendency to attack vs. try to run away when encountering zombies, and is a randomly generated value that's ±10% of the setting for initial human aggressiveness.
+- Agressiveness applies to situations where multiple humans are under attack and to the logic for calculating influences on the human's heading while travelling. 
+- Agressiveness automatically increases following survival of fights with zombies.
+- Selflessness (heroism) is a personality trait that doesn't increase over time, and that allows humans to overcome the urge to run away from a zombie attacking another human. It will overcome at most one negative influence, and then is reset every turn.
 - Humans who idle around one another learn how to fight zombies better through conversation. 10 minutes of conversation will get the learner to halfway between their own ability and their teacher's.
 
 ## Units
 
 - Units are metric.
 - Base distance is 1m.
+- Base time unit is 1s.
 - Two objects can't occupy the same space
 - Heading is noted in radians, clockwise from North
 
