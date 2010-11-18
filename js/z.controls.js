@@ -114,11 +114,13 @@ $(document).ready(function ($) {
 		
 		if (text.indexOf('-') > -1) {
 			$(this).text('[+] settings');
+			controls.toggle('fast', function () {$('#config').hide();});
 		} else {
 			$(this).text('[-] settings');
+			$('#config').show();
+			controls.toggle('fast');
 		}
 		
-		controls.toggle('fast');
 	});
 	
 	$('#stats-switch').live('click', function (event) {
