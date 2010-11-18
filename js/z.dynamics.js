@@ -215,7 +215,7 @@ z.interact = function (humanoid, neighbor)
 	
 	// humanoids automatically bounce off of other bodies that are too close to them
 	if (distance < 0.25) {
-		humanoid.setPosition(humanoid.position.x - (diffX - (diffX * 0.25 / distance)), humanoid.position.y - (diffY - (diffY * 0.25 / distance)));
+		humanoid.setPosition(humanoid.position.x - ((diffX * 0.25 / distance) - diffX), humanoid.position.y - ((diffY * 0.25 / distance) - diffY));
 	} 
 	// this checks whether the two humanoids should be in combat. The answer is true for zombies who are not stunned and true for humans who are not resting, are encountering a zombie that is not stunned and who meet other criteria for aggressiveness and cooperative.
 	if (distance <= 1) {
