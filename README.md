@@ -45,6 +45,8 @@ Generally the intended use is to set the starting conditions and then run the si
 
 In-flight changes can be made for: human herding; human queueing; zombie herding; zombi queueing; zombie brain-eating success; timelapse
 
+The simulation automatically ends when either: humans are extinct; or zombies are extinct and zero zombie conversions are pending.
+
 ## Assumptions
 
 The math in this simulation depends on a number of baseline properties that were arrived at through educated guesswork. The accuracy and value of the program would be increased by replacing those with real numbers through further research or measurement. The following is a list of those assumptions:
