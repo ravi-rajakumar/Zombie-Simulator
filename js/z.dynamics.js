@@ -85,7 +85,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	}
 };
 
-z.fight = function (humanoid,neighbor) {
+z.fight = function (humanoid, neighbor) {
 	var biteChance = 0.1,
 		humanDieChance = 0.01,
 		zombieStunChance = 0.05,
@@ -100,97 +100,107 @@ z.fight = function (humanoid,neighbor) {
 	// how long (in whole seconds) since we last performed fight actions
 	seconds = Math.floor(z.simulatedTimeElapsed - humanoid.lastActionTimeStamp);
 	
-	// check to see whether a whole second has gone by since the last action and to be sure that oth humanoids are still on the field
+	// check to see whether a whole second has gone by since the last action
 	if (seconds >= 1) {
 		try {
-			if (humanoid.isZombie()) {
-				zombie = humanoid;
-				human = neighbor;
-			} else {
-				human = humanoid;
-				zombie = neighbor;
-			}	
-			
-			zombieStunChance = (human.zombieKillingFitness <= 0.18) ? human.zombieKillingFitness * 5 : 0.9; // 5% chance by default but improved in more experienced humans
-			zombieDieChance = human.zombieKillingFitness; // 1% chance by default but improved in more experienced humans
-			
-			// update the human's zombie killing skill for the next fight they have
-			if (human.zombieKillingFitness < 0.16) {
-				human.zombieKillingFitness += 0.07;
-			}
-			
-			// over-tired humans will fight less efficiently, bottoming out at -100 stamina
-			if (human.stamina < 0) {
-				zombieDieChance = zombieDieChance * (100 - Math.abs(human.stamina)) / 100;
-			}
-			
-			humanTargeted = (zombie.currentTarget === human);
-			zombieTargeted = (human.currentTarget === zombie);
-		
-			// do one action per second
-			for (var i = 0; i < seconds; i++) {
-	
-				z.flash(human);
-				z.flash(zombie);
+			// check to be sure that targets are still in range
+			if (z.range(humanoid, neighbor) <= 1) {
+				if (humanoid.isZombie()) {
+					zombie = humanoid;
+					human = neighbor;
+				} else {
+					human = humanoid;
+					zombie = neighbor;
+				}	
 				
-				/* handling multiple parties in a fight in a new way. participants can only have one focus at a time and only act on that focus.
-				*/
-				// this only happens if the zombie is actually focused on this human
-				if (humanTargeted) {			
-					if (Math.random() < biteChance) {
-						if (human.zombify !== null) {
-							human.zombify();
-							human.currentTarget = zombie;
-							z.message('human zombify coming...');
-						}
-					}
-					
-					if (Math.random() < humanDieChance) {
-						if (Math.random() < (z.zombieBrainEatingEfficiency / 100)) {
-							human.zombify = null; // the brain is destroyed so this person can't zombify
-						}
-						human.die();
-						z.message('human death');
-						zombie.currentTarget = null;
-						exit = true;
-					}
+				zombieStunChance = (human.zombieKillingFitness <= 0.18) ? human.zombieKillingFitness * 5 : 0.9; // 5% chance by default but improved in more experienced humans
+				zombieDieChance = human.zombieKillingFitness; // 1% chance by default but improved in more experienced humans
+				
+				// update the human's zombie killing skill for the next fight they have
+				if (human.zombieKillingFitness < 0.16) {
+					human.zombieKillingFitness += 0.07;
 				}
 				
-				// this only happens if the human is actually focused on this zombie
-				if (zombieTargeted) {	
-					if (Math.random() < zombieStunChance) {
-						for (var j = 0; j < Math.floor(60 / z.secondsPerTurn()); j++) {
-							zombie.actionQueue.push('stunned');	
-						}
-						human.currentTarget = null;
-						exit = true;
-					}
-					
-					if (Math.random() < zombieDieChance) {
-						zombie.die();
-						z.message('zombie death');
-						human.currentTarget = null;
-						exit = true;
-					}
-					
-					// fights drain human stamina very quickly
-					human.stamina -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) * 100 / 3600;
-					// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
-					human.slept -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) / 2;
-				}
-				human.lastActionTimeStamp = z.simulatedTimeElapsed;
-				zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
+				// over-tired humans will fight less efficiently, bottoming out at -100 stamina
+				if (human.stamina < 0) {
+					zombieDieChance = zombieDieChance * (100 - Math.abs(human.stamina)) / 100;
+				}			
 				
 				// if they weren't fighting before, they are now
+				if (humanoid.currentTarget === null) {
+					humanoid.currentTarget = neighbor;
+				}
+				if (neighbor.currentTarget === null) {
+					neighbor.currentTarget = humanoid;
+				}
+				
 				humanoid.actionQueue = ['fight'];
 				neighbor.actionQueue = ['fight'];
 				
-				// wake up! (later factor in latency in waking up)
-				human.sleeping = false;	
-				
-				if (exit) {		
-					human.aggressiveness += Math.random() * 0.2;	
-					return;
+				humanTargeted = (zombie.currentTarget === human);
+				zombieTargeted = (human.currentTarget === zombie);
+			
+				// do one action per second
+				for (var i = 0; i < seconds; i++) {
+		
+					z.flash(human);
+					z.flash(zombie);
+					
+					/* handling multiple parties in a fight in a new way. participants can only have one focus at a time and only act on that focus.
+					*/
+					// this only happens if the zombie is actually focused on this human
+					if (humanTargeted) {			
+						if (Math.random() < biteChance) {
+							if (human.zombify !== null) {
+								human.zombify();
+								human.currentTarget = zombie;
+								z.message('human zombify coming...');
+							}
+						}
+						
+						if (Math.random() < humanDieChance) {
+							if (Math.random() < (z.zombieBrainEatingEfficiency / 100)) {
+								human.zombify = null; // the brain is destroyed so this person can't zombify
+							}
+							human.die();
+							z.message('human death');
+							zombie.currentTarget = null;
+							exit = true;
+						}
+					}
+					
+					// this only happens if the human is actually focused on this zombie
+					if (zombieTargeted) {	
+						if (Math.random() < zombieStunChance) {
+							for (var j = 0; j < Math.floor(60 / z.secondsPerTurn()); j++) {
+								zombie.actionQueue.push('stunned');	
+							}
+							human.currentTarget = null;
+							exit = true;
+						}
+						
+						if (Math.random() < zombieDieChance) {
+							zombie.die();
+							z.message('zombie death');
+							human.currentTarget = null;
+							exit = true;
+						}
+						
+						// fights drain human stamina very quickly
+						human.stamina -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) * 100 / 3600;
+						// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
+						human.slept -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) / 2;
+					}
+					human.lastActionTimeStamp = z.simulatedTimeElapsed;
+					zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
+					
+					// wake up! (later factor in latency in waking up)
+					human.sleeping = false;	
+					
+					if (exit) {		
+						human.aggressiveness += Math.random() * 0.2;
+						return;
+					}
 				}
 			}
 		} catch (err) {

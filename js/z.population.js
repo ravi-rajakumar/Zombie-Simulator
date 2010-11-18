@@ -219,7 +219,8 @@ z.humanoid = function (spec) {
 	};
 	
 	that.doNext = function () {
-		switch (that.nextAction()) {
+		var nxt = that.nextAction();
+		switch (nxt) {
 			case 'stunned':
 				// do nothing
 				break;
@@ -327,9 +328,7 @@ z.human = function (spec) {
 	that.zombify = function () {
 		if (that.deadtimer === null && that.livetimer === null) {
 			that.livetimer = z.setTimeout(function() {
-				that.nextAction = function () {
-					return 'die';
-				};
+				that.actionQueue = ['die'];
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified++;
 				z.message(that.zombifyMsg);
@@ -344,9 +343,7 @@ z.human = function (spec) {
 	};
 		
 	that.die = function () {		
-		that.nextAction = function () {
-			return 'die';
-		};
+		that.actionQueue = ['die'];
 		
 		// this gets set right away because getting killed overrides any pending 'live-turn' event
 		that.zombifyMsg = 'dead-turn';
@@ -439,9 +436,7 @@ z.zombie = function (spec) {
 	};
 		
 	that.die = function () {
-		that.nextAction = function () {
-			return 'die';
-		};
+		that.actionQueue = ['die'];
 	};
 	
 	that.nextAction = function () {
