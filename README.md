@@ -64,7 +64,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Range at which humanoids notice influences by hearing them: 3m
 - Chance in any one round of a fight that the human will be bitten: 10%
 - Chance in any one round of a fight that the human will die: 1%
-- Humans learn from fights and their proficiency improves to a maximum of 22 times a zombie's killing proficiency (about a 63% chance of killing the zombie in an average 4-round fight)
+- Humans learn from fights and their proficiency improves to a maximum of about 22 times a zombie's killing proficiency
 - Zombies are five times as likely to be only temporarily killed in a fight as permanently killed
 - Interval between actions in a fight: 1s
 - Variance in direction of humanoid travel, absent external influences: ±11.25 degrees/turn
