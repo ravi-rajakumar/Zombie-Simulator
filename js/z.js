@@ -167,7 +167,6 @@ z.advanceTurn = function () {
 	// check for dead humans, and remove them before creating the set
 	for (var j = 0; j < hcount; j++) {
 		if (z.humans[j].actionQueue[0] === 'die') {
-			z.humans[j].actionQueue.shift();
 			// remove them from the population
 			z.humans.splice(j,1);
 			hcount -= 1;
@@ -180,7 +179,6 @@ z.advanceTurn = function () {
 	// check for destroyed zombies, and remove them before creating the set
 	for (var k = 0; k < zcount; k++) {
 		if (z.zombies[k].actionQueue[0] === 'die') {
-			z.zombies[k].actionQueue.shift();
 			// remove them from the population
 			z.zombies.splice(k,1);
 			z.stats.zDestroyed++;

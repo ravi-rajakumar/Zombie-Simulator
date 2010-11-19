@@ -260,6 +260,10 @@ z.humanoid = function (spec) {
 			case 'stunned':
 				// do nothing
 				break;
+			case 'die':
+				// make sure the die message isn't removed through race conditions
+				that.actionQueue = ['die'];
+				break;
 			case 'idle':
 				that.idle();
 				break;

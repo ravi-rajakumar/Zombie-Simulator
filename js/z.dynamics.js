@@ -111,18 +111,18 @@ z.fight = function (humanoid, neighbor) {
 				}			
 				
 				// if they weren't fighting before, they are now
-				if (humanoid.currentTarget === null) {
-					if (humanoid.isFacing(neighbor, distance)) {
-						humanoid.currentTarget = neighbor;
+				if (human.currentTarget === null) {
+					if (human.isFacing(neighbor, distance)) {
+						human.currentTarget = zombie;
 					} else {
-						humanoid.face(neighbor);
+						human.face(zombie);
 					}
 				}
-				if (neighbor.currentTarget === null) {
-					if (neighbor.isFacing(humanoid, distance)) {
-						neighbor.currentTarget = humanoid;
+				if (zombie.currentTarget === null) {
+					if (zombie.isFacing(human, distance)) {
+						zombie.currentTarget = human;
 					} else {
-						neighbor.face(humanoid);
+						zombie.face(human);
 					}
 				}
 				
@@ -155,7 +155,6 @@ z.fight = function (humanoid, neighbor) {
 							human.die();
 							z.message('human death');							
 							z.updateStatistics();
-							zombie.currentTarget = null;
 							exit = true;
 						}
 						
@@ -167,8 +166,7 @@ z.fight = function (humanoid, neighbor) {
 						if (Math.random() < zombieStunChance) {
 							for (var j = 0; j < Math.floor(60 / z.secondsPerTurn()); j++) {
 								zombie.actionQueue.push('stunned');	
-							}
-							human.currentTarget = null;
+							}	
 							exit = true;
 						}
 						
@@ -176,7 +174,6 @@ z.fight = function (humanoid, neighbor) {
 							zombie.die();
 							z.message('zombie death');							
 							z.updateStatistics();
-							human.currentTarget = null;
 							exit = true;
 						}
 						
@@ -184,14 +181,6 @@ z.fight = function (humanoid, neighbor) {
 						human.stamina -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) * 100 / 3600;
 						// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
 						human.slept -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) / 2;
-
-						// update the human's zombie killing skill for the next fight they have
-						if (human.zombieKillingFitness < 0.16) {
-							human.zombieKillingFitness += 0.07;
-						}
-						if (human.aggressiveness < 1) {
-							human.aggressiveness += Math.random() * 0.2;
-						}
 						
 						human.lastActionTimeStamp = z.simulatedTimeElapsed;
 					}
@@ -200,6 +189,15 @@ z.fight = function (humanoid, neighbor) {
 					human.sleeping = false;	
 					
 					if (exit) {
+						// update the human's zombie killing skill for the next fight they have
+						if (human.zombieKillingFitness < 0.16) {
+							human.zombieKillingFitness += 0.07;
+						}
+						if (human.aggressiveness < 1) {
+							human.aggressiveness += Math.random() * 0.2;
+						}
+						human.currentTarget = null;
+						zombie.currentTarget = null;
 						return;
 					}
 				}
