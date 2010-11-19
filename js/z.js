@@ -8,6 +8,7 @@ var z = {
 	isRunning: false,
 	hasfocus: null, // used for in-flight changes to the settings form
 	guid: 0,
+	context: null,
 	
 	humanRecognitionRange: 1, // humans recognize zombies
 	zombieRecognitionRange: 10, // zombies recognize humans
@@ -24,7 +25,7 @@ var z = {
 	zombificationDuration: 3 * 3600, // 3 hours
 	
 	/* time stats: these are used throughout to measure and recalibrate the simulation's performance. The underlying rule is that we try to run as fast as possible (for the highest granularity), and then measure how fast we're actually going, then re-calculate physics based on the desired time-lapse and actual performance */
-	timeLapseFactor: 300, // how many simulated seconds pass in one real-world second
+	timeLapseFactor: 100, // how many simulated seconds pass in one real-world second
 	simulatedTimeElapsed: 0, // used for custom timeouts and perf measurements
 	actualTurnsPerSecond: null, // real time -- used to measure performance
 	secondsPerTurn: function () {	// these are simulated seconds per turn
@@ -72,7 +73,7 @@ z.init = function (spec) {
 	z.humans = [];
 	z.zombies = [];
 	z.resetStats();
-	z.updateStatistics();
+	z.zombiesPending = 0;
 	z.currentTurn = 0;
 	z.frameCounter = 0;
 	z.simulatedTimeElapsed = 0;
@@ -81,6 +82,7 @@ z.init = function (spec) {
 	var i,j;
 	
 	z.canvas = document.getElementById('zombie-world');
+	z.context = z.canvas.getContext('2d');
 	
 	z.scale = spec.scale;
 	z.canvasWidth = z.canvas.width;
@@ -110,6 +112,8 @@ z.init = function (spec) {
 	z.draw();
 	
 	z.updateTimer();
+	
+	z.updateStatistics();
 };
 
 /* this is a custom version of settimeout, designed to account for the pauses in the simulation. 
@@ -149,13 +153,14 @@ z.advanceTurn = function () {
 	if (Math.random() < (((hcount / 1000) * z.naturalbirthrate * z.secondsPerTurn()) / (86400 * 365))) {
 		z.humans.push(z.human({position: {}}));
 		z.message('natural birth');
+		z.updateStatistics();
 		z.stats.hBirths++;
 	}
 	if (Math.random() < (((hcount / 1000) * z.naturaldeathrate * z.secondsPerTurn()) / (86400 * 365))) {
 		var ndeath = z.humans.pop();
-		z.updateStatistics();
 		ndeath.zombify = null;
 		z.message('natural death');
+		z.updateStatistics();
 		z.stats.hNaturalDeaths++;
 	}
 	
@@ -175,7 +180,7 @@ z.advanceTurn = function () {
 	// check for destroyed zombies, and remove them before creating the set
 	for (var k = 0; k < zcount; k++) {
 		if (z.zombies[k].actionQueue[0] === 'die') {
-			z.humans[k].actionQueue.shift();
+			z.zombies[k].actionQueue.shift();
 			// remove them from the population
 			z.zombies.splice(k,1);
 			z.stats.zDestroyed++;

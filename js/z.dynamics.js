@@ -2,23 +2,10 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	var attraction = 0,
 		persuasion = 0,
 		walkingSpeed = currentHumanoid.maxWalkingSpeed,
-		diffX = neighbor.position.x - currentHumanoid.position.x,
-		diffY = neighbor.position.y - currentHumanoid.position.y,
-		headingScale = (distance > 0) ? walkingSpeed / distance : 1,
-		influence = 0,
-		angle = 0;
-	
-	// calculate the bearing to the influence
-	influence = ((diffY) >= 0) ? Math.PI - Math.asin((diffX) / distance) : (Math.PI * 2 + Math.asin((neighbor.position.x - currentHumanoid.position.x) / distance)) % (Math.PI * 2);
-	
-	angle = Math.abs(currentHumanoid.heading - influence);
-	
-	if (angle > Math.PI) {
-		angle = Math.PI * 2 - angle;
-	}
-	
+		headingScale = (distance > 0) ? walkingSpeed / distance : 1;
+		
 	// can currentHumanoid actually see or hear the neighbor?
-	if (angle <= z.fieldOfView / 2 || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue[0] !== 'rest')) {		
+	if (currentHumanoid.isFacing(neighbor, distance) || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue[0] !== 'rest')) {		
 		// are the current humanoid and neighbor the same type or assumed to be? humans are automatically attracted to other humanoids unless they recognize them as zombies
 		if (currentHumanoid.isZombie() === neighbor.isZombie() || !currentHumanoid.recognizes(neighbor)) {
 			attraction = currentHumanoid.herding();
@@ -95,6 +82,7 @@ z.fight = function (humanoid, neighbor) {
 		zombieTargeted = true,
 		humanTargeted = true,
 		seconds = 0,
+		distance = 0,
 		exit = false;
 
 	// how long (in whole seconds) since we last performed fight actions
@@ -104,7 +92,8 @@ z.fight = function (humanoid, neighbor) {
 	if (seconds >= 1) {
 		try {
 			// check to be sure that targets are still in range
-			if (z.range(humanoid, neighbor) <= 1) {
+			distance = z.range(humanoid, neighbor);
+			if (distance <= 1) {
 				if (humanoid.isZombie()) {
 					zombie = humanoid;
 					human = neighbor;
@@ -116,11 +105,6 @@ z.fight = function (humanoid, neighbor) {
 				zombieStunChance = (human.zombieKillingFitness <= 0.18) ? human.zombieKillingFitness * 5 : 0.9; // 5% chance by default but improved in more experienced humans
 				zombieDieChance = human.zombieKillingFitness; // 1% chance by default but improved in more experienced humans
 				
-				// update the human's zombie killing skill for the next fight they have
-				if (human.zombieKillingFitness < 0.16) {
-					human.zombieKillingFitness += 0.07;
-				}
-				
 				// over-tired humans will fight less efficiently, bottoming out at -100 stamina
 				if (human.stamina < 0) {
 					zombieDieChance = zombieDieChance * (100 - Math.abs(human.stamina)) / 100;
@@ -128,14 +112,19 @@ z.fight = function (humanoid, neighbor) {
 				
 				// if they weren't fighting before, they are now
 				if (humanoid.currentTarget === null) {
-					humanoid.currentTarget = neighbor;
+					if (humanoid.isFacing(neighbor, distance)) {
+						humanoid.currentTarget = neighbor;
+					} else {
+						humanoid.face(neighbor);
+					}
 				}
 				if (neighbor.currentTarget === null) {
-					neighbor.currentTarget = humanoid;
+					if (neighbor.isFacing(humanoid, distance)) {
+						neighbor.currentTarget = humanoid;
+					} else {
+						neighbor.face(humanoid);
+					}
 				}
-				
-				humanoid.actionQueue = ['fight'];
-				neighbor.actionQueue = ['fight'];
 				
 				humanTargeted = (zombie.currentTarget === human);
 				zombieTargeted = (human.currentTarget === zombie);
@@ -155,6 +144,7 @@ z.fight = function (humanoid, neighbor) {
 								human.zombify();
 								human.currentTarget = zombie;
 								z.message('human zombify coming...');
+								z.updateStatistics();
 							}
 						}
 						
@@ -163,10 +153,13 @@ z.fight = function (humanoid, neighbor) {
 								human.zombify = null; // the brain is destroyed so this person can't zombify
 							}
 							human.die();
-							z.message('human death');
+							z.message('human death');							
+							z.updateStatistics();
 							zombie.currentTarget = null;
 							exit = true;
 						}
+						
+						zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
 					}
 					
 					// this only happens if the human is actually focused on this zombie
@@ -181,7 +174,8 @@ z.fight = function (humanoid, neighbor) {
 						
 						if (Math.random() < zombieDieChance) {
 							zombie.die();
-							z.message('zombie death');
+							z.message('zombie death');							
+							z.updateStatistics();
 							human.currentTarget = null;
 							exit = true;
 						}
@@ -190,15 +184,22 @@ z.fight = function (humanoid, neighbor) {
 						human.stamina -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) * 100 / 3600;
 						// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
 						human.slept -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) / 2;
+
+						// update the human's zombie killing skill for the next fight they have
+						if (human.zombieKillingFitness < 0.16) {
+							human.zombieKillingFitness += 0.07;
+						}
+						if (human.aggressiveness < 1) {
+							human.aggressiveness += Math.random() * 0.2;
+						}
+						
+						human.lastActionTimeStamp = z.simulatedTimeElapsed;
 					}
-					human.lastActionTimeStamp = z.simulatedTimeElapsed;
-					zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
 					
 					// wake up! (later factor in latency in waking up)
 					human.sleeping = false;	
 					
-					if (exit) {		
-						human.aggressiveness += Math.random() * 0.2;
+					if (exit) {
 						return;
 					}
 				}

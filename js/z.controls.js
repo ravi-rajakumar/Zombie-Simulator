@@ -27,6 +27,7 @@ z.updateRates = function () {
 z.updateStatistics = function () {
 	$('#humans span').text(z.humans.length);
 	$('#zombies span').text(z.zombies.length);
+	$('#zombies-pending span').text(z.zombiesPending);
 	$('#hkilled span').text(z.stats.hKilled);
 	$('#zdestroyed span').text(z.stats.zDestroyed);
 	$('#hzombified span').text(z.stats.hZombified);
@@ -70,6 +71,7 @@ z.complete = function (extinct) {
 	var msg = 'Simulation ended. ' + extinct + ' extinct after ' + $('#days').text() + ' ' + $('#hours').text() + ' ' + $('#minutes').text() + ' ' + $('#seconds').text();
 	$('#messages p').html('<strong>' + msg + '</strong>&nbsp;');
 	z.log += msg + '\n';
+	z.updateStatistics();
 };
 
 $(document).ready(function ($) {
@@ -101,15 +103,15 @@ $(document).ready(function ($) {
 		z.init(spec);
 	});
 	
-	$('#stop').live('click', function (event) {
+	$('#stop').click(function (event) {
 		z.stop();
 	});
 	
-	$('#play').live('click', function (event) {
+	$('#play').click(function (event) {
 		z.play();
 	});
 	
-	$('#control-switch').live('click', function (event) {
+	$('#control-switch').click(function (event) {
 		var text = $(this).text();
 		
 		if (text.indexOf('-') > -1) {
@@ -123,7 +125,7 @@ $(document).ready(function ($) {
 		
 	});
 	
-	$('#stats-switch').live('click', function (event) {
+	$('#stats-switch').click(function (event) {
 		var text = $(this).text();
 		
 		if (text.indexOf('-') > -1) {
@@ -154,8 +156,8 @@ $(document).ready(function ($) {
 	$('#config input').change(function () {
 		z.updateSettings();
 	});
-
-	controls.toggle('slow');
+	
+	controls.toggle('slow', function () {$('#config').hide();});
 	
 	$('#settings').submit();
 });

@@ -24,6 +24,30 @@ z.humanoid = function (spec) {
 		dy: 0
 	};
 	
+	that.bearing = function (target, distance) {
+		var	diffX = target.position.x - that.position.x,
+			diffY = target.position.y - that.position.y, 
+			range = distance || z.range(that, target),
+			influence = 0, 
+			angle = 0;
+		// calculate the bearing to the target
+		return ((diffY) >= 0) ? Math.PI - Math.asin((diffX) / range) : (Math.PI * 2 + Math.asin((target.position.x - that.position.x) / range)) % (Math.PI * 2);
+	};
+	
+	that.isFacing = function (target, distance) {
+		var	angle = Math.abs(that.heading - that.bearing(target, distance));
+		
+		if (angle > Math.PI) {
+			angle = Math.PI * 2 - angle;
+		}
+		
+		return angle <= z.fieldOfView / 2;		
+	};
+	
+	that.face = function (target, distance) {
+		that.heading = that.bearing(target, distance);
+	};
+	
 	that.setPosition = function (x, y) {
 		that.position.x = x;
 		that.position.y = y;
@@ -93,6 +117,11 @@ z.humanoid = function (spec) {
 
 		that.heading = that.adjustHeading();
 		
+		if (isNaN(that.heading)) {
+			z.stop();
+			console.log(that.guid + ' just found a goddamned wormhole');
+		}
+		
 		hDelta = Math.sin(that.heading) * that.walkingSpeed;
 		vDelta = 0 - Math.cos(that.heading) * that.walkingSpeed;
 		
@@ -120,7 +149,12 @@ z.humanoid = function (spec) {
 			movy = z.canvasHeight * z.scale;
 		}
 		
-		that.setPosition(movx, movy);
+		if (!isNaN(movx) && !isNaN(movy)) {
+			that.setPosition(movx, movy);
+		} else {
+			z.stop();
+			console.log(that.guid + ' just found a goddamned wormhole');
+		}
 	};
 	
 	that.walk = function () {
@@ -142,6 +176,8 @@ z.humanoid = function (spec) {
 			// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
 			that.slept -=  (z.simulatedTimeElapsed - that.lastActionTimeStamp) / 2;
 		}
+		// update the humanoid's internal timestamp
+		that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	};
 	
 	that.idle = function () {
@@ -157,6 +193,8 @@ z.humanoid = function (spec) {
 			// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
 			that.slept -=  (z.simulatedTimeElapsed - that.lastActionTimeStamp) / 2;
 		}
+		// update the humanoid's internal timestamp
+		that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	};
 	
 	that.run = function () {
@@ -172,6 +210,8 @@ z.humanoid = function (spec) {
 			// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
 			that.slept -= (z.simulatedTimeElapsed - that.lastActionTimeStamp) / 2;
 		}
+		// update the humanoid's internal timestamp
+		that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	};
 	
 	that.rest = function () {
@@ -205,6 +245,8 @@ z.humanoid = function (spec) {
 				that.actionQueue = [];
 			}
 		}
+		// update the humanoid's internal timestamp
+		that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	};
 	
 	that.sleep = function () {
@@ -216,6 +258,8 @@ z.humanoid = function (spec) {
 			that.actionQueue = ['rest'];
 			that.slept += z.simulatedTimeElapsed - that.lastActionTimeStamp;
 		}
+		// update the humanoid's internal timestamp
+		that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	};
 	
 	that.doNext = function () {
@@ -250,9 +294,6 @@ z.humanoid = function (spec) {
 				
 		// reset walking speed
 		that.walkingSpeed = that.maxWalkingSpeed;
-		
-		// update the humanoid's internal timestamp
-		that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	};
 	
 	that.isZombie = function () {
@@ -331,7 +372,8 @@ z.human = function (spec) {
 				that.actionQueue = ['die'];
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified++;
-				z.message(that.zombifyMsg);
+				z.message(that.zombifyMsg);				
+				z.updateStatistics();
 				z.zombiesPending -=1;
 			}, z.zombificationDuration);
 			z.zombiesPending +=1;
@@ -353,6 +395,7 @@ z.human = function (spec) {
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified++;
 				z.message(that.zombifyMsg);
+				z.updateStatistics();
 				z.zombiesPending -=1;
 			}, z.zombificationDuration);
 			z.zombiesPending +=1;
