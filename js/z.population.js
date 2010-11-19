@@ -117,11 +117,6 @@ z.humanoid = function (spec) {
 
 		that.heading = that.adjustHeading();
 		
-		if (isNaN(that.heading)) {
-			z.stop();
-			console.log(that.guid + ' just found a goddamned wormhole');
-		}
-		
 		hDelta = Math.sin(that.heading) * that.walkingSpeed;
 		vDelta = 0 - Math.cos(that.heading) * that.walkingSpeed;
 		
@@ -151,9 +146,6 @@ z.humanoid = function (spec) {
 		
 		if (!isNaN(movx) && !isNaN(movy)) {
 			that.setPosition(movx, movy);
-		} else {
-			z.stop();
-			console.log(that.guid + ' just found a goddamned wormhole');
 		}
 	};
 	
