@@ -55,7 +55,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Average human running speed: 3x walking speed
 - Average zombie walking speed: 1.6km/hour
 - Humans are attracted to other humans (herding and queueing), but resist overcrowding
-- Humanoid direction of travel is determined by applying a random variance to their existing heading and then adding al external influences to their choice of direction. Zombies, having no memory will completely drop their previous heading in the presence of any external influences.
+- Humanoid direction of travel is determined by applying a random variance to their existing heading and then adding all external influences to their choice of direction. Zombies, having no memory will completely drop their previous heading in the presence of any external influences.
 - Walking speed variance: ±10%
 - Range to see/notice another humanoid: 20m
 - Range at which humans recognize zombies: 1m on day 1, increasing to 10m by day 3
@@ -73,7 +73,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Natural Human Birth Rate: 14/k/year
 - Natural Human Death Rate: 8/k/year
 - Humans will 'idle' around one another for about 0-3 (randomized) hours before getting bored and wandering off
-- Humans have reserves of both sleep and stamia, each of which decay and are replenished by particular rules. Either can dip into negative numbers indefinitely, but as stanina deficits increase, humans become more likely to choose rest to the xclusion of all else, and as sleep is depleted they become more likely to fall asleep while resting.
+- Humans have reserves of both sleep and stamia, each of which decay and are replenished by particular rules. Either can dip into negative numbers indefinitely, but as stanina deficits increase, humans become more likely to choose rest to the exclusion of all else, and as sleep is depleted they become more likely to fall asleep while resting.
 - Humans rest in stretches of approxinately 2 hours until their stamina is over 50%
 - Humans will choose to sleep for around 8 hours if their stamina and sleep time get low enough
 - Stamina decays at varying rates depending on the human's actions. 100% of stamina is lost for every: 1 hour of fighting; 2 hours of running; 8 hours of walking; 16 hours of idling.

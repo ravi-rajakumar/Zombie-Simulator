@@ -95,7 +95,6 @@ z.performance = {
 	
 			// update the statistics displayed by the simulation. Since redraws elements, don't do it every turn
 			z.updateRates();
-			z.updateStatistics();
 			
 			this.mark();
 		}

@@ -195,12 +195,12 @@ canvas {
 #statistics {
 	float: left;
 	clear: both;
-	width: 380px;
+	width: 350px;
 }
 
 #populations {
 	float: right;
-	width: 100px;
+	width: 130px;
 	text-align: right;
 }
 
