@@ -109,7 +109,6 @@ z.fight = function (humanoid, neighbor) {
 		human = null,
 		zombieTargeted = true,
 		humanTargeted = true,
-		humanAlive = true,
 		seconds = 0,
 		distance = 0,
 		exit = false;
@@ -187,8 +186,7 @@ z.fight = function (humanoid, neighbor) {
 									z.zombiesPending -= 1;
 								}
 							}
-							human.die();							
-							humanAlive = false;
+							human.die();		
 							z.message('human death');							
 							z.updateStatistics();
 							exit = true;
@@ -237,7 +235,7 @@ z.fight = function (humanoid, neighbor) {
 						zombie.currentTarget = null;
 						
 						// if human survives, they distance themselves from the site of the attack and the zombie body by walking away for 10 seconds
-						if (humanAlive) {
+						if (human.isAlive()) {
 							human.actionQueue = [];
 							for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
 								human.actionQueue.push('walk');
