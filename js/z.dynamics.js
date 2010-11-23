@@ -72,6 +72,34 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	}
 };
 
+z.collide = function (humanoid, neighbor, distance) {
+	var newX = 0,
+		newY = 0;
+		
+	// coordinates to simply bounce to minimum distance
+	newX = humanoid.position.x - (neighbor.position.x - humanoid.position.x) * ((0.25 / distance) - 1);
+	newY = humanoid.position.y - (neighbor.position.y - humanoid.position.y) * ((0.25 / distance) - 1);
+	
+	if (isNaN(newX) || isNaN(newY) || newX < 0 || newX > z.canvasWidth * z.scale || newY < 0 || newY > z.canvasHeight * z.scale) {
+		// this more complex collision/flocking is only performed when the simpler bounce won't work
+		z.flock(humanoid);
+	} else {
+		humanoid.setPosition(newX, newY);
+	}
+};
+
+z.flock = function (humanoid) {
+	// pick a random heading on a hexagonal grid
+	humanoid.heading = z.flockAngle;
+	humanoid.heading = humanoid.adjustHeading();		
+	humanoid.nextMove.dx = Math.sin(humanoid.heading) * humanoid.walkingSpeed * z.secondsPerTurn();
+	humanoid.nextMove.dy = 0 - Math.cos(humanoid.heading) * humanoid.walkingSpeed * z.secondsPerTurn();
+	humanoid.move();
+	// humanoid turns back around to face the way they came
+	humanoid.heading = (humanoid.heading + Math.PI) % (2 * Math.PI);
+	z.flockAngle = (z.flockAngle + (Math.PI / 3)) % (2 * Math.PI);
+};
+
 z.fight = function (humanoid, neighbor) {
 	var biteChance = 0.1,
 		humanDieChance = 0.01,
@@ -81,6 +109,7 @@ z.fight = function (humanoid, neighbor) {
 		human = null,
 		zombieTargeted = true,
 		humanTargeted = true,
+		humanAlive = true,
 		seconds = 0,
 		distance = 0,
 		exit = false;
@@ -150,9 +179,16 @@ z.fight = function (humanoid, neighbor) {
 						
 						if (Math.random() < humanDieChance) {
 							if (Math.random() < (z.zombieBrainEatingEfficiency / 100)) {
-								human.zombify = null; // the brain is destroyed so this person can't zombify
+								// the brain is destroyed so this person can't zombify
+								human.zombify = null;
+								// remove any pending zombification if the brain is destroyed
+								if (human.livetimer !== null) {
+									human.livetimer = null;
+									z.zombiesPending -= 1;
+								}
 							}
-							human.die();
+							human.die();							
+							humanAlive = false;
 							z.message('human death');							
 							z.updateStatistics();
 							exit = true;
@@ -196,8 +232,18 @@ z.fight = function (humanoid, neighbor) {
 						if (human.aggressiveness < 1) {
 							human.aggressiveness += Math.random() * 0.2;
 						}
+						
 						human.currentTarget = null;
 						zombie.currentTarget = null;
+						
+						// if human survives, they distance themselves from the site of the attack and the zombie body by walking away for 10 seconds
+						if (humanAlive) {
+							human.actionQueue = [];
+							for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
+								human.actionQueue.push('walk');
+							}
+						}
+						
 						return;
 					}
 				}
@@ -210,11 +256,11 @@ z.fight = function (humanoid, neighbor) {
 
 z.interact = function (humanoid, neighbor) 
 {	
-	var distance = z.range(humanoid, neighbor), diffX = neighbor.position.x - humanoid.position.x, diffY = neighbor.position.y - humanoid.position.y;
+	var distance = z.range(humanoid, neighbor);
 	
 	// humanoids automatically bounce off of other bodies that are too close to them
 	if (distance < 0.25) {
-		humanoid.setPosition(humanoid.position.x - ((diffX * 0.25 / distance) - diffX), humanoid.position.y - ((diffY * 0.25 / distance) - diffY));
+		z.collide(humanoid, neighbor, distance);
 	} 
 	// this checks whether the two humanoids should be in combat. The answer is true for zombies who are not stunned and true for humans who are not resting, are encountering a zombie that is not stunned and who meet other criteria for aggressiveness and cooperative.
 	if (distance <= 1) {
