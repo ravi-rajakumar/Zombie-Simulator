@@ -7,6 +7,10 @@ z.humanoid = function (spec) {
 	
 	that.currentTarget = null;
 	
+	that.isAlive = function () {
+		return !(that.actionQueue[0] === 'die'); 
+	};
+	
 	that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	
 	that.heading = spec.heading || Math.random() * Math.PI * 2;
@@ -247,7 +251,7 @@ z.humanoid = function (spec) {
 	
 	that.sleep = function () {
 		// check for death condition before doing anything
-		if (that.actionQueue[0] !== 'die') {
+		if (that.isAlive()) {
 			that.sleeping = true;
 			// chance to wake up automatically if I have over 6 hours of sleep in the bank, reaching 100% at ten hours
 			if (Math.random() < (that.slept / 3600 - 6) / 4) {
