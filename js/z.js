@@ -9,6 +9,7 @@ var z = {
 	hasfocus: null, // used for in-flight changes to the settings form
 	guid: 0,
 	context: null,
+	flockAngle: 0,
 	
 	humanRecognitionRange: 1, // humans recognize zombies
 	zombieRecognitionRange: 10, // zombies recognize humans
@@ -114,26 +115,6 @@ z.init = function (spec) {
 	z.updateTimer();
 	
 	z.updateStatistics();
-};
-
-/* this is a custom version of settimeout, designed to account for the pauses in the simulation. 
-	It checks against the game's time elapsed (in seconds), which doesn't increment when paused */ 
-z.setTimeout = function (fn, t) {
-	var timer = {}, 
-		start = z.simulatedTimeElapsed;
-	
-	timer.run = null;
-	
-	timer.go = (function () {
-		timer.run = setInterval(function () {
-			if (z.simulatedTimeElapsed >= start + t) {
-				fn();
-				clearInterval(timer.run);
-			}
-		},100);
-	})();
-	
-	return timer;
 };
 
 z.advanceTurn = function () {

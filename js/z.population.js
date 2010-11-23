@@ -407,6 +407,7 @@ z.human = function (spec) {
 		return '{"human": { "x":' + this.position.x + ', "y": ' + this.position.y + '}}';
 	};
 	
+	// choice algorithm here corresponds to conscious decision-making
 	that.nextAction = function () {
 		if (that.actionQueue.length > 0) {
 			return that.actionQueue.shift();
