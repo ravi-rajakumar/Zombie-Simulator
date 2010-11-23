@@ -207,51 +207,58 @@ z.humanoid = function (spec) {
 	};
 	
 	that.rest = function () {
-		var stam = that.stamina;
-		// 8 hours of rest should be sufficient to increase stamina from 0 to 100
-		stam += (z.simulatedTimeElapsed - that.lastActionTimeStamp) * 100 / 8 / 3600;
-		if (stam >= 100) {
-			that.stamina = 100;
-			// 'get up' if fully rested and awake
-			if (that.actionQueue[0] === 'rest' && !that.sleeping) {
-				that.actionQueue = [];
-			}
-		} else {
-			that.stamina = stam;
-		}
+		var stam = that.stamina,
+			action = that.actionQueue[0];
 		
-		// keep resting until the current timer runs out or something else happens
-		if (z.simulatedTimeElapsed < that.restStop && that.actionQueue[0] !== 'rest') {
-			that.actionQueue = ['rest'];
-		}
-		
-		// keep sleeping if I already am
-		// the probability that a human will fall asleep while resting increases to 100% if they have 0 sleep in the bank
-		if (that.sleeping || Math.random() > that.slept / (6 * 3600)) {
-			that.sleep();
-		} else {
-			// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
-			that.slept -= z.simulatedTimeElapsed - that.lastActionTimeStamp / 2;
-			// 'wake up' if an influence comes close and the human is awake and not too exhausted
-			if (that.influences.r < 2 && that.stamina > 0) {
-				that.actionQueue = [];
+		if (action !== 'die') {
+			// 8 hours of rest should be sufficient to increase stamina from 0 to 100
+			stam += (z.simulatedTimeElapsed - that.lastActionTimeStamp) * 100 / 8 / 3600;
+			if (stam >= 100) {
+				that.stamina = 100;
+				// 'get up' if fully rested and awake
+				if (action === 'rest' && !that.sleeping) {
+					that.actionQueue = [];
+				}
+			} else {
+				that.stamina = stam;
 			}
+			
+			// keep resting until the current timer runs out or something else happens
+			if (z.simulatedTimeElapsed < that.restStop && action !== 'rest') {
+				that.actionQueue = ['rest'];
+			}
+			
+			// keep sleeping if I already am
+			// the probability that a human will fall asleep while resting increases to 100% if they have 0 sleep in the bank
+			if (that.sleeping || Math.random() > that.slept / (6 * 3600)) {
+				that.sleep();
+			} else {
+				// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
+				that.slept -= z.simulatedTimeElapsed - that.lastActionTimeStamp / 2;
+				// 'wake up' if an influence comes close and the human is awake and not too exhausted
+				if (that.influences.r < 2 && that.stamina > 0) {
+					that.actionQueue = [];
+				}
+			}
+			// update the humanoid's internal timestamp
+			that.lastActionTimeStamp = z.simulatedTimeElapsed;
 		}
-		// update the humanoid's internal timestamp
-		that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	};
 	
 	that.sleep = function () {
-		that.sleeping = true;
-		// chance to wake up automatically if I have over 6 hours of sleep in the bank, reaching 100% at ten hours
-		if (Math.random() < (that.slept / 3600 - 6) / 4) {
-			that.sleeping = false;
-		} else {
-			that.actionQueue = ['rest'];
-			that.slept += z.simulatedTimeElapsed - that.lastActionTimeStamp;
+		// check for death condition before doing anything
+		if (that.actionQueue[0] !== 'die') {
+			that.sleeping = true;
+			// chance to wake up automatically if I have over 6 hours of sleep in the bank, reaching 100% at ten hours
+			if (Math.random() < (that.slept / 3600 - 6) / 4) {
+				that.sleeping = false;
+			} else {
+				that.actionQueue = ['rest'];
+				that.slept += z.simulatedTimeElapsed - that.lastActionTimeStamp;
+			}
+			// update the humanoid's internal timestamp
+			that.lastActionTimeStamp = z.simulatedTimeElapsed;
 		}
-		// update the humanoid's internal timestamp
-		that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	};
 	
 	that.doNext = function () {
