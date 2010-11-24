@@ -165,61 +165,70 @@ z.fight = function (humanoid, neighbor) {
 					
 					/* handling multiple parties in a fight in a new way. participants can only have one focus at a time and only act on that focus.
 					*/
-					// this only happens if the zombie is actually focused on this human
-					if (humanTargeted) {			
-						if (Math.random() < biteChance) {
-							if (human.zombify !== null) {
-								human.zombify();
-								human.currentTarget = zombie;
-								z.message('human zombify coming...');
-								z.updateStatistics();
-							}
-						}
-						
-						if (Math.random() < humanDieChance) {
-							if (Math.random() < (z.zombieBrainEatingEfficiency / 100)) {
-								// the brain is destroyed so this person can't zombify
-								human.zombify = null;
-								// remove any pending zombification if the brain is destroyed, checking to see whether they are already dead
-								if (human.livetimer !== null && human.isAlive()) {
-									z.clearTimeout(human.livetimer, 
-										function () {
-											z.zombiesCanceled++;
-										}
-									);
+					// check to see if the zombie is actually focused on this human
+					if (humanTargeted) {	
+						// check to see whether the human is already dead
+						if (human.isAlive()) {
+							if (Math.random() < biteChance) {
+								if (human.zombify !== null) {
+									human.zombify();
+									human.currentTarget = zombie;
+									z.message('human zombify coming...');
+									z.updateStatistics();
 								}
 							}
-							human.die();		
-							z.message('human death');							
-							z.updateStatistics();
+						
+							if (Math.random() < humanDieChance) {
+								if (Math.random() < (z.zombieBrainEatingEfficiency / 100)) {
+									// the brain is destroyed so this person can't zombify
+									human.zombify = null;
+									// remove any pending zombification if the brain is destroyed
+									if (human.livetimer !== null) {
+										z.clearTimeout(human.livetimer, 
+											function () {
+												z.zombiesCanceled++;
+											}
+										);
+									}
+								}
+								human.die();		
+								z.message('human death');							
+								z.updateStatistics();
+								exit = true;
+							}
+						zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
+						} else {
 							exit = true;
 						}
-						
-						zombie.lastActionTimeStamp = z.simulatedTimeElapsed;
 					}
 					
 					// this only happens if the human is actually focused on this zombie
-					if (zombieTargeted) {	
-						if (Math.random() < zombieStunChance) {
-							for (var j = 0; j < Math.floor(60 / z.secondsPerTurn()); j++) {
-								zombie.actionQueue.push('stunned');	
-							}	
+					if (zombieTargeted) {
+						// check to see whether the zombie is already dead
+						if (zombie.isAlive()) {	
+							if (Math.random() < zombieStunChance) {
+								for (var j = 0; j < Math.floor(60 / z.secondsPerTurn()); j++) {
+									zombie.actionQueue.push('stunned');	
+								}	
+								exit = true;
+							}
+							
+							if (Math.random() < zombieDieChance) {
+								zombie.die();
+								z.message('zombie death');							
+								z.updateStatistics();
+								exit = true;
+							}
+							
+							// fights drain human stamina very quickly
+							human.stamina -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) * 100 / 3600;
+							// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
+							human.slept -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) / 2;
+							
+							human.lastActionTimeStamp = z.simulatedTimeElapsed;
+						} else {
 							exit = true;
 						}
-						
-						if (Math.random() < zombieDieChance) {
-							zombie.die();
-							z.message('zombie death');							
-							z.updateStatistics();
-							exit = true;
-						}
-						
-						// fights drain human stamina very quickly
-						human.stamina -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) * 100 / 3600;
-						// while humans are awake, accrued sleep decays at a rate of 1hr/2hrs awake, resulting in a natural 8 hour per day sleep schedule
-						human.slept -= (z.simulatedTimeElapsed - human.lastActionTimeStamp) / 2;
-						
-						human.lastActionTimeStamp = z.simulatedTimeElapsed;
 					}
 					
 					// wake up! (later factor in latency in waking up)
