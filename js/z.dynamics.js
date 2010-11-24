@@ -176,14 +176,18 @@ z.fight = function (humanoid, neighbor) {
 							}
 						}
 						
-						if (Math.random() < humanDieChance) {
+						// check for outcome and also to see whether they are already dead
+						if (Math.random() < humanDieChance && human.isAlive()) {
 							if (Math.random() < (z.zombieBrainEatingEfficiency / 100)) {
 								// the brain is destroyed so this person can't zombify
 								human.zombify = null;
 								// remove any pending zombification if the brain is destroyed
 								if (human.livetimer !== null) {
-									human.livetimer = null;
-									z.zombiesPending -= 1;
+									z.clearTimeout(human.livetimer, 
+										function () {
+											z.zombiesCanceled++;
+										}
+									);
 								}
 							}
 							human.die();		

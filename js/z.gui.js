@@ -20,7 +20,7 @@ z.draw = function () {
 			z.context.fill();
 		};
 				
-		z.frameCounter++;
+		z.frameCounter += 1;
 		
 		z.context.clearRect(0, 0, z.canvas.width, z.canvas.height);
 		

@@ -3,7 +3,7 @@ z.humanoid = function (spec) {
 	
 	that.actionQueue = [];
 	
-	that.guid = z.guid++;
+	that.guid = z.guid += 1;
 	
 	that.currentTarget = null;
 	
@@ -375,15 +375,17 @@ z.human = function (spec) {
 	
 	that.zombify = function () {
 		if (that.deadtimer === null && that.livetimer === null) {
+			z.zombiesQueued += 1;
 			that.livetimer = z.setTimeout(function() {
+				that.livetimer = null;
 				that.actionQueue = ['die'];
 				z.zombies.push(z.zombie(that));
-				z.stats.hZombified++;
+				z.stats.hZombified += 1;
 				z.message(that.zombifyMsg);				
 				z.updateStatistics();
-				z.zombiesPending -=1;
 			}, z.zombificationDuration);
-			z.zombiesPending +=1;
+			// eliminating the possibility of both timers being set
+		//	that.deadtimer = null;
 		}
 		
 		that.zombify = null; // this should prevent duplicate zombies
@@ -398,14 +400,15 @@ z.human = function (spec) {
 		that.zombifyMsg = 'dead-turn';
 		
 		if (that.zombify !== null && that.deadtimer === null && that.livetimer === null) {
-			that.deadtimer = z.setTimeout(function() {		
+			z.zombiesQueued += 1;
+			that.deadtimer = z.setTimeout(function() {
 				z.zombies.push(z.zombie(that));
-				z.stats.hZombified++;
+				z.stats.hZombified += 1;
 				z.message(that.zombifyMsg);
 				z.updateStatistics();
-				z.zombiesPending -=1;
 			}, z.zombificationDuration);
-			z.zombiesPending +=1;
+			// eliminating the possibility of both timers being set
+		//	that.livetimer = null;
 		}
 		
 		that.zombify = null; 

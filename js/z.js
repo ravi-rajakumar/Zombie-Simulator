@@ -62,7 +62,11 @@ var z = {
 	zombieHerding: 0.5,
 	zombieQueueing: 1,
 	zombieBrainEatingEfficiency: 50,
-	zombiesPending: 0,
+	zombiesQueued: 0,
+	zombiesCanceled: 0,
+	zombiesPending: function () {
+		return z.zombiesQueued - z.stats.hZombified - z.zombiesCanceled;
+	},
 	
 	// populations
 	humans: [],
@@ -74,7 +78,8 @@ z.init = function (spec) {
 	z.humans = [];
 	z.zombies = [];
 	z.resetStats();
-	z.zombiesPending = 0;
+	z.zombiesQueued = 0;
+	z.zombiesCanceled = 0;
 	z.currentTurn = 0;
 	z.frameCounter = 0;
 	z.simulatedTimeElapsed = 0;
@@ -121,13 +126,13 @@ z.advanceTurn = function () {
 	var hcount = z.humans.length,
 		zcount = z.zombies.length;
 		
-	if (zcount === 0 && z.zombiesPending <= 0) {
+	if (zcount === 0 && z.zombiesPending() <= 0) {
 		z.complete('Zombies');
 	} else if (hcount === 0) {
 		z.complete('Humans');
 	}	
 	
-	z.currentTurn++;
+	z.currentTurn += 1;
 	z.simulatedTimeElapsed += Math.round(z.secondsPerTurn()*1000)/1000;
 	
 	// natural births & deaths
@@ -135,14 +140,14 @@ z.advanceTurn = function () {
 		z.humans.push(z.human({position: {}}));
 		z.message('natural birth');
 		z.updateStatistics();
-		z.stats.hBirths++;
+		z.stats.hBirths += 1;
 	}
 	if (Math.random() < (((hcount / 1000) * z.naturaldeathrate * z.secondsPerTurn()) / (86400 * 365))) {
 		var ndeath = z.humans.pop();
 		ndeath.zombify = null;
 		z.message('natural death');
 		z.updateStatistics();
-		z.stats.hNaturalDeaths++;
+		z.stats.hNaturalDeaths += 1;
 	}
 	
 	// check for dead humans, and remove them before creating the set
@@ -152,7 +157,7 @@ z.advanceTurn = function () {
 			z.humans.splice(j,1);
 			hcount -= 1;
 			j -= 1;
-			z.stats.hKilled++;
+			z.stats.hKilled += 1;
 			z.updateStatistics();
 		}
 	}
@@ -162,7 +167,7 @@ z.advanceTurn = function () {
 		if (z.zombies[k].actionQueue[0] === 'die') {
 			// remove them from the population
 			z.zombies.splice(k,1);
-			z.stats.zDestroyed++;
+			z.stats.zDestroyed += 1;
 			z.updateStatistics();
 			zcount -= 1;
 			k -= 1;
@@ -213,7 +218,7 @@ z.advanceTurn = function () {
 					z.interact(humanoid, neighbor);
 				}
 				
-				neighborIndex++;
+				neighborIndex += 1;
 			}
 			
 			proximityFail = false;
@@ -231,7 +236,7 @@ z.advanceTurn = function () {
 					z.interact(humanoid, neighbor);
 				}
 				
-				neighborIndex--;
+				neighborIndex -= 1;
 			}
 		}
 	}
