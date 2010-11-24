@@ -27,7 +27,7 @@ z.updateRates = function () {
 z.updateStatistics = function () {
 	$('#humans span').text(z.humans.length);
 	$('#zombies span').text(z.zombies.length);
-	$('#zombies-pending span').text(z.zombiesPending);
+	$('#zombies-pending span').text(z.zombiesPending());
 	$('#hkilled span').text(z.stats.hKilled);
 	$('#zdestroyed span').text(z.stats.zDestroyed);
 	$('#hzombified span').text(z.stats.hZombified);

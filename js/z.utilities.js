@@ -15,7 +15,20 @@ z.setTimeout = function (fn, t) {
 		},100);
 	})();
 	
+	timer.cancel = function () {
+		clearInterval(timer.run);
+	};
+	
 	return timer;
+};
+
+z.clearTimeout = function (timer, callback) {
+	try {
+		timer.cancel();
+	} catch (e) {
+		// if this failed it's probably because timer wasn't an actual timeout and had no cancel method
+	}
+	callback();
 };
 
 z.mergeSort = function (humanoids, axis) {
