@@ -2,21 +2,40 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 	var attraction = 0,
 		persuasion = 0,
 		walkingSpeed = currentHumanoid.maxWalkingSpeed,
-		headingScale = (distance > 0) ? walkingSpeed / distance : 1;
+		headingScale = (distance > 0) ? walkingSpeed / distance : 1,
+		currentHerding = 0,
+		currentQueueing = 0,
+		crowding = 0;
 		
 	// can currentHumanoid actually see or hear the neighbor?
-	if (currentHumanoid.isFacing(neighbor, distance) || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue[0] !== 'rest')) {		
+	if (currentHumanoid.isFacing(neighbor, distance) || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue[0] !== 'rest')) {
+		currentHerding = currentHumanoid.herding();
+		currentQueueing = currentHumanoid.queueing();
+		crowding = currentHumanoid.lastInfluences.w;
+	
+		// add to count of current influences
+		currentHumanoid.influences.w += 1;
+		
+		// too much crowding in one spot makes that location less appealing
+		if (crowding > z.maxCrowding * currentHerding / 2) {
+			// this reflects the value off of an upper bound and applies it to 'attractiveness' of the location
+			currentHerding = currentHerding - (crowding / z.maxCrowding);
+			if (currentHerding < -1) {
+				currentHerding = -1;
+			}
+		}
+	
 		// are the current humanoid and neighbor the same type or assumed to be? humans are automatically attracted to other humanoids unless they recognize them as zombies
 		if (currentHumanoid.isZombie() === neighbor.isZombie() || !currentHumanoid.recognizes(neighbor)) {
-			attraction = currentHumanoid.herding();
-			persuasion = currentHumanoid.queueing();
+			attraction = currentHerding;
+			persuasion = currentQueueing;
 			// learn how to fight from neghboring humans who are close enough to communicate
 			if (distance < 2 && !currentHumanoid.isZombie() && currentHumanoid.zombieKillingFitness < neighbor.zombieKillingFitness) {
 				// 10 minutes of conversation will get the learner to halfway between their own ability and their teacher's
 				var ck = currentHumanoid.zombieKillingFitness, nk = neighbor.zombieKillingFitness;
 				currentHumanoid.zombieKillingFitness += ((ck + nk) / 2 - ck) * z.secondsPerTurn() / 600;
 			}
-		} else if (!currentHumanoid.isZombie() && neighbor.isZombie()) {
+		} else if (!currentHumanoid.isZombie()) {
 			if (neighbor.currentTarget !== null) {	
 				// overcome negative influence with any heroism that the human possesses, expending it in the process
 				attraction = currentHumanoid.showHeroism() + (currentHumanoid.aggressiveness * 2) - 1;
@@ -54,16 +73,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 			currentHumanoid.influences.y += neighbor.nextMove.dy / z.secondsPerTurn() * persuasion;
 		}
 		
-		// add to count of influences
-		currentHumanoid.influences.w += 1;
-
-		// too much crowding in one spot makes that location less appealing
-		if (currentHumanoid.influences.w > 16 * z.humanHerding) {
-			// this reflects the value off of an upper bound and applies it to 'attractiveness' of the location
-			currentHumanoid.influences.a -= currentHumanoid.influences.w - (16 * z.humanHerding);
-		} else {
-			currentHumanoid.influences.a += attraction / distance;
-		}
+		currentHumanoid.influences.a += attraction / distance;
 			
 		// store the distance to the nearest attractor for calculating whether to idle
 		if (distance < currentHumanoid.influences.r && attraction > 0) {

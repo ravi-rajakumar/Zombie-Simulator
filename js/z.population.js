@@ -101,6 +101,8 @@ z.humanoid = function (spec) {
 	// Array of influences. Each item has an x influence, a y influence, a weight, a value for the strength of attraction/repulsion in the area, and a value for the nearest attractor's range
 	that.influences = {x:0,y:0,w:1,a:0,r:20};
 	
+	that.lastInfluences = {x:0,y:0,w:1,a:0,r:20};
+	
 	that.chooseNextMove = function () {			
 		var hDelta = 0, vDelta = 0;
 		

@@ -37,6 +37,9 @@ var z = {
 		}
 	},
 	
+	// used to generate an aversion to overcrowding. With human herding set at 1, this theoretically equates to the max # of influences within 60 feet,  (max), after which humans are repelled by one another. 
+	maxCrowding: 25, 
+	
 	// human characteristics
 	humanStartingPopulation: 1000,
 	humanBaseWalkingSpeed: function () {
@@ -185,6 +188,9 @@ z.advanceTurn = function () {
 			neighborIndex = 0,
 			distance = 0,
 			neighbor = null;
+		
+		// record the last turn's infliuences for crowd detection
+		humanoid.lastInfluences = humanoid.influences;
 		
 		// reset influence object at the start of every move
 		humanoid.influences = {x:0,y:0,w:1,a:0,r:20};
