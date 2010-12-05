@@ -17,9 +17,9 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		currentHumanoid.influences.w += 1;
 		
 		// too much crowding in one spot makes that location less appealing
-		if (crowding > z.maxCrowding * currentHerding / 2) {
+		if (crowding > z.maxAttraction * currentHerding / 2) {
 			// this reflects the value off of an upper bound and applies it to 'attractiveness' of the location
-			currentHerding = currentHerding - (crowding / z.maxCrowding);
+			currentHerding = currentHerding - (crowding / z.maxAttraction);
 			if (currentHerding < -1) {
 				currentHerding = -1;
 			}
@@ -194,11 +194,7 @@ z.fight = function (humanoid, neighbor) {
 									human.zombify = null;
 									// remove any pending zombification if the brain is destroyed
 									if (human.livetimer !== null) {
-										z.clearTimeout(human.livetimer, 
-											function () {
-												z.zombiesCanceled++;
-											}
-										);
+										z.clearTimeout(human.livetimer,z.zombieCancel);
 									}
 								}
 								human.die();		
@@ -259,7 +255,7 @@ z.fight = function (humanoid, neighbor) {
 						// if human survives, they distance themselves from the site of the attack and the zombie body by walking away for 10 seconds
 						if (human.isAlive()) {
 							human.actionQueue = [];
-							for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
+							for (var k = 0; k < (10 / z.secondsPerTurn()); k++) {
 								human.actionQueue.push('walk');
 							}
 						}

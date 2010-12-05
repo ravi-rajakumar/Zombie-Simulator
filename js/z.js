@@ -1,5 +1,5 @@
 var z = {
-	version: 1.0,
+	version: "1.0.1",
 	canvasWidth: 0,
 	canvasHeight: 0,
 	log: '',
@@ -38,8 +38,9 @@ var z = {
 		}
 	},
 	
-	// used to generate an aversion to overcrowding. With human herding set at 1, this theoretically equates to the max # of influences within 60 feet,  (max), after which humans are repelled by one another. 
-	maxCrowding: 25, 
+	// used to generate an aversion to overcrowding. With human herding set at 1, maxAttraction theoretically equates to the max # of visible influences within 20 meters (max), after which humans are repelled by one another. 
+	maxCrowding: 0.25,
+	maxAttraction: 105,
 	
 	// human characteristics
 	humanStartingPopulation: 1000,
@@ -51,9 +52,9 @@ var z = {
 	humanBaseAgressiveness: 0,
 	humanStaminaCoefficient: 1,
 	humanHungerCoefficient: 1,
-	// this generates a 75% chance of being bored within 3 hours
+	// this generates a 75% chance of being bored within 2 hours
 	humanBoredomFactor: function () {
-		return 0 - (Math.log(0.25) * z.secondsPerTurn() / 10800);
+		return 0 - (Math.log(0.25) * z.secondsPerTurn() / 7200);
 	},
 	naturalbirthrate: 14,	// per 1k, per year
 	naturaldeathrate: 8,	// per 1k, per year
@@ -76,7 +77,6 @@ var z = {
 	humans: [],
 	zombies: [],
 	neighbors: [],
-	completed: false,
 	extinct: "neither",
 	dataIsValid: true
 };
@@ -101,6 +101,10 @@ z.init = function (spec) {
 	z.canvasWidth = z.canvas.width;
 	z.canvasHeight = z.canvas.height;
 	
+	z.maxCrowding = spec.maxCrowding;
+	// factors scale, sight range and field of view into crowding behavior
+	z.maxAttraction = z.maxCrowding * Math.pow(z.sightRange,2) * z.fieldOfView / 2; 
+	
 	z.humanStartingPopulation = spec.humanPopulation;
 	z.humanHerding = spec.humanHerding;
 	z.humanQueueing = spec.humanQueueing;
@@ -114,7 +118,7 @@ z.init = function (spec) {
 	z.timeLapseFactor = spec.timeLapseFactor;
 	z.simulatedTimeElapsed = 0;
 	
-	z.completed = false;
+	z.extinct = "neither";
 	z.dataIsValid = true;
 	
 	for (i = 0; i < z.humanStartingPopulation; i++) {

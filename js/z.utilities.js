@@ -31,6 +31,10 @@ z.clearTimeout = function (timer, callback) {
 	callback();
 };
 
+z.zombieCancel = function () {
+	z.zombiesCanceled++;
+};
+
 z.mergeSort = function (humanoids, axis) {
 	var middle = 0,
 			left = [],
@@ -175,6 +179,7 @@ z.postResults = function () {
 		zombie_queueing: z.zombieQueueing,
 		brain_eating_success: z.zombieBrainEatingEfficiency,
 		scale: z.scale,
+		max_crowding: z.maxCrowding,
 		humans_killed: z.stats.hKilled,
 		zombies_killed: z.stats.zDestroyed,
 		humans_zombified: z.stats.hZombified,

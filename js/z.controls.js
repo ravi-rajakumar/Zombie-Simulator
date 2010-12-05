@@ -89,7 +89,6 @@ $(document).ready(function ($) {
 		z.stop();
 		
 		var spec = {
-			scale: $('#scale').val(),
 			
 			humanPopulation: $('#human-population').val(),
 			humanHerding: $('#human-herding').val(),
@@ -101,6 +100,8 @@ $(document).ready(function ($) {
 			zombieQueueing: $('#zombie-queueing').val(),
 			zombieBrainEatingEfficiency: $('#zombie-brain-eating-efficiency').val(),
 			
+			scale: $('#scale').val(),
+			maxCrowding: $('#max-crowding').val(),
 			timeLapseFactor: $('#time-lapse-factor').val()
 		};
 			

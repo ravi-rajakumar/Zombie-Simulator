@@ -8,7 +8,11 @@ z.humanoid = function (spec) {
 	that.currentTarget = null;
 	
 	that.isAlive = function () {
-		return !(that.actionQueue[0] === 'die'); 
+		var ret = true;
+		if (that.actionQueue[0] === 'die') {
+			ret = false;
+		}
+		return ret; 
 	};
 	
 	that.lastActionTimeStamp = z.simulatedTimeElapsed;
