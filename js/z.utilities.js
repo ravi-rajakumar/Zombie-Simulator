@@ -162,6 +162,8 @@ z.message = function (msg) {
 z.postResults = function () {
 	var postdata = {
 		outcome: z.extinct + " extinct",
+		humans_remaining: z.humans.length,
+		zombies_remaining: z.zombies.length,
 		time_elapsed: Math.round(z.simulatedTimeElapsed),
 		version: z.version,
 		human_init_pop: z.humanStartingPopulation,

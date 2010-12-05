@@ -1,6 +1,6 @@
 # Zombie Simulator, AKA The Living Dead
 
-- Version: 0
+- Version: 1.0
 - Date: 27th August 2010
 - GitHub Repository: <http://github.com/ravi-rajakumar/Zombie-Simulator>
 
@@ -90,6 +90,10 @@ The math in this simulation depends on a number of baseline properties that were
 - Base time unit is 1s.
 - Two objects can't occupy the same space
 - Heading is noted in radians, clockwise from North
+
+## Data
+
+Results of completed simulations are stored to a database. In-flight changes to settings invalidatethe data as the simulation is meant to record data for a constant set of behavioral and physical conditions.
 
 ## Glossary
 
