@@ -76,6 +76,8 @@ var z = {
 	humans: [],
 	zombies: [],
 	neighbors: [],
+	completed: false,
+	extinct: neither,
 	dataIsValid: true
 };
 
@@ -112,6 +114,7 @@ z.init = function (spec) {
 	z.timeLapseFactor = spec.timeLapseFactor;
 	z.simulatedTimeElapsed = 0;
 	
+	z.completed = false;
 	z.dataIsValid = true;
 	
 	for (i = 0; i < z.humanStartingPopulation; i++) {
@@ -134,9 +137,11 @@ z.advanceTurn = function () {
 		zcount = z.zombies.length;
 		
 	if (zcount === 0 && z.zombiesPending() <= 0) {
-		z.complete('Zombies');
+		z.extinct = "Zombies";
+		z.complete();
 	} else if (hcount === 0) {
-		z.complete('Humans');
+		z.extinct = "Humans";
+		z.complete();
 	}	
 	
 	z.currentTurn += 1;

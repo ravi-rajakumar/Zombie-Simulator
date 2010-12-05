@@ -70,9 +70,9 @@ z.stop = function () {
 	z.isRunning = false;
 };
 
-z.complete = function (extinct) {
+z.complete = function () {
 	z.stop();
-	var msg = 'Simulation ended. ' + extinct + ' extinct after ' + $('#days').text() + ' ' + $('#hours').text() + ' ' + $('#minutes').text() + ' ' + $('#seconds').text();
+	var msg = 'Simulation ended. ' + z.extinct + ' extinct after ' + $('#days').text() + ' ' + $('#hours').text() + ' ' + $('#minutes').text() + ' ' + $('#seconds').text();
 	$('#messages p').html('<strong>' + msg + '</strong>&nbsp;');
 	z.log += msg + '\n';
 	z.updateStatistics();
