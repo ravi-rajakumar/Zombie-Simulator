@@ -93,7 +93,7 @@ The math in this simulation depends on a number of baseline properties that were
 
 ## Data
 
-Results of completed simulations are stored to a database. In-flight changes to settings invalidatethe data as the simulation is meant to record data for a constant set of behavioral and physical conditions.
+Results of completed simulations are stored to a database. Because the simulator is meant to record results for a constant set of behavioral and physical conditions, in-flight changes to settings invalidate the data. If the data is invalidated in this way, it isn't sent to the db.
 
 ## Glossary
 
