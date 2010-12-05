@@ -158,3 +158,30 @@ z.message = function (msg) {
 		$('#messages p #msg').fadeOut(1000);
 		}, 1000);
 };
+
+z.postResults = function () {
+	var postdata = {
+		outcome: z.extinct + " extinct",
+		time_elapsed: Math.round(z.simulatedTimeElapsed),
+		version: z.version,
+		human_init_pop: z.humanStartingPopulation,
+		zombie_init_pop: z.zombieStartingPopulation,
+		human_herding: z.humanHerding,
+		human_queueing: z.humanQueueing,
+		human_init_aggressiveness: z.humanBaseAgressiveness,
+		zombie_herding: z.zombieHerding,
+		zombie_queueing: z.zombieQueueing,
+		brain_eating_success: z.zombieBrainEatingEfficiency,
+		scale: z.scale,
+		humans_killed: z.stats.hKilled,
+		zombies_killed: z.stats.zDestroyed,
+		humans_zombified: z.stats.hZombified,
+		humans_born: z.stats.hBirths,
+		human_natural_deaths: z.stats.hNaturalDeaths 
+	};
+	$.ajax({
+			type: 'POST',
+			url: '/python/post_results.py',
+			data: postdata
+		}); 
+};

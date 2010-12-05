@@ -76,6 +76,9 @@ z.complete = function () {
 	$('#messages p').html('<strong>' + msg + '</strong>&nbsp;');
 	z.log += msg + '\n';
 	z.updateStatistics();
+	if (z.dataIsValid) {
+		z.postResults();
+	}
 };
 
 $(document).ready(function ($) {

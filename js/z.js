@@ -77,7 +77,7 @@ var z = {
 	zombies: [],
 	neighbors: [],
 	completed: false,
-	extinct: neither,
+	extinct: "neither",
 	dataIsValid: true
 };
 
