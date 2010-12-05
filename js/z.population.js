@@ -387,7 +387,7 @@ z.human = function (spec) {
 				z.updateStatistics();
 			}, z.zombificationDuration);
 			// eliminating the possibility of both timers being set
-		//	that.deadtimer = null;
+			that.deadtimer = null;
 		}
 		
 		that.zombify = null; // this should prevent duplicate zombies
@@ -410,7 +410,7 @@ z.human = function (spec) {
 				z.updateStatistics();
 			}, z.zombificationDuration);
 			// eliminating the possibility of both timers being set
-		//	that.livetimer = null;
+			that.livetimer = null;
 		}
 		
 		that.zombify = null; 
