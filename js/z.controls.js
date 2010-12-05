@@ -42,6 +42,10 @@ z.updateSettings = function () {
 	z.zombieQueueing = $('#zombie-queueing').val();
 	z.zombieBrainEatingEfficiency = $('#zombie-brain-eating-efficiency').val();
 	z.timeLapseFactor = $('#time-lapse-factor').val();
+	if (z.simulatedTimeElapsed > 0) {
+		// on-the-fly changes are for testing the simulator itself, and invalidate the final outcome data.
+		z.dataIsValid = false;
+	}
 };
 
 z.play = function () {
