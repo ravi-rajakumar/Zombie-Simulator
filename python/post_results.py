@@ -3,11 +3,6 @@
 # import various dependencies
 import MySQLdb, sys, cgi, connection
 
-try:
-	import json
-except:
-	import simplejson as json
-
 print "Content-type: text/html\n"
 
 The_Form = cgi.FieldStorage()
