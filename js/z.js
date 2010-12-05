@@ -1,4 +1,5 @@
 var z = {
+	version: 0.9,
 	canvasWidth: 0,
 	canvasHeight: 0,
 	log: '',
@@ -74,7 +75,8 @@ var z = {
 	// populations
 	humans: [],
 	zombies: [],
-	neighbors: []
+	neighbors: [],
+	dataIsValid: true
 };
 
 z.init = function (spec) {
@@ -109,6 +111,8 @@ z.init = function (spec) {
 	
 	z.timeLapseFactor = spec.timeLapseFactor;
 	z.simulatedTimeElapsed = 0;
+	
+	z.dataIsValid = true;
 	
 	for (i = 0; i < z.humanStartingPopulation; i++) {
 		z.humans.push(z.human({position: {}}));
