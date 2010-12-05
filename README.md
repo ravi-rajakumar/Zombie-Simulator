@@ -43,7 +43,9 @@ Generally the intended use is to set the starting conditions and then run the si
 - spacebar: start/stop
 - return: open/close the settings panel and commit any changes if closing it
 
-In-flight changes can be made for: human herding; human queueing; zombie herding; zombi queueing; zombie brain-eating success; timelapse
+In-flight changes can be made for: human herding; human queueing; zombie herding; zombie queueing; zombie brain-eating success; timelapse.
+
+In-flight changes are meant for testing the simulator itself, and invalidate the outcome data.
 
 The simulation automatically ends when either: humans are extinct; or zombies are extinct and zero zombie conversions are pending.
 
