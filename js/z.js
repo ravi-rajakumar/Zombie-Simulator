@@ -1,5 +1,5 @@
 var z = {
-	version: "1.0.1",
+	version: "1.0.2",
 	canvasWidth: 0,
 	canvasHeight: 0,
 	log: '',

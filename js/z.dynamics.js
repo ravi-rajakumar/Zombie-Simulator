@@ -284,7 +284,7 @@ z.interact = function (humanoid, neighbor)
 			humanoid.currentTarget = neighbor;
 			humanoid.actionQueue = ['fight'];
 		} else if (neighbor.isZombie() && !humanoid.isZombie() && neighbor.actionQueue[0] !== 'stunned' && humanoid.actionQueue[0] !== 'rest' && !humanoid.sleeping) {
-			if (Math.random() < humanoid.aggressiveness + humanoid.showHeroism()) {
+			if (Math.random() < humanoid.aggressiveness + humanoid.showHeroism() || neighbor.currentTarget === humanoid) {
 				humanoid.currentTarget = neighbor;
 				humanoid.actionQueue = ['fight'];
 			} else {
