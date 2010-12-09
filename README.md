@@ -58,7 +58,7 @@ The math in this simulation depends on a number of baseline properties that were
 - Average zombie walking speed: 1.6km/hour
 - Humans are attracted to other humans (herding and queueing), but resist overcrowding
 - Humanoid direction of travel is determined by applying a random variance to their existing heading and then adding all external influences to their choice of direction. Zombies, having no memory will completely drop their previous heading in the presence of any external influences.
-- Walking speed variance: ±10%
+- Variance in direction of humanoid travel, absent external influences: ±11.25 degrees/turn
 - Range to see/notice another humanoid: 20m
 - Range at which humans recognize zombies: 1m on day 1, increasing to 10m by day 3
 - Humans get better at recognizing zombies after encountering them. Within three encounters they jump to the max of 10m.
@@ -69,7 +69,6 @@ The math in this simulation depends on a number of baseline properties that were
 - Humans learn from fights and their proficiency improves to a maximum of about 22 times a zombie's killing proficiency
 - Zombies are five times as likely to be only temporarily killed in a fight as permanently killed
 - Interval between actions in a fight: 1s
-- Variance in direction of humanoid travel, absent external influences: ±11.25 degrees/turn
 - Effective human visual field: 120º
 - Time to turn zombie: 3 hours
 - Natural Human Birth Rate: 14/k/year
