@@ -1,5 +1,13 @@
 # Version History
 
+### 1.0.3
+- ???
+- added inspector for analyzing information about individual humanoids by clicking them on the map
+
+### 1.0.2
+- 12-7-2010
+- fix to combat logic so that humans who are directly attacked will defend themselves
+
 ### 1.0.1
 - 12-5-2010
 - more realistic default crowding density

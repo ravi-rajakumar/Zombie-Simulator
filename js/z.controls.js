@@ -50,6 +50,11 @@ z.updateSettings = function () {
 
 z.play = function () {
 	z.stop();
+
+	if (z.inspectorUp) {
+		z.hideInspector();
+	}
+
 	z.performance.init();
 	
 	z.turns = setInterval(function () {
@@ -66,8 +71,10 @@ z.play = function () {
 z.stop = function () {
 	clearInterval(z.turns);
 	clearInterval(z.animate);
-	
-	z.isRunning = false;
+	if (z.isRunning) {
+		z.draw();
+		z.isRunning = false;
+	}
 };
 
 z.complete = function () {
@@ -121,7 +128,10 @@ $(document).ready(function ($) {
 	
 	$('#control-switch').click(function (event) {
 		var text = $(this).text();
-		
+		if (z.inspectorUp) {
+			z.draw();
+			z.hideInspector();
+		}
 		if (text.indexOf('-') > -1) {
 			$(this).text('[+] settings');
 			controls.toggle('fast', function () {$('#config').hide();});
@@ -164,6 +174,45 @@ $(document).ready(function ($) {
 	$('#config input').change(function () {
 		z.updateSettings();
 	});
+	
+	$('#zombie-world').click(function (e) {
+		z.stop();
+		
+		if ($('#control-switch').text().indexOf('-') > -1) {
+			$('#control-switch').text('[+] settings');
+			controls.toggle('fast', function () {$('#config').hide();});
+		}	
+		
+		if (z.inspectorUp) {
+			z.hideInspector();
+		}
+		
+		z.draw();
+		
+		var offset = $("#zombie-world").offset(),
+			x = 0,
+			y = 0,
+			selectionSet = [];
+		x = Math.floor((e.pageX - offset.left));
+		y = Math.floor((e.pageY - offset.top));
+		selectionSet = z.findNearest(x, y);
+		
+		for (var i = 0, j = selectionSet.length; i < j; i++) {
+			z.highlight(selectionSet[i]);
+		}
+		
+		if (selectionSet.length === 1) {
+			z.inspect(selectionSet[0]);
+		} else if (selectionSet.length > 1) {
+			z.specifyTarget(selectionSet, x, y);
+		}
+    });
+    
+    $('#inspector li').live('click', function () {
+		var selected = z.find(parseInt($(this).text(), 10));
+		z.highlight(selected);
+		z.inspect(selected);
+    });
 	
 	controls.toggle('slow', function () {$('#config').hide();});
 	

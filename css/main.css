@@ -153,6 +153,79 @@ input {
 	width:134px;
 }
 
+#inspector {
+	position:absolute;
+	border:1px solid #9cb;
+	padding:0px 3px 1px;
+	background-color:#eee;
+	opacity:.8;
+	filter: alpha(opacity=80);
+	display:none;
+	width: auto;
+}
+
+#inspector form {
+	width: auto;
+}
+
+#inspector label {
+	float: left;
+	clear:left;
+	padding:0px;
+	margin:1px 0 1px;
+	color: #666666;
+	width:99px;
+}
+
+#inspector input {
+	display: inline-block;
+	float: left;
+	font-size: 10px;
+	padding: 0;
+	margin:1px 0 1px 1px;
+	border: medium none;
+	color: #000;
+}
+
+#inspector #i_position {
+	width: 132px;
+}
+
+#inspector h5 {
+	font-size: 10px;
+	font-weight: bold;
+	margin: 1px 0;
+	padding:0;
+}
+
+#inspector ul {
+	float: left;
+	clear: both;
+	margin: 0 0 2px;
+	padding: 0;
+}
+
+#inspector li {
+	cursor: pointer;
+	list-style-type:none;
+	float:left;
+	clear:both;
+	padding: 0 2px 1px;
+}
+
+#inspector li:hover {
+	background-color: #bdb;
+}
+
+#inspector .sleeping {
+	opacity:.75;
+	filter: alpha(opacity=75);
+}
+
+#inspector .infected {
+	color: #22b;
+}
+
 form {
 	width: 480px;
 	margin-bottom: 20px;
@@ -186,6 +259,7 @@ canvas {
 	display: block;
 	margin: 10px auto;
 	border: 1px solid #ddd;
+	cursor:crosshair;
 }
 
 #footer {

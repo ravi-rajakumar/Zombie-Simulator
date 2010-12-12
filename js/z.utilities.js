@@ -90,13 +90,11 @@ z.performance = {
 	markedTime: 0,
 	markedTurn: 0,
 	markedFrame: 0,
-	frameCounter: 0,
 	
 	init: function () {
 		markedTime = 0;
 		markedTurn = 0;
 		markedFrame = 0;
-		frameCounter = 0;
 		this.mark();
 	},
 	
@@ -155,12 +153,53 @@ z.resetStats = function () {
 	}
 };
 
+// method for reading out messages to the ui's message pane
 z.message = function (msg) {
 	$('#messages p').html('<span id="msg"><strong>' + msg + '</strong></span>&nbsp;');
 	z.log += msg + '\n';
 	var messageTimeout = setTimeout(function () {
 		$('#messages p #msg').fadeOut(1000);
 		}, 1000);
+};
+
+// used for clicks on the canvas. supply left and top coords and this will return a set (array) of humanoids within a 3 pixel radius of them
+z.findNearest = function (l, t) {
+	var click = {
+			position: {
+				x: l * z.scale,
+				y: t * z.scale
+			}
+		},
+		i,j,
+		close = [];
+		
+	for (i = 0, j = z.neighbors.length; i < j; i++) {
+		if (z.range(z.neighbors[i], click) < 3 * z.scale) {
+			close.push(z.neighbors[i]);
+		}
+	}
+	
+	return close;
+};
+
+// searches humanoids for a guid and then returns a reference to the object when it finds one, or undefined if it doesn't
+z.find = function (id) {
+	for (var i = 0, j = z.neighbors.length; i < j; i++) {
+		if (z.neighbors[i].guid === id) {
+			return z.neighbors[i];
+		}
+	}
+	return undefined;
+};
+
+// rounding with significant digits
+z.round = function (n, s) {
+	if (s) {
+		var d = Math.pow(10, s);
+		return Math.round(n * d)/d;
+	} else {
+		return Math.round(n);
+	}
 };
 
 z.postResults = function () {

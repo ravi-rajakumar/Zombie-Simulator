@@ -154,11 +154,13 @@ z.fight = function (humanoid, neighbor) {
 						human.currentTarget = zombie;
 					} else {
 						human.face(zombie);
+						human.actionQueue = ['fight'];
 					}
 				}
 				if (zombie.currentTarget === null) {
 					if (zombie.isFacing(human, distance)) {
 						zombie.currentTarget = human;
+						zombie.actionQueue = ['fight'];
 					} else {
 						zombie.face(human);
 					}

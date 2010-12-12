@@ -2,6 +2,7 @@ var z = {
 	version: "1.0.2",
 	canvasWidth: 0,
 	canvasHeight: 0,
+	inspectorUp: false,
 	log: '',
 	scale: 5, // 5m per pixel
 	canvas: null,
@@ -100,6 +101,9 @@ z.init = function (spec) {
 	z.scale = spec.scale;
 	z.canvasWidth = z.canvas.width;
 	z.canvasHeight = z.canvas.height;
+	if (z.inspectorUp) {
+		z.hideInspector();
+	}
 	
 	z.maxCrowding = spec.maxCrowding;
 	// factors scale, sight range and field of view into crowding behavior
@@ -134,6 +138,10 @@ z.init = function (spec) {
 	z.updateTimer();
 	
 	z.updateStatistics();
+	
+	// initialize the set of humanoids who will act in the next turn
+	z.neighbors = z.humans.concat(z.zombies);
+	z.neighbors = z.mergeSort(z.neighbors, 'x');
 };
 
 z.advanceTurn = function () {
