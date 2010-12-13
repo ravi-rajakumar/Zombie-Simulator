@@ -156,7 +156,7 @@ input {
 #inspector {
 	position:absolute;
 	border:1px solid #9cb;
-	padding:0px 3px 1px;
+	padding:1px 3px 1px;
 	background-color:#eee;
 	opacity:.8;
 	filter: alpha(opacity=80);
@@ -178,6 +178,7 @@ input {
 }
 
 #inspector input {
+	font-family: Helvetica, Arial, Sans;
 	display: inline-block;
 	float: left;
 	font-size: 10px;
