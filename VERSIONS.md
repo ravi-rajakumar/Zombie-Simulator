@@ -1,8 +1,10 @@
 # Version History
 
 ### 1.0.3
-- ???
+- 12-12-2010
 - added inspector for analyzing information about individual humanoids by clicking them on the map
+- minor improvement to combat-related logic
+- bugfix to human aggression overcoming natural repulsion toward zombies
 
 ### 1.0.2
 - 12-7-2010

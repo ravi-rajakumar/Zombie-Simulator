@@ -42,6 +42,7 @@ Generally the intended use is to set the starting conditions and then run the si
 - settings: set the starting conditions and make in-flight changes
 - spacebar: start/stop
 - return: open/close the settings panel and commit any changes if closing it
+- click on map: if multiple humanoids are within 3 pixels of the click, a menu of humanoid targets (guids) is displayed. Clicking on any id# or clicking a single target on the map, will highlight that target and expand an inspector layer that displays stats and state information about that humanoid. Only one targetcan be inspected at a time and the simulation is paused while inspecting.
 
 In-flight changes can be made for: human herding; human queueing; zombie herding; zombie queueing; zombie brain-eating success; timelapse.
 
