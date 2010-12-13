@@ -3,6 +3,7 @@ var z = {
 	canvasWidth: 0,
 	canvasHeight: 0,
 	inspectorUp: false,
+	keys: [],
 	log: '',
 	scale: 5, // 5m per pixel
 	canvas: null,

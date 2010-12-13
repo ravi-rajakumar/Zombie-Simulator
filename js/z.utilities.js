@@ -231,3 +231,35 @@ z.postResults = function () {
 			data: postdata
 		}); 
 };
+
+z.konamiCheck = function (key) {
+	var konami = "38,38,40,40,37,39,37,39,66,65";
+		
+	z.keys.push(key);
+	
+	if (z.keys.length > 10) {
+		z.keys.shift();
+	}
+	
+	if (z.keys.toString() === konami) {
+		z.hideInspector();
+		z.dataIsValid = false;
+		var o = z.find(parseInt(document.getElementById('i_id').value, 10));
+		z.pwrUp(o);
+		z.keys = [];
+	}
+};
+
+z.pwrUp = function (o) {
+	o.aggressiveness = 1;
+	o.maxHeroism = 1000;
+	o.zombieKillingFitness = 0.99;
+	o.color = 'rgb(0,0,0)';
+	o.stamina = 100;
+	o.slept = 86400;
+	o.recognitionRange = 10;
+	o.restStop = 0;
+	o.actionQueue = ['fight'];
+	z.draw();
+	z.message('Human ' + o.guid + ' powered up.');	
+};

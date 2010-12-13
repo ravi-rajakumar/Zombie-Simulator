@@ -43,10 +43,12 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 			} else {
 				attraction = (currentHumanoid.aggressiveness * 2) - 1;
 				persuasion = 0;
-				// drop everything and run away for 10 seconds
-				currentHumanoid.actionQueue = [];
-				for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
-					currentHumanoid.actionQueue.push('run');
+				if (attraction < 0) {
+					// drop everything and run away for 10 seconds if the human is not going to fight
+					currentHumanoid.actionQueue = [];
+					for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
+						currentHumanoid.actionQueue.push('run');
+					}
 				}
 			}
 			// after an encounter with a zombie, humans learn to recognize  them better

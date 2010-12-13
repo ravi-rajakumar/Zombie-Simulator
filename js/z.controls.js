@@ -155,7 +155,7 @@ $(document).ready(function ($) {
 		$('#stats').toggle('fast');
 	});
 	
-	$(this).keypress(function(event) {
+	$(this).keyup(function(event) {
 		if ((event.keyCode == '32') && !z.isRunning) {
 			z.play();
 		} else if (event.keyCode == '13') {
@@ -164,6 +164,8 @@ $(document).ready(function ($) {
 			return false;
 		} else if ((event.keyCode == '32') && z.isRunning) {
 			z.stop();
+		} else if (z.inspectorUp && document.getElementById('i_id') !== null) {
+			z.konamiCheck(event.keyCode);
 		}
 	});
 	
