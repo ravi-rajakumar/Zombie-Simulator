@@ -155,17 +155,28 @@ $(document).ready(function ($) {
 		$('#stats').toggle('fast');
 	});
 	
-	$(this).keyup(function(event) {
-		if ((event.keyCode == '32') && !z.isRunning) {
-			z.play();
-		} else if (event.keyCode == '13') {
+	$(this).keypress(function(event) {
+		if (event.keyCode === 32) {
+			if (!z.isRunning) {
+				z.play();
+			} else {
+				z.stop();
+			}
+		// this has to be bound to 'keypress' in order to override the form submission that's ordinarily bound to it
+		} else if (event.keyCode === 13) {
 			$('#control-switch').click();
 			$(z.hasfocus).change();
 			return false;
-		} else if ((event.keyCode == '32') && z.isRunning) {
-			z.stop();
-		} else if (z.inspectorUp && document.getElementById('i_id') !== null) {
+		}
+	});
+	
+	// many key codes are only returned correctly by keyup and keydown events
+	$(this).keyup(function(event) {
+		if (z.inspectorUp && document.getElementById('i_id') !== null) {
 			z.konamiCheck(event.keyCode);
+		} else {
+			// clear the konami checker's storage so that keys typed outside the inspector will count against the konami code being validated
+			z.keys = [];
 		}
 	});
 	
