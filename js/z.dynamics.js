@@ -8,7 +8,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		crowding = 0;
 		
 	// can currentHumanoid actually see or hear the neighbor?
-	if (currentHumanoid.isFacing(neighbor, distance) || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue[0] !== 'rest')) {
+	if (currentHumanoid.isFacing(neighbor, distance) && !currentHumanoid.sleeping || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue[0] !== 'rest')) {
 		currentHerding = currentHumanoid.herding();
 		currentQueueing = currentHumanoid.queueing();
 		crowding = currentHumanoid.lastInfluences.w;
@@ -30,7 +30,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 			attraction = currentHerding;
 			persuasion = currentQueueing;
 			// learn how to fight from neghboring humans who are close enough to communicate
-			if (distance < 2 && !currentHumanoid.isZombie() && currentHumanoid.zombieKillingFitness < neighbor.zombieKillingFitness) {
+			if (distance < 2 && !currentHumanoid.isZombie() && currentHumanoid.zombieKillingFitness < neighbor.zombieKillingFitness && !neighbor.sleeping) {
 				// 10 minutes of conversation will get the learner to halfway between their own ability and their teacher's
 				var ck = currentHumanoid.zombieKillingFitness, nk = neighbor.zombieKillingFitness;
 				currentHumanoid.zombieKillingFitness += ((ck + nk) / 2 - ck) * z.secondsPerTurn() / 600;

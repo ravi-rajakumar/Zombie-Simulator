@@ -1,5 +1,9 @@
 # Version History
 
+### 1.0.4
+- 12-13-2010
+- fixes to human influence and learning to account for sleep
+
 ### 1.0.3
 - 12-12-2010
 - added inspector for analyzing information about individual humanoids by clicking them on the map
