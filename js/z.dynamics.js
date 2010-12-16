@@ -162,9 +162,9 @@ z.fight = function (humanoid, neighbor) {
 				if (zombie.currentTarget === null) {
 					if (zombie.isFacing(human, distance)) {
 						zombie.currentTarget = human;
-						zombie.actionQueue = ['fight'];
 					} else {
 						zombie.face(human);
+						zombie.actionQueue = ['fight'];
 					}
 				}
 				
@@ -288,7 +288,7 @@ z.interact = function (humanoid, neighbor)
 			humanoid.currentTarget = neighbor;
 			humanoid.actionQueue = ['fight'];
 		} else if (neighbor.isZombie() && !humanoid.isZombie() && neighbor.actionQueue[0] !== 'stunned' && humanoid.actionQueue[0] !== 'rest' && !humanoid.sleeping) {
-			if (Math.random() < humanoid.aggressiveness + humanoid.showHeroism() || neighbor.currentTarget === humanoid) {
+			if (Math.random() < humanoid.aggressiveness + humanoid.showHeroism()) {
 				humanoid.currentTarget = neighbor;
 				humanoid.actionQueue = ['fight'];
 			} else {

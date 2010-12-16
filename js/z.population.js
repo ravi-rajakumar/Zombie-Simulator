@@ -390,6 +390,7 @@ z.human = function (spec) {
 				z.message(that.zombifyMsg);				
 				z.updateStatistics();
 			}, z.zombificationDuration);
+			z.timers.push(that.livetimer);
 			// eliminating the possibility of both timers being set
 			that.deadtimer = null;
 		}
@@ -413,6 +414,7 @@ z.human = function (spec) {
 				z.message(that.zombifyMsg);
 				z.updateStatistics();
 			}, z.zombificationDuration);
+			z.timers.push(that.deadtimer);
 			// eliminating the possibility of both timers being set
 			that.livetimer = null;
 		}

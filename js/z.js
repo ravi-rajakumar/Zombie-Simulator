@@ -1,5 +1,5 @@
 var z = {
-	version: "1.0.4",
+	version: "1.0.5",
 	canvasWidth: 0,
 	canvasHeight: 0,
 	inspectorUp: false,
@@ -78,6 +78,7 @@ var z = {
 	// populations
 	humans: [],
 	zombies: [],
+	timers: [],
 	neighbors: [],
 	extinct: "neither",
 	dataIsValid: true
@@ -122,6 +123,14 @@ z.init = function (spec) {
 	
 	z.timeLapseFactor = spec.timeLapseFactor;
 	z.simulatedTimeElapsed = 0;
+	
+	// clear any residual timers from previous runs
+	if (z.timers.length > 0) {
+		for (var k = 0, len = z.timers.length; k < len; k++) {
+			z.clearTimeout(z.timers[k]);
+		}
+		z.timers = [];
+	}
 	
 	z.extinct = "neither";
 	z.dataIsValid = true;

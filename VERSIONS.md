@@ -1,5 +1,12 @@
 # Version History
 
+### 1.0.5
+- 12-16-2010
+- fixed an inconsistency in combat logic for zombies
+- reverted a change in human behavior that was rendered unnessecary byt a later improvement in combat logic
+- fixed a bug where zombie timers left over from previous runs were persisting into new ones
+
+
 ### 1.0.4
 - 12-13-2010
 - fixes to human influence and learning to account for sleep

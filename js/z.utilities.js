@@ -28,7 +28,9 @@ z.clearTimeout = function (timer, callback) {
 	} catch (e) {
 		// if this failed it's probably because timer wasn't an actual timeout and had no cancel method
 	}
-	callback();
+	if (callback) {
+		callback();
+	}
 };
 
 z.zombieCancel = function () {
