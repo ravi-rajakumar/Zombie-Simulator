@@ -1,5 +1,9 @@
 # Version History
 
+### 1.0.6
+- 12-18-2010
+- fixed a problem where people attacked from outside their field of view were retaliating too quickly
+
 ### 1.0.5
 - 12-16-2010
 - fixed an inconsistency in combat logic for zombies

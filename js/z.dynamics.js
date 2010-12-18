@@ -156,7 +156,8 @@ z.fight = function (humanoid, neighbor) {
 						human.currentTarget = zombie;
 					} else {
 						human.face(zombie);
-						human.actionQueue = ['fight'];
+						// reset action queue, clearing out rest etc.
+						human.actionQueue = [];
 					}
 				}
 				if (zombie.currentTarget === null) {
@@ -164,7 +165,8 @@ z.fight = function (humanoid, neighbor) {
 						zombie.currentTarget = human;
 					} else {
 						zombie.face(human);
-						zombie.actionQueue = ['fight'];
+						// reset action queue (we know the zombie isn't stunned because this function is only called when they aren't)
+						zombie.actionQueue = [];
 					}
 				}
 				
