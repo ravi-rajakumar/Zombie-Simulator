@@ -4,25 +4,25 @@ z.humanoid = function (spec) {
 	that.actionQueue = [];
 	
 	that.clearActionQueue = function () {
-		if (that.isAlive) {
+		if (!that.dead) {
 			that.actionQueue = [];
 		}
 	};
 	
 	that.setActionQueue = function (list) {
-		if (that.isAlive) {
+		if (!that.dead) {
 			that.actionQueue = list;
 		}
 	};
 	
 	that.pushActionQueue = function (item) {
-		if (that.isAlive) {
+		if (!that.dead) {
 			that.actionQueue.push(item);
 		}
 	};
 	
 	that.shiftActionQueue = function () {
-		if (that.isAlive) {
+		if (!that.dead) {
 			return that.actionQueue.shift();
 		} else {
 			return 'die';
