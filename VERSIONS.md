@@ -1,5 +1,14 @@
 # Version History
 
+### 1.0.7
+- 12-19-2010
+- fixed errors causing death events to fail
+- finally fixed bug where zombification cancellations were failing to happen correctly, resulting in negative numbers of 'pending zombies'
+- revisions to checks for alive/dead state
+- refactored a lot of zombification code to remove logic that could result in immune humans
+- data from this point forward is not comparable with past versions
+- fix to make 'flash' function for highlighting fights asyncronous with steps in the main loop
+
 ### 1.0.6
 - 12-18-2010
 - fixed a problem where people attacked from outside their field of view were retaliating too quickly

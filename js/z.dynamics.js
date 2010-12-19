@@ -8,7 +8,7 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		crowding = 0;
 		
 	// can currentHumanoid actually see or hear the neighbor?
-	if (currentHumanoid.isFacing(neighbor, distance) && !currentHumanoid.sleeping || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue[0] !== 'rest')) {
+	if (!currentHumanoid.sleeping && !currentHumanoid.dead && (currentHumanoid.isFacing(neighbor, distance) || (distance < z.hearingRange && !neighbor.sleeping && neighbor.actionQueue[0] !== 'rest'))) {
 		currentHerding = currentHumanoid.herding();
 		currentQueueing = currentHumanoid.queueing();
 		crowding = currentHumanoid.lastInfluences.w;
@@ -45,9 +45,9 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 				persuasion = 0;
 				if (attraction < 0) {
 					// drop everything and run away for 10 seconds if the human is not going to fight
-					currentHumanoid.actionQueue = [];
+					currentHumanoid.clearActionQueue();
 					for (var i = 0; i < (10 / z.secondsPerTurn()); i++) {
-						currentHumanoid.actionQueue.push('run');
+						currentHumanoid.pushActionQueue('run');
 					}
 				}
 			}
@@ -157,7 +157,7 @@ z.fight = function (humanoid, neighbor) {
 					} else {
 						human.face(zombie);
 						// reset action queue, clearing out rest etc.
-						human.actionQueue = [];
+						human.clearActionQueue();
 					}
 				}
 				if (zombie.currentTarget === null) {
@@ -166,7 +166,7 @@ z.fight = function (humanoid, neighbor) {
 					} else {
 						zombie.face(human);
 						// reset action queue (we know the zombie isn't stunned because this function is only called when they aren't)
-						zombie.actionQueue = [];
+						zombie.clearActionQueue();
 					}
 				}
 				
@@ -184,20 +184,18 @@ z.fight = function (humanoid, neighbor) {
 					// check to see if the zombie is actually focused on this human
 					if (humanTargeted) {	
 						// check to see whether the human is already dead
-						if (human.isAlive()) {
+						if (!human.dead) {
 							if (Math.random() < biteChance) {
-								if (human.zombify !== null) {
-									human.zombify();
-									human.currentTarget = zombie;
-									z.message('human zombify coming...');
-									z.updateStatistics();
-								}
+								human.zombify();
+								human.currentTarget = zombie;
+								z.message('human zombify coming...');
+								z.updateStatistics();
 							}
 						
 							if (Math.random() < humanDieChance) {
 								if (Math.random() < (z.zombieBrainEatingEfficiency / 100)) {
 									// the brain is destroyed so this person can't zombify
-									human.zombify = null;
+									human.deadtimer = 'never';
 									// remove any pending zombification if the brain is destroyed
 									if (human.livetimer !== null) {
 										z.clearTimeout(human.livetimer,z.zombieCancel);
@@ -217,10 +215,10 @@ z.fight = function (humanoid, neighbor) {
 					// this only happens if the human is actually focused on this zombie
 					if (zombieTargeted) {
 						// check to see whether the zombie is already dead
-						if (zombie.isAlive()) {	
+						if (!zombie.dead) {	
 							if (Math.random() < zombieStunChance) {
 								for (var j = 0; j < Math.floor(60 / z.secondsPerTurn()); j++) {
-									zombie.actionQueue.push('stunned');	
+									zombie.pushActionQueue('stunned');	
 								}	
 								exit = true;
 							}
@@ -259,10 +257,10 @@ z.fight = function (humanoid, neighbor) {
 						zombie.currentTarget = null;
 						
 						// if human survives, they distance themselves from the site of the attack and the zombie body by walking away for 10 seconds
-						if (human.isAlive()) {
-							human.actionQueue = [];
+						if (!human.dead) {
+							human.clearActionQueue();
 							for (var k = 0; k < (10 / z.secondsPerTurn()); k++) {
-								human.actionQueue.push('walk');
+								human.pushActionQueue('walk');
 							}
 						}
 						
@@ -288,13 +286,13 @@ z.interact = function (humanoid, neighbor)
 	if (distance <= 1) {
 		if (humanoid.isZombie() && humanoid.actionQueue[0] !== 'stunned' && !neighbor.isZombie()) {		
 			humanoid.currentTarget = neighbor;
-			humanoid.actionQueue = ['fight'];
+			humanoid.setActionQueue(['fight']);
 		} else if (neighbor.isZombie() && !humanoid.isZombie() && neighbor.actionQueue[0] !== 'stunned' && humanoid.actionQueue[0] !== 'rest' && !humanoid.sleeping) {
 			if (Math.random() < humanoid.aggressiveness + humanoid.showHeroism()) {
 				humanoid.currentTarget = neighbor;
-				humanoid.actionQueue = ['fight'];
+				humanoid.setActionQueue(['fight']);
 			} else {
-				humanoid.actionQueue = ['run'];
+				humanoid.setActionQueue(['run']);
 				z.humanoidInfluence(humanoid, neighbor, distance);
 			}
 		}

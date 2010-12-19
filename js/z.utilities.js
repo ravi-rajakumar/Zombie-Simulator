@@ -1,15 +1,21 @@
 /* this is a custom version of settimeout, designed to account for the pauses in the simulation. 
-	It checks against the game's time elapsed (in seconds), which doesn't increment when paused */ 
-z.setTimeout = function (fn, t) {
+It checks against the game's time elapsed (in seconds), which doesn't increment when paused.
+fn, t are requires; id is an optional argument */ 
+z.setTimeout = function (fn, t, n) {
 	var timer = {}, 
 		start = z.simulatedTimeElapsed;
 	
 	timer.run = null;
 	
+	timer.fired = false;
+	
+	timer.id = n | null;
+	
 	timer.go = (function () {
 		timer.run = setInterval(function () {
 			if (z.simulatedTimeElapsed >= start + t) {
 				fn();
+				timer.fired = true;
 				clearInterval(timer.run);
 			}
 		},100);
@@ -22,13 +28,29 @@ z.setTimeout = function (fn, t) {
 	return timer;
 };
 
+z.timerDebug = function () {
+	var dupes = [],
+		copy = [];
+	
+	for (var j = 0, leng = z.timers.length; j < leng; j++) {
+		if (copy[z.timers[j].id]) {
+			dupes.push(z.timers[j].id);
+		} else {
+			copy[z.timers[j].id] = true;
+		}
+	}
+	
+	return dupes;
+};	
+	
 z.clearTimeout = function (timer, callback) {
 	try {
 		timer.cancel();
 	} catch (e) {
 		// if this failed it's probably because timer wasn't an actual timeout and had no cancel method
 	}
-	if (callback) {
+	// make sure we succeeded at clearing it before firing callback
+	if (callback && !timer.fired) {
 		callback();
 	}
 };
@@ -261,7 +283,7 @@ z.pwrUp = function (o) {
 	o.slept = 86400;
 	o.recognitionRange = 10;
 	o.restStop = 0;
-	o.actionQueue = ['fight'];
+	o.setActionQueue(['fight']);
 	z.draw();
 	z.message('Human ' + o.guid + ' powered up.');	
 };

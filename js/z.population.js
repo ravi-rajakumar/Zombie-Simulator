@@ -3,17 +3,35 @@ z.humanoid = function (spec) {
 	
 	that.actionQueue = [];
 	
-	that.guid = z.guid += 1;
+	that.clearActionQueue = function () {
+		if (that.isAlive) {
+			that.actionQueue = [];
+		}
+	};
+	
+	that.setActionQueue = function (list) {
+		if (that.isAlive) {
+			that.actionQueue = list;
+		}
+	};
+	
+	that.pushActionQueue = function (item) {
+		if (that.isAlive) {
+			that.actionQueue.push(item);
+		}
+	};
+	
+	that.shiftActionQueue = function () {
+		if (that.isAlive) {
+			return that.actionQueue.shift();
+		} else {
+			return 'die';
+		}
+	};
 	
 	that.currentTarget = null;
 	
-	that.isAlive = function () {
-		var ret = true;
-		if (that.actionQueue[0] === 'die') {
-			ret = false;
-		}
-		return ret; 
-	};
+	that.dead = false;
 	
 	that.lastActionTimeStamp = z.simulatedTimeElapsed;
 	
@@ -227,7 +245,7 @@ z.humanoid = function (spec) {
 				that.stamina = 100;
 				// 'get up' if fully rested and awake
 				if (action === 'rest' && !that.sleeping) {
-					that.actionQueue = [];
+					that.clearActionQueue();
 				}
 			} else {
 				that.stamina = stam;
@@ -235,7 +253,7 @@ z.humanoid = function (spec) {
 			
 			// keep resting until the current timer runs out or something else happens
 			if (z.simulatedTimeElapsed < that.restStop && action !== 'rest') {
-				that.actionQueue = ['rest'];
+				that.setActionQueue(['rest']);
 			}
 			
 			// keep sleeping if I already am
@@ -247,7 +265,7 @@ z.humanoid = function (spec) {
 				that.slept -= z.simulatedTimeElapsed - that.lastActionTimeStamp / 2;
 				// 'wake up' if an influence comes close and the human is awake and not too exhausted
 				if (that.influences.r < 2 && that.stamina > 0) {
-					that.actionQueue = [];
+					that.clearActionQueue();
 				}
 			}
 			// update the humanoid's internal timestamp
@@ -257,13 +275,13 @@ z.humanoid = function (spec) {
 	
 	that.sleep = function () {
 		// check for death condition before doing anything
-		if (that.isAlive()) {
+		if (!that.dead) {
 			that.sleeping = true;
 			// chance to wake up automatically if I have over 6 hours of sleep in the bank, reaching 100% at ten hours
 			if (Math.random() < (that.slept / 3600 - 6) / 4) {
 				that.sleeping = false;
 			} else {
-				that.actionQueue = ['rest'];
+				that.setActionQueue(['rest']);
 				that.slept += z.simulatedTimeElapsed - that.lastActionTimeStamp;
 			}
 			// update the humanoid's internal timestamp
@@ -274,15 +292,12 @@ z.humanoid = function (spec) {
 	that.doNext = function () {
 		var nxt = that.nextAction();
 		switch (nxt) {
-			case 'stunned':
-				// do nothing
-				break;
-			case 'die':
-				// make sure the die message isn't removed through race conditions
-				that.actionQueue = ['die'];
-				break;
 			case 'idle':
 				that.idle();
+				break;
+			case 'rest':
+				that.currentTarget = null;
+				that.rest();
 				break;
 			case 'walk':
 				that.walk();
@@ -294,12 +309,15 @@ z.humanoid = function (spec) {
 					that.walk();
 				}
 				break;
+			case 'stunned':
+				// do nothing
+				break;
+			case 'die':
+				// make sure the die message isn't removed through race conditions
+				that.actionQueue = ['die'];
+				break;
 			case 'fight':
 				z.fight(that, that.currentTarget);
-				break;
-			case 'rest':
-				that.currentTarget = null;
-				that.rest();
 				break;
 			default: 
 				that.idle();
@@ -323,6 +341,8 @@ z.human = function (spec) {
 	that.maxWalkingSpeed = spec.maxWalkingSpeed ? spec.maxWalkingSpeed : (Math.random() / 5 + 0.9) * z.humanBaseWalkingSpeed();
 	
 	that.walkingSpeed = that.maxWalkingSpeed;
+
+	that.guid = z.guid += 1;
 	
 	that.recognitionRange = 1;
 	
@@ -383,43 +403,35 @@ z.human = function (spec) {
 		if (that.deadtimer === null && that.livetimer === null) {
 			z.zombiesQueued += 1;
 			that.livetimer = z.setTimeout(function() {
-				that.livetimer = null;
-				that.actionQueue = ['die'];
+				that.setActionQueue(['die']);
+				that.dead = true;
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified += 1;
 				z.message(that.zombifyMsg);				
 				z.updateStatistics();
-			}, z.zombificationDuration);
+			}, z.zombificationDuration, that.guid);
 			z.timers.push(that.livetimer);
-			// eliminating the possibility of both timers being set
-			that.deadtimer = null;
+			that.color = 'rgb(30,30,' + (grayValue+50) + ')';
 		}
-		
-		that.zombify = null; // this should prevent duplicate zombies
-		
-		that.color = 'rgb(30,30,' + (grayValue+50) + ')';
 	};
 		
 	that.die = function () {		
-		that.actionQueue = ['die'];
+		that.setActionQueue(['die']);
+		that.dead = true;
 		
 		// this gets set right away because getting killed overrides any pending 'live-turn' event
 		that.zombifyMsg = 'dead-turn';
 		
-		if (that.zombify !== null && that.deadtimer === null && that.livetimer === null) {
+		if (that.deadtimer === null && that.livetimer === null) {
 			z.zombiesQueued += 1;
 			that.deadtimer = z.setTimeout(function() {
 				z.zombies.push(z.zombie(that));
 				z.stats.hZombified += 1;
 				z.message(that.zombifyMsg);
 				z.updateStatistics();
-			}, z.zombificationDuration);
+			}, z.zombificationDuration, that.guid);
 			z.timers.push(that.deadtimer);
-			// eliminating the possibility of both timers being set
-			that.livetimer = null;
-		}
-		
-		that.zombify = null; 
+		}		
 		
 		// remove this function so that it can't be called again
 		that.die = function () {};
@@ -431,8 +443,12 @@ z.human = function (spec) {
 	
 	// choice algorithm here corresponds to conscious decision-making
 	that.nextAction = function () {
-		if (that.actionQueue.length > 0) {
-			return that.actionQueue.shift();
+		// this trumps everything
+		if (that.dead) {
+			return 'die';
+			
+		} else if (that.actionQueue.length > 0) {
+			return that.shiftActionQueue();
 			
 		// if they are sleeping they will keep sleeping
 		} else if (that.sleeping) {
@@ -472,6 +488,8 @@ z.zombie = function (spec) {
 	that.maxWalkingSpeed = spec.maxWalkingSpeed ? spec.maxWalkingSpeed / 3 : (Math.random() / 5 + 0.9) * z.zombieBaseWalkingSpeed();
 	that.walkingSpeed = that.maxWalkingSpeed;
 	
+	that.guid = spec.guid ? spec.guid : z.guid += 1;
+	
 	that.color = 'rgb(' + (Math.round(Math.random() * 40) + 200) + ', 30, 30)';
 	
 	that.herding = function () {
@@ -498,12 +516,13 @@ z.zombie = function (spec) {
 	};
 		
 	that.die = function () {
-		that.actionQueue = ['die'];
+		that.setActionQueue(['die']);
+		that.dead = true;
 	};
 	
 	that.nextAction = function () {
 		if (that.actionQueue.length > 0) {
-			return that.actionQueue.shift();
+			return that.shiftActionQueue();
 		} else {
 			return 'walk';
 		}

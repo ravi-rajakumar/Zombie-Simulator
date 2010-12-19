@@ -1,5 +1,5 @@
 var z = {
-	version: "1.0.6",
+	version: "1.0.7",
 	canvasWidth: 0,
 	canvasHeight: 0,
 	inspectorUp: false,
@@ -23,7 +23,7 @@ var z = {
 	currentTurn: 0,
 	frameCounter: 0,
 	turns: null,
-	interval: 20,
+	interval: 10,
 	foodAvailability: 0, // not used yet
 	hidingPlaceFrequency: 0, // not used yet
 	zombificationDuration: 3 * 3600, // 3 hours
@@ -178,7 +178,6 @@ z.advanceTurn = function () {
 	}
 	if (Math.random() < (((hcount / 1000) * z.naturaldeathrate * z.secondsPerTurn()) / (86400 * 365))) {
 		var ndeath = z.humans.pop();
-		ndeath.zombify = null;
 		z.message('natural death');
 		z.updateStatistics();
 		z.stats.hNaturalDeaths += 1;

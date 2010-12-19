@@ -35,8 +35,7 @@ z.draw = function () {
 		}
 };
 
-// this flashes a circle around a selected humanoid
-z.flash = function (spec) {
+z.circle = function (spec) {
 	if (z.canvas.getContext) 
 	{
 		var context = z.canvas.getContext('2d'),
@@ -53,6 +52,16 @@ z.flash = function (spec) {
 			context.strokeStyle = 'rgba(255,0,0,0.5)';
 			context.stroke();
 	}
+};
+
+// this flashes a circle around a selected humanoid
+z.flash = function (spec) {
+	var c = setInterval(function () {
+			z.circle(spec);
+		}, 17),
+		fl = setTimeout(function () {
+			clearInterval(c);
+		}, 52);
 };
 
 // this draws a circle around a selected humanoid
@@ -178,7 +187,7 @@ z.inspect = function (o) {
 	type = (o.isZombie()) ? 'zombie' : 'human';
 	addInput('i_type', 'type', type);
 	addInput('i_id', 'id', o.guid);
-	addInput('i_alive', 'alive', o.isAlive());
+	addInput('i_alive', 'alive', !o.dead);
 	addInput('i_next_in_q', 'next action in queue', '' + o.actionQueue[0]);
 	addInput('i_position', 'position', 'x = ' + z.round(o.position.x, 3) + ', y = ' + z.round(o.position.y, 3));
 	addInput('i_heading', 'heading', z.round(o.heading, 3));
