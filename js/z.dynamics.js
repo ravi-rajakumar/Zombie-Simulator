@@ -29,8 +29,8 @@ z.humanoidInfluence = function (currentHumanoid, neighbor, distance) {
 		if (currentHumanoid.isZombie() === neighbor.isZombie() || !currentHumanoid.recognizes(neighbor)) {
 			attraction = currentHerding;
 			persuasion = currentQueueing;
-			// learn how to fight from neghboring humans who are close enough to communicate
-			if (distance < 2 && !currentHumanoid.isZombie() && currentHumanoid.zombieKillingFitness < neighbor.zombieKillingFitness && !neighbor.sleeping) {
+			// learn how to fight from neghboring humans who are close enough to communicate, but with a cap equal to zombie sun chance. This means that humans will teach each other to destroy the zombies' brains (avoiding 'stun' outcomes), but only that much. Additional skill in killing zombies requires first-hand experience
+			if (distance < 2 && !currentHumanoid.isZombie() && currentHumanoid.zombieKillingFitness < 0.05 && currentHumanoid.zombieKillingFitness < neighbor.zombieKillingFitness && !neighbor.sleeping) {
 				// 10 minutes of conversation will get the learner to halfway between their own ability and their teacher's
 				var ck = currentHumanoid.zombieKillingFitness, nk = neighbor.zombieKillingFitness;
 				currentHumanoid.zombieKillingFitness += ((ck + nk) / 2 - ck) * z.secondsPerTurn() / 600;
@@ -142,8 +142,11 @@ z.fight = function (humanoid, neighbor) {
 					zombie = neighbor;
 				}	
 				
-				zombieStunChance = (human.zombieKillingFitness <= 0.18) ? human.zombieKillingFitness * 5 : 0.9; // 5% chance by default but improved in more experienced humans
-				zombieDieChance = human.zombieKillingFitness; // 1% chance by default but improved in more experienced humans
+				// stun is the chance the zombie will be 'killed' but with their brain left intact, meaning that they will resuscitate later. this starts at a 5% chance by default but decreases, approaching 0 very rapidly as the human gets experienced and learns to destroy the zombie's brain
+				zombieStunChance = (10 / (Math.pow((100 * human.zombieKillingFitness), 4) + 1)) / 100; 
+				
+				// 1% chance by default but improved in more experienced humans
+				zombieDieChance = human.zombieKillingFitness; 
 				
 				// over-tired humans will fight less efficiently, bottoming out at -100 stamina
 				if (human.stamina < 0) {

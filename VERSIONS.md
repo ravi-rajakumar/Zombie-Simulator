@@ -1,5 +1,10 @@
 # Version History
 
+### 1.0.8
+- 12-30-2010
+- fix to cap human learning (by word-of-mouth) so that it's more realistic -- humans can only improve so far without first-hand experience
+- fix to fight mechanics so that zombie 'stun' rate is inversely proporttional to human zombie-killing skill. This follows a steep, almost stepped curve; when humans know to destroy the brain, the chances that they will leave zombies stunned approach zero
+
 ### 1.0.7
 - 12-19-2010
 - fixed errors causing death events to fail
