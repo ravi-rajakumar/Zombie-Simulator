@@ -1,7 +1,7 @@
 # Zombie Simulator, AKA The Living Dead
 
-- Version: 1.0.3
-- Date: 27th August 2010
+- Version: 1.0.8
+- Date: 30th December 2010
 - GitHub Repository: <http://github.com/ravi-rajakumar/Zombie-Simulator>
 
 ## Synopsis
