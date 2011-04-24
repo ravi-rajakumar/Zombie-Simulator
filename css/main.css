@@ -70,6 +70,7 @@ header cite {
 
 #config {
 	position:absolute;
+	width:456px;
 	border:0;
 	margin:9px 1px;
 	padding:1px 12px 12px;
@@ -95,7 +96,7 @@ header cite {
 
 #controls-human, #controls-zombie, #controls-general {
 	float: left;
-	margin-right: 10px;
+	margin-right: 12px;
 	width:144px;
 }
 
